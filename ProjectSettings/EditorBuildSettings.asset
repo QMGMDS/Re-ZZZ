@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/ReZZZ/Scenes/Bootstrap.unity
+    guid: 3f44e15b27e0cea449efff17f0b5243d
+  - enabled: 1
+    path: Assets/ReZZZ/Scenes/CombatSandbox.unity
+    guid: f05f998d39b728644a78a76aa9cdd05e
   m_configObjects: {}
