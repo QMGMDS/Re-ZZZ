@@ -6,9 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/ReZZZ/Scenes/Bootstrap.unity
-    guid: 3f44e15b27e0cea449efff17f0b5243d
+    path: "Assets/ZZZ/Scenes/\u6E38\u620F\u542F\u52A8\u5F15\u5BFC.unity"
+    guid: 09b343cda9ea6e34d85ee9227d3c260b
   - enabled: 1
-    path: Assets/ReZZZ/Scenes/CombatSandbox.unity
-    guid: f05f998d39b728644a78a76aa9cdd05e
+    path: "Assets/ZZZ/Scenes/\u4E3B\u83DC\u5355.unity"
+    guid: 96fc4001174a71a47947950ea8f375a5
+  - enabled: 1
+    path: "Assets/ZZZ/Scenes/\u6E38\u620F\u4E3B\u573A\u666F.unity"
+    guid: d6e3c52f5a5a80c498b9194462659522
   m_configObjects: {}
