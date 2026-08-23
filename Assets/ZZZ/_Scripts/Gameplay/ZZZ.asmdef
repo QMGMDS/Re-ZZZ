@@ -1,7 +1,9 @@
 {
     "name": "ZZZ",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "Game.Framework"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
