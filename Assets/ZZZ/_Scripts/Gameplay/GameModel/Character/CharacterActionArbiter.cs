@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 
 using GamePlay.Data;
 
@@ -12,31 +9,40 @@ namespace GamePlay.GameModule
     /// </summary>
     public sealed class CharacterActionArbiter
     {
-        private readonly ReadOnlyCollection<CharacterActionAsset> _actions;
+        private readonly IReadOnlyDictionary<string, CharacterActionAsset> _actionsById;
+        private readonly IReadOnlyDictionary<string, IReadOnlyList<CharacterActionLink>> _linksBySourceActionId;
 
-        public CharacterActionArbiter(IReadOnlyList<CharacterActionAsset> actions)
+        public CharacterActionArbiter(
+            IReadOnlyDictionary<string, CharacterActionAsset> actionsById,
+            IReadOnlyDictionary<string, IReadOnlyList<CharacterActionLink>> linksBySourceActionId)
         {
-            _actions = Array.AsReadOnly(actions.OrderByDescending(action => action.Priority).ToArray());
+            _actionsById = actionsById;
+            _linksBySourceActionId = linksBySourceActionId;
         }
 
         /// <summary>
-        /// 返回优先级最高且满足全部条件的动作资产
+        /// 返回当前动作出边中优先级最高且满足全部条件的目标动作资产
         /// 无匹配动作时返回 null
         /// </summary>
-        public CharacterActionAsset TrySwitch(in CharacterIntention intention, in CharacterFact fact)
+        public CharacterActionAsset TrySwitch(
+            string currentActionId,
+            in CharacterIntention intention,
+            in CharacterFact fact)
         {
-            for (int index = 0; index < _actions.Count; index++)
+            if (!_linksBySourceActionId.TryGetValue(currentActionId, out IReadOnlyList<CharacterActionLink> outgoingLinks))
             {
-                CharacterActionAsset action = _actions[index];
-                CharacterIntention requiredIntention = action.RequiredIntention;
-                CharacterFact requiredFact = action.RequiredFact;
+                return null;
+            }
 
-                if (Matches(requiredIntention.Attack, intention.Attack)
-                    && Matches(requiredIntention.Move, intention.Move)
-                    && Matches(requiredFact.Death, fact.Death)
-                    && Matches(requiredFact.LogicalProgress, fact.LogicalProgress))
+            for (int index = 0; index < outgoingLinks.Count; index++)
+            {
+                CharacterActionLink link = outgoingLinks[index];
+                if (Matches(link.RequiredIntention.Attack, intention.Attack)
+                    && Matches(link.RequiredIntention.Move, intention.Move)
+                    && Matches(link.RequiredFact.Death, fact.Death)
+                    && Matches(link.RequiredFact.LogicalProgress, fact.LogicalProgress))
                 {
-                    return action;
+                    return _actionsById[link.ToActionId];
                 }
             }
 

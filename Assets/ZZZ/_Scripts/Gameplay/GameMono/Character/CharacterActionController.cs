@@ -43,16 +43,19 @@ namespace GamePlay.GameMono
                 throw new InvalidOperationException($"{nameof(CharacterActionController)} 要求必须分配 {nameof(_animator)}");
             }
 
-            _arbiter = new CharacterActionArbiter(_actionSet.Actions);
+            _actionSet.BuildRuntimeLookups(out var actionsById, out var linksBySourceActionId);
+            _arbiter = new CharacterActionArbiter(actionsById, linksBySourceActionId);
             _transition = new CharacterActionTransition();
             _animationDriver = new CharacterAnimationDriver(_animator);
+            // 第一个动作为默认动作
+            _currentAction = _actionSet.Actions[0];
 
             _fact = new CharacterFact(Trilean.False, Trilean.False);
         }
 
         private void Update()
         {
-            CharacterActionAsset targetAction = _arbiter.TrySwitch(_inputCharacterData.Intention, _fact);
+            CharacterActionAsset targetAction = _arbiter.TrySwitch(_currentAction.Id, _inputCharacterData.Intention, _fact);
             float logicalProgressSeconds = _transition.Tick(targetAction, ref _currentAction, Time.deltaTime, ref _fact);
             _animationDriver.Evaluate(_currentAction, logicalProgressSeconds);
         }
