@@ -13,12 +13,5 @@ MonoBehaviour:
   m_Name: Anbi_Stop
   m_EditorClassIdentifier: 
   _id: Anbi_Stop
-  _priority: 1
-  _requiredIntention:
-    _attack: 1
-    _move: 1
-  _requiredFact:
-    _death: 0
-    _logicalProgress: 0
-  _durationSeconds: 1.1
-  _animationClip: {fileID: 6032505460816376181, guid: dde6900bd931c3142a6e49505c92f125, type: 3}
+  _durationSeconds: 1.667
+  _animationClip: {fileID: 7400000, guid: 1319a2c2733f29f4ebd81887cae30785, type: 2}

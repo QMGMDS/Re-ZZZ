@@ -13,12 +13,5 @@ MonoBehaviour:
   m_Name: Anbi_Idle
   m_EditorClassIdentifier: 
   _id: Anbi_Idle
-  _priority: 0
-  _requiredIntention:
-    _attack: 1
-    _move: 1
-  _requiredFact:
-    _death: 0
-    _logicalProgress: 2
-  _durationSeconds: 3.4
-  _animationClip: {fileID: 8406963695831445294, guid: dde6900bd931c3142a6e49505c92f125, type: 3}
+  _durationSeconds: 4.033
+  _animationClip: {fileID: 7400000, guid: d013022323d47fa42b8c1aa7db1c07f5, type: 2}

@@ -17,17 +17,84 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bffc21359f10cf0468eae4ccdd3e9317, type: 2}
   - {fileID: 11400000, guid: 7564b7fea873201438a617a704f80c13, type: 2}
   - {fileID: 11400000, guid: 0507192520093324e9080563e8bf0af4, type: 2}
-  _initialAction: {fileID: 11400000, guid: 2fbab0f00a6e6854daae6b89ecac37f3, type: 2}
   _links:
-  - _from: {fileID: 11400000, guid: 2fbab0f00a6e6854daae6b89ecac37f3, type: 2}
-    _to: {fileID: 11400000, guid: 2fbab0f00a6e6854daae6b89ecac37f3, type: 2}
-  - _from: {fileID: 11400000, guid: 2fbab0f00a6e6854daae6b89ecac37f3, type: 2}
-    _to: {fileID: 11400000, guid: 0507192520093324e9080563e8bf0af4, type: 2}
-  - _from: {fileID: 11400000, guid: 0507192520093324e9080563e8bf0af4, type: 2}
-    _to: {fileID: 11400000, guid: 7564b7fea873201438a617a704f80c13, type: 2}
-  - _from: {fileID: 11400000, guid: 7564b7fea873201438a617a704f80c13, type: 2}
-    _to: {fileID: 11400000, guid: 7564b7fea873201438a617a704f80c13, type: 2}
-  - _from: {fileID: 11400000, guid: 7564b7fea873201438a617a704f80c13, type: 2}
-    _to: {fileID: 11400000, guid: bffc21359f10cf0468eae4ccdd3e9317, type: 2}
-  - _from: {fileID: 11400000, guid: bffc21359f10cf0468eae4ccdd3e9317, type: 2}
-    _to: {fileID: 11400000, guid: 2fbab0f00a6e6854daae6b89ecac37f3, type: 2}
+  - _fromActionId: Anbi_Idle
+    _toActionId: Anbi_Idle
+    _priority: 0
+    _requiredIntention:
+      _attack: 1
+      _move: 1
+    _requiredFact:
+      _death: 0
+      _logicalProgress: 2
+    _animationTransitionDurationSeconds: 0
+  - _fromActionId: Anbi_Idle
+    _toActionId: Anbi_WalkStart
+    _priority: 0
+    _requiredIntention:
+      _attack: 1
+      _move: 2
+    _requiredFact:
+      _death: 0
+      _logicalProgress: 0
+    _animationTransitionDurationSeconds: 0.25
+  - _fromActionId: Anbi_WalkStart
+    _toActionId: Anbi_WalkLoop
+    _priority: 1
+    _requiredIntention:
+      _attack: 0
+      _move: 2
+    _requiredFact:
+      _death: 0
+      _logicalProgress: 2
+    _animationTransitionDurationSeconds: 0
+  - _fromActionId: Anbi_WalkLoop
+    _toActionId: Anbi_WalkLoop
+    _priority: 1
+    _requiredIntention:
+      _attack: 0
+      _move: 2
+    _requiredFact:
+      _death: 0
+      _logicalProgress: 2
+    _animationTransitionDurationSeconds: 0
+  - _fromActionId: Anbi_WalkLoop
+    _toActionId: Anbi_Stop
+    _priority: 1
+    _requiredIntention:
+      _attack: 1
+      _move: 1
+    _requiredFact:
+      _death: 0
+      _logicalProgress: 0
+    _animationTransitionDurationSeconds: 0.25
+  - _fromActionId: Anbi_Stop
+    _toActionId: Anbi_Idle
+    _priority: 0
+    _requiredIntention:
+      _attack: 1
+      _move: 1
+    _requiredFact:
+      _death: 0
+      _logicalProgress: 2
+    _animationTransitionDurationSeconds: 0.25
+  - _fromActionId: Anbi_WalkStart
+    _toActionId: Anbi_Stop
+    _priority: 1
+    _requiredIntention:
+      _attack: 1
+      _move: 1
+    _requiredFact:
+      _death: 0
+      _logicalProgress: 0
+    _animationTransitionDurationSeconds: 0.25
+  - _fromActionId: Anbi_Stop
+    _toActionId: Anbi_WalkStart
+    _priority: 0
+    _requiredIntention:
+      _attack: 1
+      _move: 2
+    _requiredFact:
+      _death: 0
+      _logicalProgress: 0
+    _animationTransitionDurationSeconds: 0.25

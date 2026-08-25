@@ -13,12 +13,5 @@ MonoBehaviour:
   m_Name: Anbi_WalkStart
   m_EditorClassIdentifier: 
   _id: Anbi_WalkStart
-  _priority: 0
-  _requiredIntention:
-    _attack: 1
-    _move: 2
-  _requiredFact:
-    _death: 0
-    _logicalProgress: 0
-  _durationSeconds: 1.1
-  _animationClip: {fileID: -8346512432481799754, guid: ad5cf7cada62eae4dbe100f799207aad, type: 3}
+  _durationSeconds: 1.2
+  _animationClip: {fileID: 7400000, guid: b7286a6084c55ef47bcecc9564e752d7, type: 2}
