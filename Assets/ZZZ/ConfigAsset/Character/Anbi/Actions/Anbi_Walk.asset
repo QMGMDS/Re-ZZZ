@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87e199002266b7a439d5ccd9219557be, type: 3}
   m_Name: Anbi_Walk
   m_EditorClassIdentifier: 
-  _id: Anbi_WalkLoop
+  _id: Anbi_Walk
   _durationSeconds: 0.533
   _animationClip: {fileID: 7400000, guid: 1213a53bf7a3ceb48a5115810ac7fda1, type: 2}

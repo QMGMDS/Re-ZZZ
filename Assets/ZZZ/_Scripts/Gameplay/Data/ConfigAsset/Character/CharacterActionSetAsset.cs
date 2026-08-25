@@ -17,12 +17,15 @@ namespace GamePlay.Data
         [SerializeField] private int _priority;
         [SerializeField] private CharacterIntention _requiredIntention;
         [SerializeField] private CharacterFact _requiredFact;
+        [SerializeField, Min(0f), Tooltip("切换到目标动作时的线性动画混合时长（秒）")]
+        private float _animationTransitionDurationSeconds;
 
         public string FromActionId => _fromActionId;
         public string ToActionId => _toActionId;
         public int Priority => _priority;
         public CharacterIntention RequiredIntention => _requiredIntention;
         public CharacterFact RequiredFact => _requiredFact;
+        public float AnimationTransitionDurationSeconds => _animationTransitionDurationSeconds;
     }
 
     /// <summary>
@@ -63,6 +66,12 @@ namespace GamePlay.Data
             {
                 CharacterActionLink link = _links[index];
                 CharacterActionAsset sourceAction = builtActionsById[link.FromActionId];
+
+                if (link.AnimationTransitionDurationSeconds < 0f)
+                {
+                    throw new InvalidOperationException(
+                        $"[{name}] 动作链接 {link.FromActionId} -> {link.ToActionId} 的动画过渡时长不能小于 0");
+                }
 
                 if (!pendingLinks.TryGetValue(sourceAction.Id, out List<CharacterActionLink> outgoingLinks))
                 {
@@ -151,6 +160,21 @@ namespace GamePlay.Data
                 {
                     Debug.LogError($"[{name}] 动作链接第 {i} 项的目标动作 Id 不存在或不唯一：{link.ToActionId}", this);
                 }
+
+                if (link.AnimationTransitionDurationSeconds < 0f)
+                {
+                    Debug.LogError($"[{name}] 动作链接第 {i} 项的动画过渡时长不能小于 0", this);
+                }
+            }
+
+            var duplicateLinkGroups = _links
+                .GroupBy(link => new { link.FromActionId, link.ToActionId })
+                .Where(group => group.Count() > 1);
+            foreach (var group in duplicateLinkGroups)
+            {
+                Debug.LogError(
+                    $"[{name}] 动作链接 {group.Key.FromActionId} -> {group.Key.ToActionId} 只能配置一条",
+                    this);
             }
         }
 #endif

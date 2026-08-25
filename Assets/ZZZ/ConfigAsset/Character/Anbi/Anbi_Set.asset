@@ -39,7 +39,7 @@ MonoBehaviour:
       _logicalProgress: 0
     _animationTransitionDurationSeconds: 0.25
   - _fromActionId: Anbi_WalkStart
-    _toActionId: Anbi_WalkLoop
+    _toActionId: Anbi_Walk
     _priority: 1
     _requiredIntention:
       _attack: 0
@@ -48,8 +48,8 @@ MonoBehaviour:
       _death: 0
       _logicalProgress: 2
     _animationTransitionDurationSeconds: 0
-  - _fromActionId: Anbi_WalkLoop
-    _toActionId: Anbi_WalkLoop
+  - _fromActionId: Anbi_Walk
+    _toActionId: Anbi_Walk
     _priority: 1
     _requiredIntention:
       _attack: 0
@@ -58,7 +58,7 @@ MonoBehaviour:
       _death: 0
       _logicalProgress: 2
     _animationTransitionDurationSeconds: 0
-  - _fromActionId: Anbi_WalkLoop
+  - _fromActionId: Anbi_Walk
     _toActionId: Anbi_Stop
     _priority: 1
     _requiredIntention:

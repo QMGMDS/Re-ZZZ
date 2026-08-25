@@ -9,7 +9,7 @@ using GamePlay.GameModule;
 namespace GamePlay.GameMono
 {
     /// <summary>
-    /// 连接角色动作裁决器与过渡器的 Mono 层入口
+    /// 角色动作控制 Root Mono
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class CharacterActionController : MonoBehaviour, IInputCharacter
@@ -44,9 +44,11 @@ namespace GamePlay.GameMono
             }
 
             _actionSet.BuildRuntimeLookups(out var actionsById, out var linksBySourceActionId);
+
             _arbiter = new CharacterActionArbiter(actionsById, linksBySourceActionId);
             _transition = new CharacterActionTransition();
-            _animationDriver = new CharacterAnimationDriver(_animator);
+            _animationDriver = new CharacterAnimationDriver(_animator, linksBySourceActionId);
+
             // 第一个动作为默认动作
             _currentAction = _actionSet.Actions[0];
 
@@ -57,7 +59,7 @@ namespace GamePlay.GameMono
         {
             CharacterActionAsset targetAction = _arbiter.TrySwitch(_currentAction.Id, _inputCharacterData.Intention, _fact);
             float logicalProgressSeconds = _transition.Tick(targetAction, ref _currentAction, Time.deltaTime, ref _fact);
-            _animationDriver.Evaluate(_currentAction, logicalProgressSeconds);
+            _animationDriver.Evaluate(_currentAction, logicalProgressSeconds, Time.deltaTime);
         }
 
         /// <inheritdoc/>
