@@ -21,30 +21,36 @@ namespace GamePlay.Editor
             AnimationClip sourceClip,
             AnimationClip targetClip,
             InPlacePositionAxes axes,
-            Vector3 constantPosition)
+            Vector3 constantPosition,
+            bool removeAnimatorRootRotation)
         {
             if (sourceClip == null || targetClip == null ||
-                sourceClip == targetClip || axes == InPlacePositionAxes.None)
+                sourceClip == targetClip ||
+                (axes == InPlacePositionAxes.None && !removeAnimatorRootRotation))
             {
                 throw new ArgumentException(
-                    "Source and target clips must be different, and at least one position axis must be selected.");
+                    "Source and target clips must be different, and at least one conversion option must be enabled.");
             }
 
-            EditorCurveBinding[] targetBindings = AnimationUtility
-                .GetCurveBindings(sourceClip)
+            EditorCurveBinding[] sourceBindings = AnimationUtility.GetCurveBindings(sourceClip);
+            EditorCurveBinding[] positionBindings = sourceBindings
                 .Where(binding => ShouldFlatten(binding, axes))
                 .ToArray();
+            EditorCurveBinding[] animatorRootRotationBindings = removeAnimatorRootRotation
+                ? sourceBindings.Where(IsAnimatorRootRotation).ToArray()
+                : Array.Empty<EditorCurveBinding>();
 
             string targetPath = AssetDatabase.GetAssetPath(targetClip);
             bool isWritableStandaloneClip = AssetDatabase.IsMainAsset(targetClip) &&
                                             targetPath.EndsWith(".anim", StringComparison.OrdinalIgnoreCase);
 
-            if (!isWritableStandaloneClip || targetBindings.Length == 0)
+            if (!isWritableStandaloneClip ||
+                positionBindings.Length + animatorRootRotationBindings.Length == 0)
             {
                 throw new InvalidOperationException(
                     !isWritableStandaloneClip
                         ? "The target must be a standalone .anim main asset. FBX sub-clips cannot be overwritten."
-                        : "The source clip has no selected position curves on RootT, Bip001, or Root.");
+                        : "The source clip has no selected root position or Animator root-object rotation curves.");
             }
 
             string targetName = targetClip.name;
@@ -56,7 +62,7 @@ namespace GamePlay.Editor
             targetClip.name = targetName;
             targetClip.hideFlags = targetHideFlags;
 
-            foreach (EditorCurveBinding binding in targetBindings)
+            foreach (EditorCurveBinding binding in positionBindings)
             {
                 InPlacePositionAxes axis = GetAxis(binding);
                 float constantValue = GetConstantValue(axis, constantPosition);
@@ -67,9 +73,14 @@ namespace GamePlay.Editor
                 AnimationUtility.SetEditorCurve(targetClip, binding, constantCurve);
             }
 
+            foreach (EditorCurveBinding binding in animatorRootRotationBindings)
+            {
+                AnimationUtility.SetEditorCurve(targetClip, binding, null);
+            }
+
             EditorUtility.SetDirty(targetClip);
             AssetDatabase.SaveAssetIfDirty(targetClip);
-            return targetBindings.Length;
+            return positionBindings.Length + animatorRootRotationBindings.Length;
         }
 
         internal static bool IsStandaloneAnimationAsset(AnimationClip clip)
@@ -90,6 +101,17 @@ namespace GamePlay.Editor
         {
             InPlacePositionAxes axis = GetAxis(binding);
             return IsSupportedRootTranslation(binding) && (axes & axis) != 0;
+        }
+
+        internal static bool IsAnimatorRootRotation(EditorCurveBinding binding)
+        {
+            bool isAnimatorRoot = binding.type == typeof(Transform) && binding.path.Length == 0;
+            bool isLocalRotation = binding.propertyName == "m_LocalRotation.x" ||
+                                   binding.propertyName == "m_LocalRotation.y" ||
+                                   binding.propertyName == "m_LocalRotation.z" ||
+                                   binding.propertyName == "m_LocalRotation.w";
+
+            return isAnimatorRoot && isLocalRotation;
         }
 
         private static bool IsSupportedRootTranslation(EditorCurveBinding binding)
@@ -169,6 +191,8 @@ namespace GamePlay.Editor
         [SerializeField] private bool _processZ = true;
         [SerializeField] private float _constantZ;
 
+        [SerializeField] private bool _removeAnimatorRootRotation = true;
+
         [MenuItem(MenuPath)]
         private static void Open()
         {
@@ -199,8 +223,17 @@ namespace GamePlay.Editor
             EditorGUILayout.Space(8f);
             EditorGUILayout.HelpBox(
                 "目标动画的全部内容会先复制自源动画，然后只将 RootT、Bip001、Root 的所选位置轴改为常量。" +
-                "其他位置轴、旋转、身体与武器骨骼曲线保持不变。该操作支持 Undo。",
+                "启用根旋转选项时，只删除空路径的 m_LocalRotation.* 曲线；RootQ、身体与武器骨骼旋转保持不变。" +
+                "该操作支持 Undo。",
                 MessageType.Info);
+
+            EditorGUILayout.Space(8f);
+            EditorGUILayout.LabelField("根旋转", EditorStyles.boldLabel);
+            _removeAnimatorRootRotation = EditorGUILayout.ToggleLeft(
+                new GUIContent(
+                    "移除 Animator 根物体旋转",
+                    "只删除空路径的 m_LocalRotation.x/y/z/w，不删除 RootQ 或子骨骼旋转。"),
+                _removeAnimatorRootRotation);
 
             EditorGUILayout.Space(8f);
             EditorGUILayout.LabelField("位置轴与常量", EditorStyles.boldLabel);
@@ -249,12 +282,14 @@ namespace GamePlay.Editor
                 _sourceClip,
                 _targetClip,
                 axes,
-                constantPosition);
+                constantPosition,
+                _removeAnimatorRootRotation);
 
-            ShowNotification(new GUIContent($"转换完成：{convertedCurveCount} 条曲线"));
+            ShowNotification(new GUIContent($"处理完成：{convertedCurveCount} 条曲线"));
             Debug.Log(
                 $"Converted '{_sourceClip.name}' to '{_targetClip.name}': " +
-                $"{convertedCurveCount} root position curves, axes={axes}, " +
+                $"{convertedCurveCount} curves processed, axes={axes}, " +
+                $"removeAnimatorRootRotation={_removeAnimatorRootRotation}, " +
                 $"constant=({constantPosition.x}, {constantPosition.y}, {constantPosition.z}).",
                 _targetClip);
         }
@@ -276,9 +311,9 @@ namespace GamePlay.Editor
                 return "目标动画必须是项目中的独立 .anim 主资产，不能使用 FBX 内的子动画。";
             }
 
-            if (GetSelectedAxes() == InPlacePositionAxes.None)
+            if (GetSelectedAxes() == InPlacePositionAxes.None && !_removeAnimatorRootRotation)
             {
-                return "至少选择一个需要转为常量的位置轴。";
+                return "至少选择一个需要转为常量的位置轴，或启用移除 Animator 根物体旋转。";
             }
 
             return string.Empty;
