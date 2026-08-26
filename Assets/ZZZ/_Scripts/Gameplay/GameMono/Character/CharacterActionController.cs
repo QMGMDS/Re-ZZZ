@@ -2,7 +2,6 @@ using System;
 
 using UnityEngine;
 
-using GamePlay.Contract;
 using GamePlay.Data;
 using GamePlay.GameModule;
 
@@ -11,15 +10,19 @@ namespace GamePlay.GameMono
     /// <summary>
     /// 角色动作控制 Root Mono
     /// </summary>
+    [RequireComponent(typeof(CharacterInfoController))]
     [DisallowMultipleComponent]
-    public sealed class CharacterActionController : MonoBehaviour, IInputCharacter
+    public sealed class CharacterActionController : MonoBehaviour
     {
         [Header("必要组件")]
-        [SerializeField, Tooltip("负责角色碰撞移动的 CharacterController")] private CharacterController _characterController;
-        [SerializeField, Tooltip("显示本角色动画的 Animator")] private Animator _animator;
+        [SerializeField, Tooltip("负责角色碰撞移动的 CharacterController")]
+        private CharacterController _characterController;
+        [SerializeField, Tooltip("显示本角色动画的 Animator")]
+        private Animator _animator;
 
         [Header("自定义配置")]
-        [SerializeField, Tooltip("本角色的动作资产集合")] private CharacterActionSetAsset _actionSet;
+        [SerializeField, Tooltip("本角色的动作资产集合")]
+        private CharacterActionSetAsset _actionSet;
 
         // 仲裁器
         private CharacterActionArbiter _arbiter;
@@ -32,28 +35,37 @@ namespace GamePlay.GameMono
         // 动画驱动器
         private CharacterAnimationDriver _animationDriver;
 
+        // 角色信息控制器
+        private CharacterInfoController _characterInfoController;
+
         // 当前动作
         private CharacterActionAsset _currentAction;
-        // 最近一次输入给角色的数据
-        private InputCharacterData _inputCharacterData;
-        // 角色所处事实
-        private CharacterFact _fact;
 
         private void Awake()
         {
             if (_characterController == null)
             {
-                throw new InvalidOperationException($"{nameof(CharacterActionController)} 要求必须分配 {nameof(_characterController)}");
+                throw new InvalidOperationException(
+                    $"{nameof(CharacterActionController)} 要求必须分配 {nameof(_characterController)}");
             }
 
             if (_animator == null)
             {
-                throw new InvalidOperationException($"{nameof(CharacterActionController)} 要求必须分配 {nameof(_animator)}");
+                throw new InvalidOperationException(
+                    $"{nameof(CharacterActionController)} 要求必须分配 {nameof(_animator)}");
             }
 
             if (_actionSet == null)
             {
-                throw new InvalidOperationException($"{nameof(CharacterActionController)} 要求必须分配 {nameof(_actionSet)}");
+                throw new InvalidOperationException(
+                    $"{nameof(CharacterActionController)} 要求必须分配 {nameof(_actionSet)}");
+            }
+
+            _characterInfoController = GetComponent<CharacterInfoController>();
+            if (_characterInfoController == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(CharacterActionController)} 要求同一物体必须挂载 {nameof(CharacterInfoController)}");
             }
 
             _actionSet.BuildRuntimeLookups(out var actionsById, out var linksBySourceActionId);
@@ -68,33 +80,52 @@ namespace GamePlay.GameMono
             // 第一个动作为默认动作
             _currentAction = _actionSet.Actions[0];
 
-            _fact = new CharacterFact(Trilean.False, Trilean.False);
+            _characterInfoController.CharacterDriven += OnCharacterDriven;
         }
 
-        private void Update()
+        private void OnCharacterDriven(CharacterInfoRuntime characterInfoRuntime)
         {
+            CharacterFact fact = characterInfoRuntime.Fact;
+
             // 裁决
-            CharacterActionAsset targetAction = _arbiter.TrySwitch(_currentAction.Id, _inputCharacterData.Intention, _fact);
+            CharacterActionAsset targetAction = _arbiter.TrySwitch(
+                _currentAction.Id,
+                characterInfoRuntime.Intention,
+                fact);
             // 过渡
-            float logicalProgressSeconds = _transition.Tick(targetAction, ref _currentAction, Time.deltaTime, ref _fact);
+            float logicalProgressSeconds = _transition.Tick(
+                targetAction,
+                ref _currentAction,
+                Time.deltaTime,
+                ref fact);
+
+            characterInfoRuntime.Fact = fact;
 
             // 位移
-            _displacementDriver.Evaluate(_currentAction, logicalProgressSeconds, _inputCharacterData.MoveInput);
+            _displacementDriver.Evaluate(
+                _currentAction,
+                logicalProgressSeconds,
+                characterInfoRuntime.MoveDirection);
             // 旋转
-            _rotationDriver.Evaluate(_currentAction, _inputCharacterData.MoveInput, Time.deltaTime);
+            _rotationDriver.Evaluate(
+                _currentAction,
+                characterInfoRuntime.MoveDirection,
+                Time.deltaTime);
             // 动画表现
             _animationDriver.Evaluate(_currentAction, logicalProgressSeconds, Time.deltaTime);
         }
 
-        /// <inheritdoc/>
-        public void InputCharacter(InputCharacterData inputCharacterData)
-        {
-            _inputCharacterData = inputCharacterData;
-        }
-
         private void OnDestroy()
         {
-            _animationDriver.Dispose();
+            if (_characterInfoController != null)
+            {
+                _characterInfoController.CharacterDriven -= OnCharacterDriven;
+            }
+
+            if (_animationDriver != null)
+            {
+                _animationDriver.Dispose();
+            }
         }
     }
 }

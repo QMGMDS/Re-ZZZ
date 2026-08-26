@@ -1,4 +1,3 @@
-using GamePlay.Contract;
 using SPFramework;
 
 namespace GamePlay.GameModule
