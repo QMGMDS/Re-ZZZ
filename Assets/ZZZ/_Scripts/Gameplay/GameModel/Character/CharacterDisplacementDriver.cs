@@ -15,8 +15,8 @@ namespace GamePlay.GameModel
 
         private CharacterActionAsset _currentAction;
         private float _previousLogicalProgressSeconds;
-        // 本帧移动朝向 1朝前 -1朝后
-        private int _movementDirection = 1;
+        // 最近一次有效的世界空间移动方向
+        private Vector3 _lastWorldMoveDirection = Vector3.forward;
 
         public CharacterDisplacementDriver(CharacterController characterController)
         {
@@ -26,7 +26,10 @@ namespace GamePlay.GameModel
         /// <summary>
         /// 推进当前动作位移并写入 CharacterController
         /// </summary>
-        public void Evaluate(CharacterActionAsset currentAction, float logicalProgressSeconds, Vector2 moveInput)
+        public void Evaluate(
+            CharacterActionAsset currentAction,
+            float logicalProgressSeconds,
+            Vector2 worldMoveDirection)
         {
             if (currentAction == null)
             {
@@ -39,7 +42,7 @@ namespace GamePlay.GameModel
             }
 
             ResetProgressIfActionRestarted(currentAction, logicalProgressSeconds);
-            UpdateMovementDirection(moveInput);
+            UpdateLastWorldMoveDirection(worldMoveDirection);
 
             float previousZ = currentAction.EvaluateZDisplacement(_previousLogicalProgressSeconds);
             float currentZ = currentAction.EvaluateZDisplacement(logicalProgressSeconds);
@@ -47,11 +50,7 @@ namespace GamePlay.GameModel
 
             if (deltaZ != 0f)
             {
-                Vector3 forward = _characterController.transform.forward;
-                forward.y = 0f;
-                forward.Normalize();
-
-                _characterController.Move(forward * (deltaZ * _movementDirection));
+                _characterController.Move(_lastWorldMoveDirection * deltaZ);
             }
 
             _previousLogicalProgressSeconds = logicalProgressSeconds;
@@ -68,20 +67,17 @@ namespace GamePlay.GameModel
             _previousLogicalProgressSeconds = 0f;
         }
 
-        // 这里的 moveInput 是世界空间中角色想要移动的方向
-        private void UpdateMovementDirection(Vector2 moveInput)
+        private void UpdateLastWorldMoveDirection(Vector2 worldMoveDirection)
         {
-            if (moveInput.sqrMagnitude == 0f)
+            if (worldMoveDirection.sqrMagnitude == 0f)
             {
                 return;
             }
 
-            Vector3 worldMoveDirection = new Vector3(moveInput.x, 0f, moveInput.y);
-            Vector3 forward = _characterController.transform.forward;
-            forward.y = 0f;
-            forward.Normalize();
-
-            _movementDirection = Vector3.Dot(forward, worldMoveDirection) < 0f ? -1 : 1;
+            _lastWorldMoveDirection = new Vector3(
+                worldMoveDirection.x,
+                0f,
+                worldMoveDirection.y).normalized;
         }
     }
 }
