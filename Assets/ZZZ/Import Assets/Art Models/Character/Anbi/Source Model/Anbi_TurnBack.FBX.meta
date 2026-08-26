@@ -33,13 +33,13 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Take 001
+      name: Anbi_TurnBack
       takeName: Take 001
       internalID: 1827226128182048838
       firstFrame: 0
       lastFrame: 34
       wrapMode: 0
-      orientationOffsetY: 0
+      orientationOffsetY: 100
       level: 0
       cycleOffset: 0
       loop: 0

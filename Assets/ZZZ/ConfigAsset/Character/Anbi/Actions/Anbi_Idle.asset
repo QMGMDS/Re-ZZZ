@@ -15,3 +15,28 @@ MonoBehaviour:
   _id: Anbi_Idle
   _durationSeconds: 4.033
   _animationClip: {fileID: 7400000, guid: d013022323d47fa42b8c1aa7db1c07f5, type: 2}
+  _zDisplacementCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _rotationSpeedDegreesPerSecond: 720

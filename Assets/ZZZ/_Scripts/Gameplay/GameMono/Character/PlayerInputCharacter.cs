@@ -11,6 +11,7 @@ namespace GamePlay.GameMono
     /// <summary>
     /// 每帧向同一物体上的角色控制器写入玩家输入
     /// </summary>
+    [DefaultExecutionOrder(-100)]
     [DisallowMultipleComponent]
     public sealed class PlayerInputCharacter : MonoBehaviour
     {
