@@ -1,3 +1,4 @@
+using GamePlay.Contract;
 using SPFramework;
 
 namespace GamePlay.GameModule
@@ -12,6 +13,7 @@ namespace GamePlay.GameModule
         /// </summary>
         public void Initialize()
         {
+            ModuleSystem.RegisterModule<IEntityModule>(new EntityModule());
             ModuleSystem.RegisterModule<ISceneModule>(new SceneModule());
         }
 

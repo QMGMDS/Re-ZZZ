@@ -16,9 +16,9 @@ namespace GamePlay.GameModule
     {
         private sealed class AnimationSource
         {
-            public AnimationClipPlayable Playable;
-            public int InputIndex;
-            public float TransitionStartWeight;
+            public AnimationClipPlayable _playable;
+            public int _inputIndex;
+            public float _transitionStartWeight;
         }
 
         private readonly IReadOnlyDictionary<string, IReadOnlyList<CharacterActionLink>> _linksBySourceActionId;
@@ -88,12 +88,12 @@ namespace GamePlay.GameModule
             for (int index = 0; index < _sources.Count; index++)
             {
                 AnimationSource source = _sources[index];
-                source.TransitionStartWeight = _mixer.GetInputWeight(source.InputIndex);
+                source._transitionStartWeight = _mixer.GetInputWeight(source._inputIndex);
             }
 
             double outgoingSpeed =
                 (double)_currentAction.AnimationClip.length / _currentAction.DurationSeconds;
-            _currentSource.Playable.SetSpeed(outgoingSpeed);
+            _currentSource._playable.SetSpeed(outgoingSpeed);
 
             float durationSeconds = GetTransitionDurationSeconds(_currentAction.Id, nextAction.Id);
 
@@ -123,9 +123,9 @@ namespace GamePlay.GameModule
 
             var source = new AnimationSource
             {
-                Playable = playable,
-                InputIndex = inputIndex,
-                TransitionStartWeight = weight
+                _playable = playable,
+                _inputIndex = inputIndex,
+                _transitionStartWeight = weight
             };
             _sources.Add(source);
 
@@ -137,7 +137,7 @@ namespace GamePlay.GameModule
             AnimationClip animationClip = _currentAction.AnimationClip;
             double normalizedProgress =
                 (double)logicalProgressSeconds / _currentAction.DurationSeconds;
-            _currentSource.Playable.SetTime(normalizedProgress * animationClip.length);
+            _currentSource._playable.SetTime(normalizedProgress * animationClip.length);
         }
 
         private void AdvanceTransition(float deltaTime)
@@ -157,8 +157,8 @@ namespace GamePlay.GameModule
                 AnimationSource source = _sources[index];
                 float weight = source == _currentSource
                     ? incomingWeight
-                    : source.TransitionStartWeight * outgoingWeight;
-                _mixer.SetInputWeight(source.InputIndex, weight);
+                    : source._transitionStartWeight * outgoingWeight;
+                _mixer.SetInputWeight(source._inputIndex, weight);
             }
 
             if (_transitionElapsedSeconds >= _transitionDurationSeconds)
@@ -205,21 +205,21 @@ namespace GamePlay.GameModule
             for (int index = 0; index < _sources.Count; index++)
             {
                 AnimationSource source = _sources[index];
-                _graph.Disconnect(_mixer, source.InputIndex);
+                _graph.Disconnect(_mixer, source._inputIndex);
 
                 if (source != _currentSource)
                 {
-                    _graph.DestroyPlayable(source.Playable);
+                    _graph.DestroyPlayable(source._playable);
                 }
             }
 
             _sources.Clear();
             _mixer.SetInputCount(1);
-            _graph.Connect(_currentSource.Playable, 0, _mixer, 0);
+            _graph.Connect(_currentSource._playable, 0, _mixer, 0);
             _mixer.SetInputWeight(0, 1f);
 
-            _currentSource.InputIndex = 0;
-            _currentSource.TransitionStartWeight = 1f;
+            _currentSource._inputIndex = 0;
+            _currentSource._transitionStartWeight = 1f;
             _sources.Add(_currentSource);
             _isTransitioning = false;
         }

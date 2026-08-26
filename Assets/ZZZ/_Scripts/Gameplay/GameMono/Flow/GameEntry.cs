@@ -9,6 +9,7 @@ namespace GamePlay.GameMono
     /// <summary>
     /// 游戏启动引导
     /// </summary>
+    [DefaultExecutionOrder(-10000)]
     public sealed class GameEntry : MonoBehaviour
     {
         private RootModule _rootModule;
@@ -18,13 +19,12 @@ namespace GamePlay.GameMono
             DontDestroyOnLoad(gameObject);
 
             _rootModule = new RootModule();
+            _rootModule.Initialize();
         }
 
         private void Start()
         {
-            _rootModule.Initialize();
-
-            ModuleSystem.GetModule<ISceneModule>().LoadScene(SceneNames.MainMenu);
+            ModuleSystem.GetModule<ISceneModule>().LoadScene(SceneNames.Gameplay);
         }
 
         private void Update()

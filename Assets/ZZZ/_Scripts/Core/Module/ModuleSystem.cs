@@ -13,15 +13,15 @@ namespace SPFramework
         /// </summary>
         private const int DEFAULT_MODULE_COUNT = 16;
 
-        private static readonly Dictionary<Type, Module> m_moduleMaps = new Dictionary<Type, Module>(DEFAULT_MODULE_COUNT);
-        private static readonly LinkedList<Module> m_modules = new LinkedList<Module>();
+        private static readonly Dictionary<Type, Module> s_moduleMaps = new Dictionary<Type, Module>(DEFAULT_MODULE_COUNT);
+        private static readonly LinkedList<Module> s_modules = new LinkedList<Module>();
 
         // 链表排序 列表遍历
-        private static readonly LinkedList<Module> m_updateModules = new LinkedList<Module>();
-        private static readonly List<IUpdateModule> m_updateExecuteList = new List<IUpdateModule>(DEFAULT_MODULE_COUNT);
+        private static readonly LinkedList<Module> s_updateModules = new LinkedList<Module>();
+        private static readonly List<IUpdateModule> s_updateExecuteList = new List<IUpdateModule>(DEFAULT_MODULE_COUNT);
 
         // 脏标记 - 模块 Update 执行链表更新时刷新
-        private static bool m_isExecuteListDirty;
+        private static bool s_isExecuteListDirty;
 
         #region Update 模块轮询
 
@@ -32,25 +32,25 @@ namespace SPFramework
         /// <param name="realElapsedTime">真实时间间隔 秒为单位</param>
         public static void Update(float elapsedTime, float realElapsedTime)
         {
-            if (m_isExecuteListDirty)
+            if (s_isExecuteListDirty)
             {
-                m_isExecuteListDirty = false;
+                s_isExecuteListDirty = false;
                 BuildUpdateExecuteList();
             }
 
-            for (int i = 0; i < m_updateExecuteList.Count; i++)
+            for (int i = 0; i < s_updateExecuteList.Count; i++)
             {
-                m_updateExecuteList[i].Update(elapsedTime, realElapsedTime);
+                s_updateExecuteList[i].Update(elapsedTime, realElapsedTime);
             }
         }
 
         private static void BuildUpdateExecuteList()
         {
-            m_updateExecuteList.Clear();
+            s_updateExecuteList.Clear();
 
-            foreach (var updateModule in m_updateModules)
+            foreach (var updateModule in s_updateModules)
             {
-                m_updateExecuteList.Add(updateModule as IUpdateModule);
+                s_updateExecuteList.Add(updateModule as IUpdateModule);
             }
         }
 
@@ -67,7 +67,7 @@ namespace SPFramework
                 throw new ArgumentException($"类型 {type.FullName} 必须是一个接口", nameof(T));
             }
 
-            if (m_moduleMaps.TryGetValue(type, out var module))
+            if (s_moduleMaps.TryGetValue(type, out var module))
             {
                 return module as T;
             }
@@ -77,7 +77,7 @@ namespace SPFramework
 
         public static Module GetModule(Type type)
         {
-            return m_moduleMaps.TryGetValue(type, out Module module) ? module : CreateModule(type);
+            return s_moduleMaps.TryGetValue(type, out Module module) ? module : CreateModule(type);
         }
 
         #endregion
@@ -96,7 +96,7 @@ namespace SPFramework
                 throw new ArgumentException("创建游戏模块失败");
             }
 
-            m_moduleMaps[moduleType] = module;
+            s_moduleMaps[moduleType] = module;
             RegisterUpdateModule(module);
             return module;
         }
@@ -113,7 +113,7 @@ namespace SPFramework
                 throw new ArgumentException($"类型 {type.FullName} 必须是一个接口", nameof(T));
             }
 
-            m_moduleMaps[type] = module;
+            s_moduleMaps[type] = module;
             RegisterUpdateModule(module);
             return module as T;
         }
@@ -123,7 +123,7 @@ namespace SPFramework
         /// </summary>
         private static void RegisterUpdateModule(Module module)
         {
-            LinkedListNode<Module> current = m_modules.First;
+            LinkedListNode<Module> current = s_modules.First;
 
             while (current != null)
             {
@@ -136,11 +136,11 @@ namespace SPFramework
 
             if (current != null)
             {
-                m_modules.AddBefore(current, module);
+                s_modules.AddBefore(current, module);
             }
             else
             {
-                m_modules.AddLast(module);
+                s_modules.AddLast(module);
             }
 
             Type interfaceType = typeof(IUpdateModule);
@@ -148,7 +148,7 @@ namespace SPFramework
 
             if (implementsIUpdateModule)
             {
-                LinkedListNode<Module> currentUpdate = m_updateModules.First;
+                LinkedListNode<Module> currentUpdate = s_updateModules.First;
                 while (currentUpdate != null)
                 {
                     if (module.Priority > currentUpdate.Value.Priority)
@@ -160,13 +160,13 @@ namespace SPFramework
 
                 if (currentUpdate != null)
                 {
-                    m_updateModules.AddBefore(currentUpdate, module);
+                    s_updateModules.AddBefore(currentUpdate, module);
                 }
                 else
                 {
-                    m_updateModules.AddLast(module);
+                    s_updateModules.AddLast(module);
                 }
-                m_isExecuteListDirty = true;
+                s_isExecuteListDirty = true;
             }
             module.OnCreate();
         }
@@ -179,17 +179,17 @@ namespace SPFramework
         public static void Destroy()
         {
             // 按优先级从低往高执行销毁处理（从后往前）
-            LinkedListNode<Module> current = m_modules.Last;
+            LinkedListNode<Module> current = s_modules.Last;
             while (current != null)
             {
                 current.Value.OnDestroy();
                 current = current.Previous;
             }
 
-            m_modules.Clear();
-            m_moduleMaps.Clear();
-            m_updateModules.Clear();
-            m_updateExecuteList.Clear();
+            s_modules.Clear();
+            s_moduleMaps.Clear();
+            s_updateModules.Clear();
+            s_updateExecuteList.Clear();
         }
     }
 }
