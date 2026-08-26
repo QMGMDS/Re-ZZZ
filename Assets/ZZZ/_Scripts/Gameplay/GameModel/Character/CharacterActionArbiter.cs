@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 using GamePlay.Data;
 
-namespace GamePlay.GameModule
+namespace GamePlay.GameModel
 {
     /// <summary>
     /// 根据角色意图和事实裁决本帧目标动作

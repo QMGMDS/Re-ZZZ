@@ -7,7 +7,7 @@ using UnityEngine.Playables;
 
 using GamePlay.Data;
 
-namespace GamePlay.GameModule
+namespace GamePlay.GameModel
 {
     /// <summary>
     /// 根据角色动作及其逻辑时间手动采样动画

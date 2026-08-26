@@ -1,7 +1,7 @@
 using UnityEngine;
 
 using SPFramework;
-using GamePlay.GameModule;
+using GamePlay.GameModel;
 using GamePlay.Data;
 
 namespace GamePlay.GameMono

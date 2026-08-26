@@ -1,6 +1,6 @@
 using SPFramework;
 
-namespace GamePlay.GameModule
+namespace GamePlay.GameModel
 {
     /// <summary>
     /// 模块根模型

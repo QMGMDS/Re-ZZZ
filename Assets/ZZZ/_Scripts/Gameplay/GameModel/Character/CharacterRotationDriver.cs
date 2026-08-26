@@ -4,7 +4,7 @@ using UnityEngine;
 
 using GamePlay.Data;
 
-namespace GamePlay.GameModule
+namespace GamePlay.GameModel
 {
     /// <summary>
     /// 角色旋转器

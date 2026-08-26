@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 
 using GamePlay.Data;
-using GamePlay.GameModule;
+using GamePlay.GameModel;
 
 namespace GamePlay.GameMono
 {

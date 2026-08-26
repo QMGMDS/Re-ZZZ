@@ -3,7 +3,7 @@ using UnityEngine;
 using GamePlay.Data;
 
 
-namespace GamePlay.GameModule
+namespace GamePlay.GameModel
 {
     /// <summary>
     /// 处理动作切换及其逻辑时间推进
