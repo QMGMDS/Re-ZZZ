@@ -11,6 +11,7 @@ namespace GamePlay.Data
     {
         public int BaseHp { get; }
         public int BaseAtk { get; }
+        public CharacterFaction Faction { get; }
         public CharacterFact Fact { get; set; }
         public CharacterIntention Intention { get; set; }
         public Vector2 MoveDirection { get; set; }
@@ -24,6 +25,7 @@ namespace GamePlay.Data
 
             BaseHp = characterInfoAsset.BaseHp;
             BaseAtk = characterInfoAsset.BaseAtk;
+            Faction = characterInfoAsset.Faction;
             Fact = new CharacterFact(Trilean.False, Trilean.False);
             Intention = new CharacterIntention(Trilean.False, Trilean.False);
             MoveDirection = Vector2.zero;

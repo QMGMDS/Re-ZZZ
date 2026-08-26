@@ -53,16 +53,16 @@ namespace GamePlay.GameMono
                     $"{nameof(CharacterActionController)} 要求必须分配 {nameof(_animator)}");
             }
 
-            if (_actionSet == null)
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(CharacterActionController)} 要求必须分配 {nameof(_actionSet)}");
-            }
-
             if (_characterInfoController == null)
             {
                 throw new InvalidOperationException(
                     $"{nameof(CharacterActionController)} 要求必须分配 {nameof(_characterInfoController)}");
+            }
+
+            if (_actionSet == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(CharacterActionController)} 要求必须分配 {nameof(_actionSet)}");
             }
 
             _actionSet.BuildRuntimeLookups(out var actionsById, out var linksBySourceActionId);

@@ -21,6 +21,7 @@ namespace GamePlay.GameMono
         public CharacterInfoRuntime Runtime => _runtime;
 
         public event Action<CharacterInfoRuntime> CharacterDriven;
+        public event Action<AttackRequest> AttackReceived;
 
         private void Awake()
         {
@@ -46,6 +47,14 @@ namespace GamePlay.GameMono
         private void DriveCharacter()
         {
             CharacterDriven?.Invoke(_runtime);
+        }
+
+        /// <summary>
+        /// 角色受击入口
+        /// </summary>
+        public void ReceiveAttack(AttackRequest attackRequest)
+        {
+            AttackReceived?.Invoke(attackRequest);
         }
     }
 }

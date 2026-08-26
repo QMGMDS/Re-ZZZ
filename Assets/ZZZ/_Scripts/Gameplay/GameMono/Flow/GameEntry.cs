@@ -1,7 +1,7 @@
 using UnityEngine;
 
 using SPFramework;
-using GamePlay.GameModel;
+using GamePlay.GameModule;
 using GamePlay.Data;
 
 namespace GamePlay.GameMono
@@ -12,14 +12,13 @@ namespace GamePlay.GameMono
     [DefaultExecutionOrder(-10000)]
     public sealed class GameEntry : MonoBehaviour
     {
-        private RootModule _rootModule;
-
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
 
-            _rootModule = new RootModule();
-            _rootModule.Initialize();
+            ModuleSystem.RegisterModule<IEntityModule>(new EntityModule());
+            ModuleSystem.RegisterModule<ICombatModule>(new CombatModule());
+            ModuleSystem.RegisterModule<ISceneModule>(new SceneModule());
         }
 
         private void Start()
@@ -29,12 +28,12 @@ namespace GamePlay.GameMono
 
         private void Update()
         {
-            _rootModule.Update(Time.deltaTime, Time.unscaledDeltaTime);
+            ModuleSystem.Update(Time.deltaTime, Time.unscaledDeltaTime);
         }
 
         private void OnDestroy()
         {
-            _rootModule.Destroy();
+            ModuleSystem.Destroy();
         }
     }
 }

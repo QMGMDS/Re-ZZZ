@@ -911,7 +911,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2067458732384291408, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3615966766429726052, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
       propertyPath: m_Height
@@ -929,6 +929,10 @@ PrefabInstance:
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 489710066}
+    - target: {fileID: 8930211997821263736, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
+      propertyPath: _characterInfoAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: b5efb5706136b5a4abd591db3351944c, type: 2}
     - target: {fileID: 9154480246847436422, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
       propertyPath: _characterController
       value: 
