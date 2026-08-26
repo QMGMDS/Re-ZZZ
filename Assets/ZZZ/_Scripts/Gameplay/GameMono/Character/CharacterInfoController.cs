@@ -22,7 +22,7 @@ namespace GamePlay.GameMono
 
         public event Action<CharacterInfoRuntime> CharacterDriven;
 
-        private void Start()
+        private void Awake()
         {
             if (_characterInfoAsset == null)
             {
@@ -33,14 +33,18 @@ namespace GamePlay.GameMono
             _runtime = new CharacterInfoRuntime(_characterInfoAsset);
         }
 
-        public void DriveCharacter()
+        public void PlayerChange(bool attack, Vector2 moveDirection)
         {
-            if (_runtime == null)
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(CharacterInfoController)} 必须先完成 Start");
-            }
+            _runtime.Intention = new CharacterIntention(
+                attack ? Trilean.True : Trilean.False,
+                moveDirection.sqrMagnitude == 0f ? Trilean.False : Trilean.True);
+            _runtime.MoveDirection = moveDirection;
 
+            DriveCharacter();
+        }
+
+        private void DriveCharacter()
+        {
             CharacterDriven?.Invoke(_runtime);
         }
     }

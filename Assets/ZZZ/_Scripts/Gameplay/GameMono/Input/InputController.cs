@@ -23,11 +23,11 @@ namespace GamePlay.GameMono
         private InputActionReference _attackInputReference;
 
         [Header("输入处理")]
-        [SerializeField, Min(0f), Tooltip("输入延时秒数")]
-        private float _inputDelaySeconds;
+        [SerializeField, Min(0f), Tooltip("方向切换时的移动输入空窗容错秒数")]
+        private float _moveInputGapToleranceSeconds = 0.05f;
 
         private RawInputCollector _rawInputCollector;
-        private InputDelay _inputDelay;
+        private InputGapFilter _inputGapFilter;
         private RawInputData _rawInputData;
         private CharacterInputData _characterInputData;
 
@@ -44,7 +44,7 @@ namespace GamePlay.GameMono
             }
 
             _rawInputCollector = new RawInputCollector();
-            _inputDelay = new InputDelay(_inputDelaySeconds);
+            _inputGapFilter = new InputGapFilter(_moveInputGapToleranceSeconds);
         }
 
         private void OnEnable()
@@ -52,6 +52,7 @@ namespace GamePlay.GameMono
             _moveInputReference.action.Enable();
             _attackInputReference.action.Enable();
 
+            _inputGapFilter.Reset();
             ServiceHub.Register<IIputData>(this);
         }
 
@@ -64,8 +65,8 @@ namespace GamePlay.GameMono
             Vector2 normalizedMove = InputNormalization.NormalizeAxis(_rawInputData.Move);
             float deltaTime = Time.deltaTime;
             _characterInputData = new CharacterInputData(
-                _inputDelay.DelayButton(_rawInputData.Attack, deltaTime),
-                _inputDelay.DelayAxis(normalizedMove, deltaTime));
+                _rawInputData.Attack,
+                _inputGapFilter.FilterAxis(normalizedMove, deltaTime));
         }
 
         private void OnDisable()

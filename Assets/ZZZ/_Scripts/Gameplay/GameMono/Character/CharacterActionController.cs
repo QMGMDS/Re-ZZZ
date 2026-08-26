@@ -10,7 +10,6 @@ namespace GamePlay.GameMono
     /// <summary>
     /// 角色动作控制 Root Mono
     /// </summary>
-    [RequireComponent(typeof(CharacterInfoController))]
     [DisallowMultipleComponent]
     public sealed class CharacterActionController : MonoBehaviour
     {
@@ -19,6 +18,8 @@ namespace GamePlay.GameMono
         private CharacterController _characterController;
         [SerializeField, Tooltip("显示本角色动画的 Animator")]
         private Animator _animator;
+        [SerializeField, Tooltip("角色信息控制器")]
+        private CharacterInfoController _characterInfoController;
 
         [Header("自定义配置")]
         [SerializeField, Tooltip("本角色的动作资产集合")]
@@ -34,9 +35,6 @@ namespace GamePlay.GameMono
         private CharacterRotationDriver _rotationDriver;
         // 动画驱动器
         private CharacterAnimationDriver _animationDriver;
-
-        // 角色信息控制器
-        private CharacterInfoController _characterInfoController;
 
         // 当前动作
         private CharacterActionAsset _currentAction;
@@ -61,11 +59,10 @@ namespace GamePlay.GameMono
                     $"{nameof(CharacterActionController)} 要求必须分配 {nameof(_actionSet)}");
             }
 
-            _characterInfoController = GetComponent<CharacterInfoController>();
             if (_characterInfoController == null)
             {
                 throw new InvalidOperationException(
-                    $"{nameof(CharacterActionController)} 要求同一物体必须挂载 {nameof(CharacterInfoController)}");
+                    $"{nameof(CharacterActionController)} 要求必须分配 {nameof(_characterInfoController)}");
             }
 
             _actionSet.BuildRuntimeLookups(out var actionsById, out var linksBySourceActionId);
