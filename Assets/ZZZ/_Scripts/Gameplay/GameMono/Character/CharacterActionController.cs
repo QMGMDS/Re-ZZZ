@@ -39,6 +39,8 @@ namespace GamePlay.GameMono
         // 当前动作
         private CharacterActionAsset _currentAction;
 
+        public string CurrentActionId => _currentAction.Id;
+
         private void Awake()
         {
             if (_characterController == null)

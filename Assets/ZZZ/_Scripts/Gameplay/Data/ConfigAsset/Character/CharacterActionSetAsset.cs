@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace GamePlay.Data
 {
@@ -16,20 +17,23 @@ namespace GamePlay.Data
         private string _fromActionId;
         [SerializeField, Tooltip("去边")]
         private string _toActionId;
-        [SerializeField, Range(0f, 1f), Tooltip("打断点")]
+        [SerializeField, Range(0f, 1f), Tooltip("打断窗口起点")]
         private float _interruptProgress;
+        [SerializeField, Range(0f, 1f), Tooltip("打断窗口终点")]
+        private float _interruptEndProgress;
         [SerializeField, Tooltip("优先级")]
         private int _priority;
         [SerializeField, Tooltip("角色本帧意图")]
         private CharacterIntention _requiredIntention;
         [SerializeField, Tooltip("角色本帧所处事实")]
         private CharacterFact _requiredFact;
-        [SerializeField, Min(0f), Tooltip("动画混合过渡时长")]
+        [SerializeField, FormerlySerializedAs("_animationTransitionNormalizedDuration"), Min(0f), Tooltip("动画混合过渡时长 单位为秒")]
         private float _animationTransitionDurationSeconds;
 
         public string FromActionId => _fromActionId;
         public string ToActionId => _toActionId;
-        public float InterruptProgress => _interruptProgress;
+        public float InterruptWindowStartProgress => _interruptProgress;
+        public float InterruptWindowEndProgress => _interruptEndProgress;
         public int Priority => _priority;
         public CharacterIntention RequiredIntention => _requiredIntention;
         public CharacterFact RequiredFact => _requiredFact;
@@ -79,19 +83,31 @@ namespace GamePlay.Data
                 CharacterActionLink link = _links[index];
                 CharacterActionAsset sourceAction = builtActionsById[link.FromActionId];
 
-                if (float.IsNaN(link.InterruptProgress)
-                    || float.IsInfinity(link.InterruptProgress)
-                    || link.InterruptProgress < 0f
-                    || link.InterruptProgress > 1f)
+                if (float.IsNaN(link.InterruptWindowStartProgress)
+                    || float.IsInfinity(link.InterruptWindowStartProgress)
+                    || link.InterruptWindowStartProgress < 0f
+                    || link.InterruptWindowStartProgress > 1f
+                    || float.IsNaN(link.InterruptWindowEndProgress)
+                    || float.IsInfinity(link.InterruptWindowEndProgress)
+                    || link.InterruptWindowEndProgress < 0f
+                    || link.InterruptWindowEndProgress > 1f)
                 {
                     throw new InvalidOperationException(
-                        $"[{name}] 动作链接 {link.FromActionId} -> {link.ToActionId} 的打断点必须位于 0 到 1 之间");
+                        $"[{name}] 动作链接 {link.FromActionId} -> {link.ToActionId} 的打断窗口必须位于 0 到 1 之间");
                 }
 
-                if (link.AnimationTransitionDurationSeconds < 0f)
+                if (link.InterruptWindowStartProgress > link.InterruptWindowEndProgress)
                 {
                     throw new InvalidOperationException(
-                        $"[{name}] 动作链接 {link.FromActionId} -> {link.ToActionId} 的动画过渡时长不能小于 0");
+                        $"[{name}] 动作链接 {link.FromActionId} -> {link.ToActionId} 的打断窗口起点不能晚于终点");
+                }
+
+                if (float.IsNaN(link.AnimationTransitionDurationSeconds)
+                    || float.IsInfinity(link.AnimationTransitionDurationSeconds)
+                    || link.AnimationTransitionDurationSeconds < 0f)
+                {
+                    throw new InvalidOperationException(
+                        $"[{name}] 动作链接 {link.FromActionId} -> {link.ToActionId} 的动画混合过渡时长必须是大于等于 0 的有限秒数");
                 }
 
                 if (!pendingLinks.TryGetValue(sourceAction.Id, out List<CharacterActionLink> outgoingLinks))

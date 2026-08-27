@@ -85,6 +85,12 @@ namespace GamePlay.GameModel
 
         private void BeginTransition(CharacterActionAsset nextAction)
         {
+            // 打断旧混合时只保留当前逻辑动作 确保 Playable 数量恒定
+            if (_isTransitioning)
+            {
+                CompleteTransition();
+            }
+
             for (int index = 0; index < _sources.Count; index++)
             {
                 AnimationSource source = _sources[index];
@@ -95,7 +101,8 @@ namespace GamePlay.GameModel
                 (double)_currentAction.AnimationClip.length / _currentAction.DurationSeconds;
             _currentSource._playable.SetSpeed(outgoingSpeed);
 
-            float durationSeconds = GetTransitionDurationSeconds(_currentAction.Id, nextAction.Id);
+            float durationSeconds =
+                GetTransitionDurationSeconds(_currentAction.Id, nextAction.Id);
 
             _currentSource = AddSource(nextAction.AnimationClip, 0f);
             _currentAction = nextAction;

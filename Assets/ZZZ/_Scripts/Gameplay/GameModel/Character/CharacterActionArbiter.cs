@@ -39,8 +39,9 @@ namespace GamePlay.GameModel
             for (int index = 0; index < outgoingLinks.Count; index++)
             {
                 CharacterActionLink link = outgoingLinks[index];
-                // 打断点排除
-                if (currentActionProgress < link.InterruptProgress)
+                // 打断窗口排除
+                if (currentActionProgress < link.InterruptWindowStartProgress
+                    || currentActionProgress > link.InterruptWindowEndProgress)
                 {
                     continue;
                 }
