@@ -30,6 +30,8 @@ namespace GamePlay.Data
             Intention = new CharacterIntention(
                 Trilean.False,
                 Trilean.False,
+                Trilean.False,
+                Trilean.False,
                 Trilean.False);
             MoveDirection = Vector2.zero;
         }

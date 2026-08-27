@@ -34,12 +34,19 @@ namespace GamePlay.GameMono
             _runtime = new CharacterInfoRuntime(_characterInfoAsset);
         }
 
-        public void PlayerChange(Vector2 moveDirection, bool attack, bool evade)
+        public void PlayerChange(
+            Vector2 moveDirection,
+            bool attack,
+            bool evade,
+            bool skill,
+            bool ultimate)
         {
             _runtime.Intention = new CharacterIntention(
                 moveDirection.sqrMagnitude == 0f ? Trilean.False : Trilean.True,
                 attack ? Trilean.True : Trilean.False,
-                evade ? Trilean.True : Trilean.False);
+                evade ? Trilean.True : Trilean.False,
+                skill ? Trilean.True : Trilean.False,
+                ultimate ? Trilean.True : Trilean.False);
 
             _runtime.MoveDirection = moveDirection;
 

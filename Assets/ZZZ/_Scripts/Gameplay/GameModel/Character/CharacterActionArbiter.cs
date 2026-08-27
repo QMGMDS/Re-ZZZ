@@ -35,16 +35,22 @@ namespace GamePlay.GameModel
                 return null;
             }
 
+            // 按优先级遍历
             for (int index = 0; index < outgoingLinks.Count; index++)
             {
                 CharacterActionLink link = outgoingLinks[index];
+                // 打断点排除
                 if (currentActionProgress < link.InterruptProgress)
                 {
                     continue;
                 }
 
-                if (Matches(link.RequiredIntention.Attack, intention.Attack)
-                    && Matches(link.RequiredIntention.Move, intention.Move)
+                // 条件匹配
+                if (Matches(link.RequiredIntention.Move, intention.Move)
+                    && Matches(link.RequiredIntention.Attack, intention.Attack)
+                    && Matches(link.RequiredIntention.Evade, intention.Evade)
+                    && Matches(link.RequiredIntention.Skill, intention.Skill)
+                    && Matches(link.RequiredIntention.Ultimate, intention.Ultimate)
                     && Matches(link.RequiredFact.Death, fact.Death))
                 {
                     return _actionsById[link.ToActionId];
