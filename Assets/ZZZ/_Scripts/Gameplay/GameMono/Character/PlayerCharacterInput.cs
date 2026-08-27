@@ -45,8 +45,9 @@ namespace GamePlay.GameMono
                 characterInputData.Move);
 
             _characterInfoController.PlayerChange(
+                worldMoveDirection,
                 characterInputData.Attack,
-                worldMoveDirection);
+                characterInputData.Evade);
         }
     }
 }

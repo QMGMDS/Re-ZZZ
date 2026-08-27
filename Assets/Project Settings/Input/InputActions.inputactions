@@ -25,6 +25,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Evade",
+                    "type": "Button",
+                    "id": "726be6fd-f391-4711-86b9-2991a518993f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Camera",
                     "type": "Value",
                     "id": "e294575e-3dbc-4e39-b7e7-006b38f8ae4e",
@@ -109,6 +118,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Camera",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b55f9d6c-0af2-4b91-b801-9daf5a456c64",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Evade",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "03db979f-2963-4f5f-b864-ec80b110a1bf",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Evade",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -11,7 +11,7 @@ namespace GamePlay.GameModel
     public sealed class RawInputCollector
     {
         /// <summary>
-        /// 采集按键输入
+        /// 采集按键单次按下
         /// </summary>
         public bool CollectButton(InputActionReference inputReference)
         {
@@ -20,7 +20,7 @@ namespace GamePlay.GameModel
                 throw new ArgumentNullException(nameof(inputReference));
             }
 
-            return inputReference.action.IsPressed();
+            return inputReference.action.WasPressedThisFrame();
         }
 
         /// <summary>

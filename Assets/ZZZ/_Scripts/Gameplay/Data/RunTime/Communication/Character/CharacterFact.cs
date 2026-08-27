@@ -11,20 +11,12 @@ namespace GamePlay.Data
     public struct CharacterFact
     {
         [SerializeField] private Trilean _death;
-        [SerializeField] private Trilean _logicalProgress;
 
         public Trilean Death => _death;
-        public Trilean LogicalProgress => _logicalProgress;
 
-        public CharacterFact(Trilean death, Trilean logicalProgress)
+        public CharacterFact(Trilean death)
         {
             _death = death;
-            _logicalProgress = logicalProgress;
-        }
-
-        internal void SetLogicalProgress(Trilean logicalProgress)
-        {
-            _logicalProgress = logicalProgress;
         }
     }
 }

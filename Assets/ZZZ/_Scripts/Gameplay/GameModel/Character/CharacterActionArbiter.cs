@@ -26,6 +26,7 @@ namespace GamePlay.GameModel
         /// </summary>
         public CharacterActionAsset TrySwitch(
             string currentActionId,
+            float currentActionProgress,
             in CharacterIntention intention,
             in CharacterFact fact)
         {
@@ -37,10 +38,14 @@ namespace GamePlay.GameModel
             for (int index = 0; index < outgoingLinks.Count; index++)
             {
                 CharacterActionLink link = outgoingLinks[index];
+                if (currentActionProgress < link.InterruptProgress)
+                {
+                    continue;
+                }
+
                 if (Matches(link.RequiredIntention.Attack, intention.Attack)
                     && Matches(link.RequiredIntention.Move, intention.Move)
-                    && Matches(link.RequiredFact.Death, fact.Death)
-                    && Matches(link.RequiredFact.LogicalProgress, fact.LogicalProgress))
+                    && Matches(link.RequiredFact.Death, fact.Death))
                 {
                     return _actionsById[link.ToActionId];
                 }

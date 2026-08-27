@@ -26,8 +26,11 @@ namespace GamePlay.Data
             BaseHp = characterInfoAsset.BaseHp;
             BaseAtk = characterInfoAsset.BaseAtk;
             Faction = characterInfoAsset.Faction;
-            Fact = new CharacterFact(Trilean.False, Trilean.False);
-            Intention = new CharacterIntention(Trilean.False, Trilean.False);
+            Fact = new CharacterFact(Trilean.False);
+            Intention = new CharacterIntention(
+                Trilean.False,
+                Trilean.False,
+                Trilean.False);
             MoveDirection = Vector2.zero;
         }
     }

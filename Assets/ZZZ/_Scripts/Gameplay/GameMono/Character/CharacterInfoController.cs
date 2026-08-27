@@ -34,11 +34,13 @@ namespace GamePlay.GameMono
             _runtime = new CharacterInfoRuntime(_characterInfoAsset);
         }
 
-        public void PlayerChange(bool attack, Vector2 moveDirection)
+        public void PlayerChange(Vector2 moveDirection, bool attack, bool evade)
         {
             _runtime.Intention = new CharacterIntention(
+                moveDirection.sqrMagnitude == 0f ? Trilean.False : Trilean.True,
                 attack ? Trilean.True : Trilean.False,
-                moveDirection.sqrMagnitude == 0f ? Trilean.False : Trilean.True);
+                evade ? Trilean.True : Trilean.False);
+
             _runtime.MoveDirection = moveDirection;
 
             DriveCharacter();

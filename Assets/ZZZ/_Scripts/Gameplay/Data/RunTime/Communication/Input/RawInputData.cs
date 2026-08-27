@@ -12,11 +12,13 @@ namespace GamePlay.Data
     {
         public bool Attack { get; }
         public Vector2 Move { get; }
+        public bool Evade { get; }
 
-        public RawInputData(bool attack, Vector2 move)
+        public RawInputData(Vector2 move, bool attack, bool evade)
         {
-            Attack = attack;
             Move = move;
+            Attack = attack;
+            Evade = evade;
         }
     }
 }

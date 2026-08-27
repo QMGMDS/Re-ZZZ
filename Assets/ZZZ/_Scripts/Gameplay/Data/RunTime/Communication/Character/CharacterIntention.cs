@@ -10,16 +10,19 @@ namespace GamePlay.Data
     [Serializable]
     public struct CharacterIntention
     {
-        [SerializeField] private Trilean _attack;
         [SerializeField] private Trilean _move;
+        [SerializeField] private Trilean _attack;
+        [SerializeField] private Trilean _evade;
 
-        public Trilean Attack => _attack;
         public Trilean Move => _move;
+        public Trilean Attack => _attack;
+        public Trilean Evade => _evade;
 
-        public CharacterIntention(Trilean attack, Trilean move)
+        public CharacterIntention(Trilean move, Trilean attack, Trilean evade)
         {
-            _attack = attack;
             _move = move;
+            _attack = attack;
+            _evade = evade;
         }
     }
 }

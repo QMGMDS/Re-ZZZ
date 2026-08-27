@@ -74,8 +74,8 @@ namespace GamePlay.GameMono
             _rotationDriver = new CharacterRotationDriver(transform);
             _animationDriver = new CharacterAnimationDriver(_animator, linksBySourceActionId);
 
-            // 第一个动作为默认动作
-            _currentAction = _actionSet.Actions[0];
+            // 默认动作
+            _currentAction = _actionSet.DefaultAction;
 
             _characterInfoController.CharacterDriven += OnCharacterDriven;
         }
@@ -83,20 +83,19 @@ namespace GamePlay.GameMono
         private void OnCharacterDriven(CharacterInfoRuntime characterInfoRuntime)
         {
             CharacterFact fact = characterInfoRuntime.Fact;
+            float currentActionProgress = _transition.GetNormalizedProgress(_currentAction);
 
             // 裁决
             CharacterActionAsset targetAction = _arbiter.TrySwitch(
                 _currentAction.Id,
+                currentActionProgress,
                 characterInfoRuntime.Intention,
                 fact);
             // 过渡
             float logicalProgressSeconds = _transition.Tick(
                 targetAction,
                 ref _currentAction,
-                Time.deltaTime,
-                ref fact);
-
-            characterInfoRuntime.Fact = fact;
+                Time.deltaTime);
 
             // 位移
             _displacementDriver.Evaluate(
