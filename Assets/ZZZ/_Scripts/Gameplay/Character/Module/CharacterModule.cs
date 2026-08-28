@@ -13,21 +13,38 @@ namespace GamePlay.Character
     {
         private readonly List<ICharacterUpdateTarget> _targets =
             new List<ICharacterUpdateTarget>();
+        private readonly Dictionary<ICharacterUpdateTarget, int> _entityIdsByTarget =
+            new Dictionary<ICharacterUpdateTarget, int>();
+        private readonly Dictionary<int, CharacterInfoRuntime> _characterInfoRuntimes =
+            new Dictionary<int, CharacterInfoRuntime>();
+
+        private int _nextEntityId;
 
         /// <inheritdoc/>
-        public void Register(ICharacterUpdateTarget target)
+        public int Register(
+            ICharacterUpdateTarget target,
+            CharacterInfoRuntime characterInfoRuntime)
         {
             if (target == null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
 
-            if (_targets.Contains(target))
+            if (characterInfoRuntime == null)
+            {
+                throw new ArgumentNullException(nameof(characterInfoRuntime));
+            }
+
+            if (_entityIdsByTarget.ContainsKey(target))
             {
                 throw new InvalidOperationException("角色更新目标不能重复注册");
             }
 
+            int entityId = _nextEntityId++;
             _targets.Add(target);
+            _entityIdsByTarget.Add(target, entityId);
+            _characterInfoRuntimes.Add(entityId, characterInfoRuntime);
+            return entityId;
         }
 
         /// <inheritdoc/>
@@ -38,11 +55,21 @@ namespace GamePlay.Character
                 throw new ArgumentNullException(nameof(target));
             }
 
-            if (!_targets.Remove(target))
+            if (!_entityIdsByTarget.TryGetValue(target, out int entityId))
             {
                 // 无注册或者已被取消注册
                 return;
             }
+
+            _targets.Remove(target);
+            _entityIdsByTarget.Remove(target);
+            _characterInfoRuntimes.Remove(entityId);
+        }
+
+        /// <inheritdoc/>
+        public IReadOnlyDictionary<int, CharacterInfoRuntime> GetCharacterInfoRuntimes()
+        {
+            return _characterInfoRuntimes;
         }
 
         /// <inheritdoc/>

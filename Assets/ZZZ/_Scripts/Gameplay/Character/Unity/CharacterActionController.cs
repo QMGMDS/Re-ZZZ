@@ -11,19 +11,27 @@ namespace GamePlay.Character
     /// 角色动作控制 Root Mono
     /// </summary>
     [DisallowMultipleComponent]
+    [RequireComponent(typeof(CharacterController))]
+    [RequireComponent(typeof(Animator))]
     public sealed class CharacterActionController : MonoBehaviour, ICharacterUpdateTarget
     {
-        [Header("必要组件")]
-        [SerializeField, Tooltip("负责角色碰撞移动的 CharacterController")]
+        // 必要组件
         private CharacterController _characterController;
-        [SerializeField, Tooltip("显示本角色动画的 Animator")]
         private Animator _animator;
-        [SerializeField, Tooltip("角色信息控制器")]
-        private CharacterInfoController _characterInfoController;
 
         [Header("自定义配置")]
+        [SerializeField, Tooltip("本角色的信息资产")]
+        private CharacterInfoAsset _characterInfoAsset;
         [SerializeField, Tooltip("本角色的动作资产集合")]
         private CharacterActionSetAsset _actionSet;
+
+        private ICharacterModule _characterModule;
+
+        private CharacterInfoRuntime _runtime;
+        private int _entityId;
+
+        public CharacterInfoRuntime Runtime => _runtime;
+        public int EntityId => _entityId;
 
         // 仲裁器
         private CharacterActionArbiter _arbiter;
@@ -36,37 +44,22 @@ namespace GamePlay.Character
         // 动画驱动器
         private CharacterAnimationDriver _animationDriver;
 
-        private ICharacterModule _characterModule;
-
         // 当前动作
         private CharacterActionAsset _currentAction;
         private float _logicalProgressSeconds;
 
         private void Awake()
         {
-            if (_characterController == null)
+            _characterController = GetComponent<CharacterController>();
+            _animator = GetComponent<Animator>();
+
+            if (_characterInfoAsset == null
+                || _actionSet == null)
             {
-                throw new InvalidOperationException(
-                    $"{nameof(CharacterActionController)} 要求必须分配 {nameof(_characterController)}");
+                throw new InvalidOperationException("检查配置");
             }
 
-            if (_animator == null)
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(CharacterActionController)} 要求必须分配 {nameof(_animator)}");
-            }
-
-            if (_characterInfoController == null)
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(CharacterActionController)} 要求必须分配 {nameof(_characterInfoController)}");
-            }
-
-            if (_actionSet == null)
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(CharacterActionController)} 要求必须分配 {nameof(_actionSet)}");
-            }
+            _runtime = new CharacterInfoRuntime(_characterInfoAsset);
 
             _actionSet.BuildRuntimeLookups(out var actionsById, out var linksBySourceActionId);
 
@@ -81,18 +74,35 @@ namespace GamePlay.Character
             _currentAction = _actionSet.DefaultAction;
         }
 
+        private void OnEnable()
+        {
+            if (!ServiceHub.TryGet<ICharacterModule>(out ICharacterModule characterModule))
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(ICharacterModule)} 未注册 不能启用 {nameof(CharacterActionController)}");
+            }
+
+            _entityId = characterModule.Register(this, _runtime);
+            _characterModule = characterModule;
+        }
+
+        private void OnDisable()
+        {
+            _characterModule.Unregister(this);
+            _characterModule = null;
+        }
+
         /// <inheritdoc/>
         public void LogicUpdate(float tickDeltaSeconds)
         {
-            CharacterInfoRuntime characterInfoRuntime = _characterInfoController.Runtime;
-            CharacterFact fact = characterInfoRuntime.Fact;
+            CharacterFact fact = _runtime.Fact;
             float currentActionProgress = _transition.GetNormalizedProgress(_currentAction);
 
             // 裁决
             CharacterActionAsset targetAction = _arbiter.TrySwitch(
                 _currentAction.Id,
                 currentActionProgress,
-                characterInfoRuntime.Intention,
+                _runtime.Intention,
                 fact);
             // 过渡
             _logicalProgressSeconds = _transition.Tick(
@@ -104,11 +114,11 @@ namespace GamePlay.Character
             _displacementDriver.Evaluate(
                 _currentAction,
                 _logicalProgressSeconds,
-                characterInfoRuntime.MoveDirection);
+                _runtime.MoveDirection);
             // 旋转
             _rotationDriver.Evaluate(
                 _currentAction,
-                characterInfoRuntime.MoveDirection,
+                _runtime.MoveDirection,
                 tickDeltaSeconds);
         }
 
@@ -121,22 +131,13 @@ namespace GamePlay.Character
                 deltaTimeSeconds);
         }
 
-        private void OnEnable()
+        /// <summary>
+        /// 写入本次逻辑 Tick 的角色运行时数据
+        /// </summary>
+        public void WriteRuntimeData(InputCharacterData inputCharacterData)
         {
-            if (!ServiceHub.TryGet<ICharacterModule>(out ICharacterModule characterModule))
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(ICharacterModule)} 未注册 不能启用 {nameof(CharacterActionController)}");
-            }
-
-            characterModule.Register(this);
-            _characterModule = characterModule;
-        }
-
-        private void OnDisable()
-        {
-            _characterModule.Unregister(this);
-            _characterModule = null;
+            _runtime.Intention = inputCharacterData.Intention;
+            _runtime.MoveDirection = inputCharacterData.MoveInput;
         }
 
         private void OnDestroy()

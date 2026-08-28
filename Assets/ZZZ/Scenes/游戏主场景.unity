@@ -172,7 +172,7 @@ MonoBehaviour:
   _specifiedObject: {fileID: 857373701}
   _targetObject: {fileID: 219287121567370706}
   _camera: {fileID: 1704952868}
-  _smoothTimeSeconds: 0.01
+  _smoothTimeSeconds: 0.05
 --- !u!1 &91265380
 GameObject:
   m_ObjectHideFlags: 0
@@ -934,6 +934,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: b5efb5706136b5a4abd591db3351944c, type: 2}
     - target: {fileID: 9154480246847436422, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
+      propertyPath: _characterInfoAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: b5efb5706136b5a4abd591db3351944c, type: 2}
+    - target: {fileID: 9154480246847436422, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
       propertyPath: _characterController
       value: 
       objectReference: {fileID: 1266167723}
@@ -1613,21 +1617,22 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 27521c28f2d661743abdbb540fbfb6a6, type: 2}
     - target: {fileID: 9154480246847436422, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
+      propertyPath: _characterInfoAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 27521c28f2d661743abdbb540fbfb6a6, type: 2}
+    - target: {fileID: 9154480246847436422, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
       propertyPath: _characterController
       value: 
       objectReference: {fileID: 305063745}
     - target: {fileID: 9154480246847436422, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
       propertyPath: _characterInfoController
       value: 
-      objectReference: {fileID: 219287121567370711}
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7056134684512737679, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2067458732384291408, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 219287121567370711}
     - targetCorrespondingSourceObject: {fileID: 2067458732384291408, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 219287121567370712}
@@ -1637,19 +1642,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1727911591275122922, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
   m_PrefabInstance: {fileID: 219287121567370705}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &219287121567370711
+--- !u!114 &219287121567370707 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 9154480246847436422, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
+  m_PrefabInstance: {fileID: 219287121567370705}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1536868785}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d902de93ed6bcb1459f7d0bec64c71a1, type: 3}
+  m_Script: {fileID: 11500000, guid: 83dffeb7cd173d64a880845117fd20df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterInfoAsset: {fileID: 11400000, guid: 27521c28f2d661743abdbb540fbfb6a6, type: 2}
 --- !u!114 &219287121567370712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1662,7 +1665,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c238913323bd3014ea28886dca6ba0cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterInfoController: {fileID: 219287121567370711}
+  _characterActionController: {fileID: 219287121567370707}
 --- !u!1001 &1184586421446674479
 PrefabInstance:
   m_ObjectHideFlags: 0

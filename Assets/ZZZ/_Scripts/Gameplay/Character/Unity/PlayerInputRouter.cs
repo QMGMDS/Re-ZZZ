@@ -17,15 +17,15 @@ namespace GamePlay.Character
     public sealed class PlayerInputRouter : MonoBehaviour, IPlayerInputRouter
     {
         [Header("必要组件")]
-        [SerializeField, Tooltip("需要写入输入数据的角色信息控制器")]
-        private CharacterInfoController _characterInfoController;
+        [SerializeField, Tooltip("需要写入输入数据的角色动作控制器")]
+        private CharacterActionController _characterActionController;
 
         private void Awake()
         {
-            if (_characterInfoController == null)
+            if (_characterActionController == null)
             {
                 throw new InvalidOperationException(
-                    $"{nameof(PlayerInputRouter)} 要求必须分配 {nameof(_characterInfoController)}");
+                    $"{nameof(PlayerInputRouter)} 要求必须分配 {nameof(_characterActionController)}");
             }
         }
 
@@ -59,7 +59,7 @@ namespace GamePlay.Character
                 ToTrilean(characterInputData.Ultimate),
                 ToTrilean(characterInputData.Switch));
 
-            _characterInfoController.WriteRuntimeData(
+            _characterActionController.WriteRuntimeData(
                 new InputCharacterData(logicalTimeSeconds, intention, worldMove));
         }
 
