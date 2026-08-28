@@ -3,7 +3,9 @@ using System;
 using UnityEngine;
 
 using GamePlay.Data;
+using GamePlay.GameModule;
 using GamePlay.GameModel;
+using SPFramework;
 
 namespace GamePlay.GameMono
 {
@@ -11,7 +13,7 @@ namespace GamePlay.GameMono
     /// 角色动作控制 Root Mono
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class CharacterActionController : MonoBehaviour
+    public sealed class CharacterActionController : MonoBehaviour, ICharacterUpdateTarget
     {
         [Header("必要组件")]
         [SerializeField, Tooltip("负责角色碰撞移动的 CharacterController")]
@@ -38,8 +40,8 @@ namespace GamePlay.GameMono
 
         // 当前动作
         private CharacterActionAsset _currentAction;
-
-        public string CurrentActionId => _currentAction.Id;
+        private float _logicalProgressSeconds;
+        private ICharacterModule _characterModule;
 
         private void Awake()
         {
@@ -78,12 +80,19 @@ namespace GamePlay.GameMono
 
             // 默认动作
             _currentAction = _actionSet.DefaultAction;
-
-            _characterInfoController.CharacterDriven += OnCharacterDriven;
         }
 
-        private void OnCharacterDriven(CharacterInfoRuntime characterInfoRuntime)
+        private void OnEnable()
         {
+            ICharacterModule characterModule = ModuleSystem.GetModule<ICharacterModule>();
+            characterModule.Register(this);
+            _characterModule = characterModule;
+        }
+
+        /// <inheritdoc/>
+        public void LogicUpdate(float tickDeltaSeconds)
+        {
+            CharacterInfoRuntime characterInfoRuntime = _characterInfoController.Runtime;
             CharacterFact fact = characterInfoRuntime.Fact;
             float currentActionProgress = _transition.GetNormalizedProgress(_currentAction);
 
@@ -94,32 +103,40 @@ namespace GamePlay.GameMono
                 characterInfoRuntime.Intention,
                 fact);
             // 过渡
-            float logicalProgressSeconds = _transition.Tick(
+            _logicalProgressSeconds = _transition.Tick(
                 targetAction,
                 ref _currentAction,
-                Time.deltaTime);
+                tickDeltaSeconds);
 
             // 位移
             _displacementDriver.Evaluate(
                 _currentAction,
-                logicalProgressSeconds,
+                _logicalProgressSeconds,
                 characterInfoRuntime.MoveDirection);
             // 旋转
             _rotationDriver.Evaluate(
                 _currentAction,
                 characterInfoRuntime.MoveDirection,
-                Time.deltaTime);
-            // 动画表现
-            _animationDriver.Evaluate(_currentAction, logicalProgressSeconds, Time.deltaTime);
+                tickDeltaSeconds);
+        }
+
+        /// <inheritdoc/>
+        public void RenderUpdate(float deltaTimeSeconds)
+        {
+            _animationDriver.Evaluate(
+                _currentAction,
+                _logicalProgressSeconds,
+                deltaTimeSeconds);
+        }
+
+        private void OnDisable()
+        {
+            _characterModule.Unregister(this);
+            _characterModule = null;
         }
 
         private void OnDestroy()
         {
-            if (_characterInfoController != null)
-            {
-                _characterInfoController.CharacterDriven -= OnCharacterDriven;
-            }
-
             if (_animationDriver != null)
             {
                 _animationDriver.Dispose();

@@ -36,6 +36,7 @@ namespace GamePlay.GameMono
 
         private RawInputCollector _rawInputCollector;
         private InputGapFilter _inputGapFilter;
+        private InputCommandBuffer _inputCommandBuffer;
         private RawInputData _rawInputData;
         private CharacterInputData _characterInputData;
 
@@ -57,6 +58,7 @@ namespace GamePlay.GameMono
 
             _rawInputCollector = new RawInputCollector();
             _inputGapFilter = new InputGapFilter(_moveInputGapToleranceSeconds);
+            _inputCommandBuffer = new InputCommandBuffer();
         }
 
         private void OnEnable()
@@ -69,10 +71,12 @@ namespace GamePlay.GameMono
             _switchInputReference.action.Enable();
 
             _inputGapFilter.Reset();
+            _inputCommandBuffer.Reset();
             ServiceHub.Register<IIputData>(this);
         }
 
-        private void Update()
+        /// <inheritdoc/>
+        public void Capture(float elapsedSeconds)
         {
             _rawInputData = new RawInputData(
                 _rawInputCollector.CollectAxis(_moveInputReference),
@@ -83,14 +87,21 @@ namespace GamePlay.GameMono
                 _rawInputCollector.CollectButton(_switchInputReference));
 
             Vector2 normalizedMove = InputNormalization.NormalizeAxis(_rawInputData.Move);
-            float deltaTime = Time.deltaTime;
             _characterInputData = new CharacterInputData(
-                _inputGapFilter.FilterAxis(normalizedMove, deltaTime),
+                _inputGapFilter.FilterAxis(normalizedMove, elapsedSeconds),
                 _rawInputData.Attack,
                 _rawInputData.Evade,
                 _rawInputData.Skill,
                 _rawInputData.Ultimate,
                 _rawInputData.Switch);
+
+            _inputCommandBuffer.Capture(in _characterInputData);
+        }
+
+        /// <inheritdoc/>
+        public CharacterInputData ConsumeCharacterInput()
+        {
+            return _inputCommandBuffer.Consume();
         }
 
         private void OnDisable()
@@ -103,6 +114,7 @@ namespace GamePlay.GameMono
             _switchInputReference.action.Disable();
 
             ServiceHub.Unregister<IIputData>(this);
+            _inputCommandBuffer.Reset();
         }
     }
 }

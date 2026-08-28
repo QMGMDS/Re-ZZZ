@@ -32,6 +32,7 @@ namespace GamePlay.Data
                 Trilean.False,
                 Trilean.False,
                 Trilean.False,
+                Trilean.False,
                 Trilean.False);
             MoveDirection = Vector2.zero;
         }

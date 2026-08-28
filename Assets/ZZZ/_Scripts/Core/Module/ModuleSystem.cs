@@ -16,46 +16,6 @@ namespace SPFramework
         private static readonly Dictionary<Type, Module> s_moduleMaps = new Dictionary<Type, Module>(DEFAULT_MODULE_COUNT);
         private static readonly LinkedList<Module> s_modules = new LinkedList<Module>();
 
-        // 链表排序 列表遍历
-        private static readonly LinkedList<Module> s_updateModules = new LinkedList<Module>();
-        private static readonly List<IUpdateModule> s_updateExecuteList = new List<IUpdateModule>(DEFAULT_MODULE_COUNT);
-
-        // 脏标记 - 模块 Update 执行链表更新时刷新
-        private static bool s_isExecuteListDirty;
-
-        #region Update 模块轮询
-
-        /// <summary>
-        /// 模块轮询
-        /// </summary>
-        /// <param name="elapsedTime">逻辑时间间隔 秒为单位</param>
-        /// <param name="realElapsedTime">真实时间间隔 秒为单位</param>
-        public static void Update(float elapsedTime, float realElapsedTime)
-        {
-            if (s_isExecuteListDirty)
-            {
-                s_isExecuteListDirty = false;
-                BuildUpdateExecuteList();
-            }
-
-            for (int i = 0; i < s_updateExecuteList.Count; i++)
-            {
-                s_updateExecuteList[i].Update(elapsedTime, realElapsedTime);
-            }
-        }
-
-        private static void BuildUpdateExecuteList()
-        {
-            s_updateExecuteList.Clear();
-
-            foreach (var updateModule in s_updateModules)
-            {
-                s_updateExecuteList.Add(updateModule as IUpdateModule);
-            }
-        }
-
-        #endregion
-
         #region 模块获取
 
         public static T GetModule<T>() where T : class
@@ -97,7 +57,7 @@ namespace SPFramework
             }
 
             s_moduleMaps[moduleType] = module;
-            RegisterUpdateModule(module);
+            RegisterModule(module);
             return module;
         }
 
@@ -113,15 +73,24 @@ namespace SPFramework
                 throw new ArgumentException($"类型 {type.FullName} 必须是一个接口", nameof(T));
             }
 
+            if (module == null)
+            {
+                throw new ArgumentNullException(nameof(module));
+            }
+
+            if (!type.IsInstanceOfType(module))
+            {
+                throw new ArgumentException(
+                    $"模块 {module.GetType().FullName} 未实现契约 {type.FullName}",
+                    nameof(module));
+            }
+
             s_moduleMaps[type] = module;
-            RegisterUpdateModule(module);
+            RegisterModule(module);
             return module as T;
         }
 
-        /// <summary>
-        /// 注册可轮询模块
-        /// </summary>
-        private static void RegisterUpdateModule(Module module)
+        private static void RegisterModule(Module module)
         {
             LinkedListNode<Module> current = s_modules.First;
 
@@ -143,31 +112,6 @@ namespace SPFramework
                 s_modules.AddLast(module);
             }
 
-            Type interfaceType = typeof(IUpdateModule);
-            bool implementsIUpdateModule = interfaceType.IsInstanceOfType(module);
-
-            if (implementsIUpdateModule)
-            {
-                LinkedListNode<Module> currentUpdate = s_updateModules.First;
-                while (currentUpdate != null)
-                {
-                    if (module.Priority > currentUpdate.Value.Priority)
-                    {
-                        break;
-                    }
-                    currentUpdate = currentUpdate.Next;
-                }
-
-                if (currentUpdate != null)
-                {
-                    s_updateModules.AddBefore(currentUpdate, module);
-                }
-                else
-                {
-                    s_updateModules.AddLast(module);
-                }
-                s_isExecuteListDirty = true;
-            }
             module.OnCreate();
         }
 
@@ -188,8 +132,6 @@ namespace SPFramework
 
             s_modules.Clear();
             s_moduleMaps.Clear();
-            s_updateModules.Clear();
-            s_updateExecuteList.Clear();
         }
     }
 }

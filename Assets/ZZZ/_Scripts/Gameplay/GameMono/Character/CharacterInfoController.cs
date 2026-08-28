@@ -20,7 +20,6 @@ namespace GamePlay.GameMono
 
         public CharacterInfoRuntime Runtime => _runtime;
 
-        public event Action<CharacterInfoRuntime> CharacterDriven;
         public event Action<AttackRequest> AttackReceived;
 
         private void Awake()
@@ -34,28 +33,13 @@ namespace GamePlay.GameMono
             _runtime = new CharacterInfoRuntime(_characterInfoAsset);
         }
 
-        public void PlayerChange(
-            Vector2 moveDirection,
-            bool attack,
-            bool evade,
-            bool skill,
-            bool ultimate)
+        /// <summary>
+        /// 写入本次逻辑 Tick 的角色运行时数据
+        /// </summary>
+        public void WriteRuntimeData(InputCharacterData inputCharacterData)
         {
-            _runtime.Intention = new CharacterIntention(
-                moveDirection.sqrMagnitude == 0f ? Trilean.False : Trilean.True,
-                attack ? Trilean.True : Trilean.False,
-                evade ? Trilean.True : Trilean.False,
-                skill ? Trilean.True : Trilean.False,
-                ultimate ? Trilean.True : Trilean.False);
-
-            _runtime.MoveDirection = moveDirection;
-
-            DriveCharacter();
-        }
-
-        private void DriveCharacter()
-        {
-            CharacterDriven?.Invoke(_runtime);
+            _runtime.Intention = inputCharacterData.Intention;
+            _runtime.MoveDirection = inputCharacterData.MoveInput;
         }
 
         /// <summary>

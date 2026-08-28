@@ -11,5 +11,15 @@ namespace GamePlay.Contract
     {
         RawInputData RawInputData { get; }
         CharacterInputData CharacterInputData { get; }
+
+        /// <summary>
+        /// 采集一次宿主帧输入
+        /// </summary>
+        void Capture(float elapsedSeconds);
+
+        /// <summary>
+        /// 消费一次逻辑 Tick 输入
+        /// </summary>
+        CharacterInputData ConsumeCharacterInput();
     }
 }
