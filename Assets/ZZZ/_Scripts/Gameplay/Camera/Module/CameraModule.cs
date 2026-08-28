@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 using GamePlay.Camera.Contract;
 
@@ -8,41 +7,9 @@ namespace GamePlay.Camera
     /// <summary>
     /// 统一驱动当前激活摄像机实例
     /// </summary>
-    public sealed class CameraModule : ICameraModule, IDisposable
+    public sealed class CameraModule : ICameraModule
     {
-        private sealed class Registration
-        {
-            public readonly ICameraUpdateTarget Target;
-            public bool IsActive;
-
-            public Registration(ICameraUpdateTarget target)
-            {
-                Target = target;
-                IsActive = true;
-            }
-        }
-
-        private readonly Dictionary<ICameraUpdateTarget, Registration> _registrations =
-            new Dictionary<ICameraUpdateTarget, Registration>();
-        private readonly List<Registration> _registrationOrder = new List<Registration>();
-        private readonly List<Registration> _executionSnapshot = new List<Registration>();
-
-        private bool _isExecuting;
-        private bool _isDestroyed;
-
-        public void Dispose()
-        {
-            _isDestroyed = true;
-
-            for (int index = 0; index < _registrationOrder.Count; index++)
-            {
-                _registrationOrder[index].IsActive = false;
-            }
-
-            _registrations.Clear();
-            _registrationOrder.Clear();
-            _executionSnapshot.Clear();
-        }
+        private ICameraUpdateTarget _target;
 
         /// <inheritdoc/>
         public void Register(ICameraUpdateTarget target)
@@ -52,20 +19,12 @@ namespace GamePlay.Camera
                 throw new ArgumentNullException(nameof(target));
             }
 
-            if (_isDestroyed)
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(CameraModule)} 已销毁 不能注册摄像机更新目标");
-            }
-
-            if (_registrations.ContainsKey(target))
+            if (_target != null)
             {
                 throw new InvalidOperationException("摄像机更新目标不能重复注册");
             }
 
-            Registration registration = new Registration(target);
-            _registrations.Add(target, registration);
-            _registrationOrder.Add(registration);
+            _target = target;
         }
 
         /// <inheritdoc/>
@@ -76,84 +35,23 @@ namespace GamePlay.Camera
                 throw new ArgumentNullException(nameof(target));
             }
 
-            if (_isDestroyed)
-            {
-                return;
-            }
-
-            if (!_registrations.TryGetValue(target, out Registration registration))
+            if (_target != target)
             {
                 throw new InvalidOperationException("摄像机更新目标尚未注册");
             }
 
-            _registrations.Remove(target);
-            registration.IsActive = false;
-
-            if (!_isExecuting)
-            {
-                CompactRegistrations();
-            }
+            _target = null;
         }
 
         /// <inheritdoc/>
         public void RenderUpdate(float deltaTimeSeconds)
         {
-            if (_isDestroyed)
+            if (_target == null)
             {
                 return;
             }
 
-            BeginExecutionSnapshot();
-            try
-            {
-                for (int index = 0; index < _executionSnapshot.Count; index++)
-                {
-                    Registration registration = _executionSnapshot[index];
-                    if (registration.IsActive)
-                    {
-                        registration.Target.RenderUpdate(deltaTimeSeconds);
-                    }
-                }
-            }
-            finally
-            {
-                EndExecutionSnapshot();
-            }
-        }
-
-        private void BeginExecutionSnapshot()
-        {
-            _executionSnapshot.Clear();
-            _executionSnapshot.AddRange(_registrationOrder);
-            _isExecuting = true;
-        }
-
-        private void EndExecutionSnapshot()
-        {
-            _isExecuting = false;
-            CompactRegistrations();
-        }
-
-        private void CompactRegistrations()
-        {
-            int activeCount = 0;
-            for (int index = 0; index < _registrationOrder.Count; index++)
-            {
-                Registration registration = _registrationOrder[index];
-                if (!registration.IsActive)
-                {
-                    continue;
-                }
-
-                _registrationOrder[activeCount] = registration;
-                activeCount++;
-            }
-
-            int inactiveCount = _registrationOrder.Count - activeCount;
-            if (inactiveCount > 0)
-            {
-                _registrationOrder.RemoveRange(activeCount, inactiveCount);
-            }
+            _target.RenderUpdate(deltaTimeSeconds);
         }
     }
 }

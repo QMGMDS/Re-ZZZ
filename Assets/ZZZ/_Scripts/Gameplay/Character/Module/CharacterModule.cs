@@ -2,47 +2,17 @@ using System;
 using System.Collections.Generic;
 
 using GamePlay.Character.Contract;
+using UnityEngine;
 
 namespace GamePlay.Character
 {
     /// <summary>
     /// 统一驱动当前激活角色实例
     /// </summary>
-    public sealed class CharacterModule : ICharacterModule, IDisposable
+    public sealed class CharacterModule : ICharacterModule
     {
-        private sealed class Registration
-        {
-            public readonly ICharacterUpdateTarget Target;
-            public bool IsActive;
-
-            public Registration(ICharacterUpdateTarget target)
-            {
-                Target = target;
-                IsActive = true;
-            }
-        }
-
-        private readonly Dictionary<ICharacterUpdateTarget, Registration> _registrations =
-            new Dictionary<ICharacterUpdateTarget, Registration>();
-        private readonly List<Registration> _registrationOrder = new List<Registration>();
-        private readonly List<Registration> _executionSnapshot = new List<Registration>();
-
-        private bool _isExecuting;
-        private bool _isDestroyed;
-
-        public void Dispose()
-        {
-            _isDestroyed = true;
-
-            for (int index = 0; index < _registrationOrder.Count; index++)
-            {
-                _registrationOrder[index].IsActive = false;
-            }
-
-            _registrations.Clear();
-            _registrationOrder.Clear();
-            _executionSnapshot.Clear();
-        }
+        private readonly List<ICharacterUpdateTarget> _targets =
+            new List<ICharacterUpdateTarget>();
 
         /// <inheritdoc/>
         public void Register(ICharacterUpdateTarget target)
@@ -52,20 +22,12 @@ namespace GamePlay.Character
                 throw new ArgumentNullException(nameof(target));
             }
 
-            if (_isDestroyed)
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(CharacterModule)} 已销毁 不能注册角色更新目标");
-            }
-
-            if (_registrations.ContainsKey(target))
+            if (_targets.Contains(target))
             {
                 throw new InvalidOperationException("角色更新目标不能重复注册");
             }
 
-            Registration registration = new Registration(target);
-            _registrations.Add(target, registration);
-            _registrationOrder.Add(registration);
+            _targets.Add(target);
         }
 
         /// <inheritdoc/>
@@ -76,109 +38,28 @@ namespace GamePlay.Character
                 throw new ArgumentNullException(nameof(target));
             }
 
-            if (_isDestroyed)
+            if (!_targets.Remove(target))
             {
+                // 无注册或者已被取消注册
                 return;
-            }
-
-            if (!_registrations.TryGetValue(target, out Registration registration))
-            {
-                throw new InvalidOperationException("角色更新目标尚未注册");
-            }
-
-            _registrations.Remove(target);
-            registration.IsActive = false;
-
-            if (!_isExecuting)
-            {
-                CompactRegistrations();
             }
         }
 
         /// <inheritdoc/>
         public void LogicUpdate(float tickDeltaSeconds)
         {
-            if (_isDestroyed)
+            for (int index = 0; index < _targets.Count; index++)
             {
-                return;
-            }
-
-            BeginExecutionSnapshot();
-            try
-            {
-                for (int index = 0; index < _executionSnapshot.Count; index++)
-                {
-                    Registration registration = _executionSnapshot[index];
-                    if (registration.IsActive)
-                    {
-                        registration.Target.LogicUpdate(tickDeltaSeconds);
-                    }
-                }
-            }
-            finally
-            {
-                EndExecutionSnapshot();
+                _targets[index].LogicUpdate(tickDeltaSeconds);
             }
         }
 
         /// <inheritdoc/>
         public void RenderUpdate(float deltaTimeSeconds)
         {
-            if (_isDestroyed)
+            for (int index = 0; index < _targets.Count; index++)
             {
-                return;
-            }
-
-            BeginExecutionSnapshot();
-            try
-            {
-                for (int index = 0; index < _executionSnapshot.Count; index++)
-                {
-                    Registration registration = _executionSnapshot[index];
-                    if (registration.IsActive)
-                    {
-                        registration.Target.RenderUpdate(deltaTimeSeconds);
-                    }
-                }
-            }
-            finally
-            {
-                EndExecutionSnapshot();
-            }
-        }
-
-        private void BeginExecutionSnapshot()
-        {
-            _executionSnapshot.Clear();
-            _executionSnapshot.AddRange(_registrationOrder);
-            _isExecuting = true;
-        }
-
-        private void EndExecutionSnapshot()
-        {
-            _isExecuting = false;
-            CompactRegistrations();
-        }
-
-        private void CompactRegistrations()
-        {
-            int activeCount = 0;
-            for (int index = 0; index < _registrationOrder.Count; index++)
-            {
-                Registration registration = _registrationOrder[index];
-                if (!registration.IsActive)
-                {
-                    continue;
-                }
-
-                _registrationOrder[activeCount] = registration;
-                activeCount++;
-            }
-
-            int inactiveCount = _registrationOrder.Count - activeCount;
-            if (inactiveCount > 0)
-            {
-                _registrationOrder.RemoveRange(activeCount, inactiveCount);
+                _targets[index].RenderUpdate(deltaTimeSeconds);
             }
         }
     }

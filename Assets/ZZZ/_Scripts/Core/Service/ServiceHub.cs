@@ -81,14 +81,6 @@ namespace SPFramework
             return true;
         }
 
-        /// <summary>
-        /// 清空全部已注册服务
-        /// </summary>
-        public static void Clear()
-        {
-            ServiceDict.Clear();
-        }
-
         private static bool IsDestroyed(IService service)
         {
             return service is UnityEngine.Object unityObject && unityObject == null;

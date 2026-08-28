@@ -1,3 +1,5 @@
+using System;
+
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -73,9 +75,14 @@ namespace GamePlay.Root
         /// <summary>
         /// 游戏世界逻辑更新
         /// </summary>
-        /// <param name="_">过去的逻辑总时间</param>
-        private void ExecuteFixedTick(float _)
+        /// <param name="logicalTimeSeconds">当前逻辑时间 单位为秒</param>
+        private void ExecuteFixedTick(float logicalTimeSeconds)
         {
+            if (ServiceHub.TryGet<IPlayerInputRouter>(out IPlayerInputRouter playerInputRouter))
+            {
+                playerInputRouter.LogicUpdate(logicalTimeSeconds);
+            }
+
             _characterModule.LogicUpdate(_fixedStepClock.FixedStepSeconds);
         }
 
@@ -103,14 +110,11 @@ namespace GamePlay.Root
 
         private void OnDestroy()
         {
-            _cameraModule.Dispose();
-            _characterModule.Dispose();
             _sceneModule.Dispose();
 
             ServiceHub.Unregister<ICameraModule>(_cameraModule);
             ServiceHub.Unregister<ICharacterModule>(_characterModule);
             ServiceHub.Unregister<ISceneModule>(_sceneModule);
-            // ServiceHub.Clear();
         }
     }
 }
