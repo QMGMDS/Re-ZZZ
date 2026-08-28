@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 namespace SPFramework
 {
-    public interface ISceneModule
+    public interface ISceneModule : IService
     {
         /// <summary>
         /// 场景加载完成事件

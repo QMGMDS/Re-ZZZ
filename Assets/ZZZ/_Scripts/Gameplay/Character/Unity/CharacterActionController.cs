@@ -36,6 +36,8 @@ namespace GamePlay.Character
         // 动画驱动器
         private CharacterAnimationDriver _animationDriver;
 
+        private ICharacterModule _characterModule;
+
         // 当前动作
         private CharacterActionAsset _currentAction;
         private float _logicalProgressSeconds;
@@ -121,12 +123,20 @@ namespace GamePlay.Character
 
         private void OnEnable()
         {
-            ModuleSystem.GetModule<ICharacterModule>().Register(this);
+            if (!ServiceHub.TryGet<ICharacterModule>(out ICharacterModule characterModule))
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(ICharacterModule)} 未注册 不能启用 {nameof(CharacterActionController)}");
+            }
+
+            characterModule.Register(this);
+            _characterModule = characterModule;
         }
 
         private void OnDisable()
         {
-            ModuleSystem.GetModule<ICharacterModule>().Unregister(this);
+            _characterModule.Unregister(this);
+            _characterModule = null;
         }
 
         private void OnDestroy()

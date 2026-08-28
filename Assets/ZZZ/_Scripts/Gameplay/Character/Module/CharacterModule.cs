@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 
 using GamePlay.Character.Contract;
-using SPFramework;
 
 namespace GamePlay.Character
 {
     /// <summary>
     /// 统一驱动当前激活角色实例
     /// </summary>
-    public sealed class CharacterModule : Module, ICharacterModule
+    public sealed class CharacterModule : ICharacterModule, IDisposable
     {
         private sealed class Registration
         {
@@ -31,14 +30,7 @@ namespace GamePlay.Character
         private bool _isExecuting;
         private bool _isDestroyed;
 
-        /// <inheritdoc/>
-        public override void OnCreate()
-        {
-            _isDestroyed = false;
-        }
-
-        /// <inheritdoc/>
-        public override void OnDestroy()
+        public void Dispose()
         {
             _isDestroyed = true;
 

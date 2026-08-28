@@ -111,8 +111,9 @@ namespace GamePlay.Input
             _ultimateInputReference.action.Disable();
             _switchInputReference.action.Disable();
 
-            ServiceHub.Unregister<IIputData>(this);
             _inputCommandBuffer.Reset();
+
+            ServiceHub.Unregister<IIputData>(this);
         }
     }
 }

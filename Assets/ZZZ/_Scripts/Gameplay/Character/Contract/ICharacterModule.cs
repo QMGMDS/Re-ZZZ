@@ -1,9 +1,11 @@
+using SPFramework;
+
 namespace GamePlay.Character.Contract
 {
     /// <summary>
     /// 角色实例更新模块契约
     /// </summary>
-    public interface ICharacterModule
+    public interface ICharacterModule : IService
     {
         /// <summary>
         /// 注册一个角色更新目标

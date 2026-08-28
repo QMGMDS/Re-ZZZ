@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 
 using GamePlay.Camera.Contract;
-using SPFramework;
 
 namespace GamePlay.Camera
 {
     /// <summary>
     /// 统一驱动当前激活摄像机实例
     /// </summary>
-    public sealed class CameraModule : Module, ICameraModule
+    public sealed class CameraModule : ICameraModule, IDisposable
     {
         private sealed class Registration
         {
@@ -31,14 +30,7 @@ namespace GamePlay.Camera
         private bool _isExecuting;
         private bool _isDestroyed;
 
-        /// <inheritdoc/>
-        public override void OnCreate()
-        {
-            _isDestroyed = false;
-        }
-
-        /// <inheritdoc/>
-        public override void OnDestroy()
+        public void Dispose()
         {
             _isDestroyed = true;
 

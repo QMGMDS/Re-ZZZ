@@ -1,9 +1,11 @@
+using SPFramework;
+
 namespace GamePlay.Camera.Contract
 {
     /// <summary>
     /// 摄像机实例更新模块契约
     /// </summary>
-    public interface ICameraModule
+    public interface ICameraModule : IService
     {
         /// <summary>
         /// 注册一个摄像机更新目标

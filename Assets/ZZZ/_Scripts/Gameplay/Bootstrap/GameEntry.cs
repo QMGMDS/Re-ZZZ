@@ -1,5 +1,3 @@
-using System;
-
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -36,8 +34,9 @@ namespace GamePlay.Root
         // 固定步长时钟 - 游戏世界逻辑更新时钟
         private FixedStepClock _fixedStepClock;
 
-        private ICharacterModule _characterModule;
-        private ICameraModule _cameraModule;
+        private SceneModule _sceneModule;
+        private CharacterModule _characterModule;
+        private CameraModule _cameraModule;
 
         private void Awake()
         {
@@ -49,10 +48,14 @@ namespace GamePlay.Root
 
             SetRenderFrameRate(_renderFrameRate);
 
-            ModuleSystem.RegisterModule<ISceneModule>(new SceneModule());
+            _sceneModule = new SceneModule();
+            ServiceHub.Register<ISceneModule>(_sceneModule);
 
-            _characterModule = ModuleSystem.RegisterModule<ICharacterModule>(new CharacterModule());
-            _cameraModule = ModuleSystem.RegisterModule<ICameraModule>(new CameraModule());
+            _characterModule = new CharacterModule();
+            ServiceHub.Register<ICharacterModule>(_characterModule);
+
+            _cameraModule = new CameraModule();
+            ServiceHub.Register<ICameraModule>(_cameraModule);
         }
 
         private void Update()
@@ -84,7 +87,7 @@ namespace GamePlay.Root
 
         private void Start()
         {
-            ModuleSystem.GetModule<ISceneModule>().LoadScene(SceneNames.Gameplay);
+            _sceneModule.LoadScene(SceneNames.Gameplay);
         }
 
         /// <summary>
@@ -100,7 +103,14 @@ namespace GamePlay.Root
 
         private void OnDestroy()
         {
-            ModuleSystem.Destroy();
+            _cameraModule.Dispose();
+            _characterModule.Dispose();
+            _sceneModule.Dispose();
+
+            ServiceHub.Unregister<ICameraModule>(_cameraModule);
+            ServiceHub.Unregister<ICharacterModule>(_characterModule);
+            ServiceHub.Unregister<ISceneModule>(_sceneModule);
+            // ServiceHub.Clear();
         }
     }
 }

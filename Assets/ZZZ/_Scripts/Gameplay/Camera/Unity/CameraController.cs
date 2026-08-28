@@ -43,8 +43,13 @@ namespace GamePlay.Camera
 
         private void OnEnable()
         {
+            if (!ServiceHub.TryGet<ICameraModule>(out ICameraModule cameraModule))
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(ICameraModule)} 未注册 不能启用 {nameof(CameraController)}");
+            }
+
             ServiceHub.Register<ICameraService>(this);
-            ICameraModule cameraModule = ModuleSystem.GetModule<ICameraModule>();
             cameraModule.Register(this);
             _cameraModule = cameraModule;
         }

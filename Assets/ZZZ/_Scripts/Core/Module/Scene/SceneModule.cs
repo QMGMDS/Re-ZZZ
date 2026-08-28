@@ -4,16 +4,14 @@ using UnityEngine.SceneManagement;
 
 namespace SPFramework
 {
-    public sealed class SceneModule : Module, ISceneModule
+    public sealed class SceneModule : ISceneModule, IDisposable
     {
-        /// <inheritdoc/>
-        public override void OnCreate()
+        public SceneModule()
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
-        /// <inheritdoc/>
-        public override void OnDestroy()
+        public void Dispose()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
