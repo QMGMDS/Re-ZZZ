@@ -49,7 +49,6 @@ namespace GamePlay.Root
 
             SetRenderFrameRate(_renderFrameRate);
 
-            ModuleSystem.RegisterModule<IEntityModule>(new EntityModule());
             ModuleSystem.RegisterModule<ISceneModule>(new SceneModule());
 
             _characterModule = ModuleSystem.RegisterModule<ICharacterModule>(new CharacterModule());
