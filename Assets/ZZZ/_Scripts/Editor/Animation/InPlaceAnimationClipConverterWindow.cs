@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace GamePlay.Editor
+namespace Editor
 {
     [Flags]
     internal enum InPlacePositionAxes

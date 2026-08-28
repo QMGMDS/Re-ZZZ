@@ -6,9 +6,9 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-using GamePlay.Data;
+using GamePlay.Character;
 
-namespace GamePlay.Editor
+namespace Editor
 {
     internal sealed class CharacterActionSetExcelImporterWindow : EditorWindow
     {
