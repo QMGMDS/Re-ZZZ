@@ -7,6 +7,8 @@ using GamePlay.Camera;
 using GamePlay.Camera.Contract;
 using GamePlay.Character;
 using GamePlay.Character.Contract;
+using GamePlay.Collider;
+using GamePlay.Collider.Contract;
 using GamePlay.Input.Contract;
 using SPFramework;
 
@@ -27,7 +29,7 @@ namespace GamePlay.Root
         // 游戏世界逻辑更新帧
         private const int GAME_LOGIC_TICK_RATE = 120;
         // 游戏世界逻辑帧的最大补偿
-        private const int MAX_LOGIC_TICKS_PER_HOST_FRAME = 8;
+        private const int MAX_LOGIC_TICKS_PER_HOST_FRAME = 1;
 
         [Header("渲染设置")]
         [SerializeField, Tooltip("选择渲染帧率")]
@@ -38,6 +40,7 @@ namespace GamePlay.Root
 
         private SceneModule _sceneModule;
         private CharacterModule _characterModule;
+        private ColliderModule _colliderModule;
         private CameraModule _cameraModule;
 
         private void Awake()
@@ -55,6 +58,9 @@ namespace GamePlay.Root
 
             _characterModule = new CharacterModule();
             ServiceHub.Register<ICharacterModule>(_characterModule);
+
+            _colliderModule = new ColliderModule();
+            ServiceHub.Register<IColliderModule>(_colliderModule);
 
             _cameraModule = new CameraModule();
             ServiceHub.Register<ICameraModule>(_cameraModule);
@@ -84,6 +90,7 @@ namespace GamePlay.Root
             }
 
             _characterModule.LogicUpdate(_fixedStepClock.FixedStepSeconds);
+            _colliderModule.LogicUpdate(_fixedStepClock.FixedStepSeconds);
         }
 
         private void LateUpdate()
@@ -113,6 +120,7 @@ namespace GamePlay.Root
             _sceneModule.Dispose();
 
             ServiceHub.Unregister<ICameraModule>(_cameraModule);
+            ServiceHub.Unregister<IColliderModule>(_colliderModule);
             ServiceHub.Unregister<ICharacterModule>(_characterModule);
             ServiceHub.Unregister<ISceneModule>(_sceneModule);
         }

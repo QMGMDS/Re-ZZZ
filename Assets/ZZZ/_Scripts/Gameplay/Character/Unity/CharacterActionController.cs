@@ -30,7 +30,6 @@ namespace GamePlay.Character
         private CharacterInfoRuntime _runtime;
         private int _entityId;
 
-        public CharacterInfoRuntime Runtime => _runtime;
         public int EntityId => _entityId;
 
         // 仲裁器
