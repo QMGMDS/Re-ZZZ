@@ -210,4 +210,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _directionMode: 2
   _rotationSpeedDegreesPerSecond: 0
+  _attackStartSeconds: 0
+  _attackEndSeconds: 0

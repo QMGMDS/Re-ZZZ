@@ -953,11 +953,6 @@ CharacterController:
   m_CorrespondingSourceObject: {fileID: 3615966766429726052, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
   m_PrefabInstance: {fileID: 1266167722}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1536868785 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2067458732384291408, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
-  m_PrefabInstance: {fileID: 219287121567370705}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1574570294
 GameObject:
   m_ObjectHideFlags: 3
@@ -1632,40 +1627,13 @@ PrefabInstance:
     - {fileID: 7056134684512737679, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2067458732384291408, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 219287121567370712}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
 --- !u!4 &219287121567370706 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1727911591275122922, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
   m_PrefabInstance: {fileID: 219287121567370705}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &219287121567370707 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9154480246847436422, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
-  m_PrefabInstance: {fileID: 219287121567370705}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1536868785}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83dffeb7cd173d64a880845117fd20df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &219287121567370712
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1536868785}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c238913323bd3014ea28886dca6ba0cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _characterActionController: {fileID: 219287121567370707}
 --- !u!1001 &1184586421446674479
 PrefabInstance:
   m_ObjectHideFlags: 0

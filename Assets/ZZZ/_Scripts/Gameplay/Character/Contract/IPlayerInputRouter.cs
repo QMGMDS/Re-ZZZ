@@ -8,9 +8,9 @@ namespace GamePlay.Character.Contract
     public interface IPlayerInputRouter : IService
     {
         /// <summary>
-        /// 驱动一次逻辑 Tick 的玩家输入路由
+        /// 消费并转换一次逻辑 Tick 的玩家输入
         /// </summary>
         /// <param name="logicalTimeSeconds">当前逻辑时间 单位为秒</param>
-        void LogicUpdate(float logicalTimeSeconds);
+        InputCharacterData ConsumePlayerInput(float logicalTimeSeconds);
     }
 }
