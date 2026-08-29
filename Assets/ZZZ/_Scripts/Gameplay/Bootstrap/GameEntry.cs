@@ -1,10 +1,11 @@
 using UnityEngine;
-using UnityEngine.Rendering;
 
 using GamePlay.Camera;
 using GamePlay.Camera.Contract;
 using GamePlay.Character;
 using GamePlay.Character.Contract;
+using GamePlay.Combat;
+using GamePlay.Combat.Contract;
 using GamePlay.Collider;
 using GamePlay.Collider.Contract;
 using GamePlay.Input.Contract;
@@ -12,32 +13,21 @@ using SPFramework;
 
 namespace GamePlay.Root
 {
-    public enum GameRenderFrameRate
-    {
-        Fps60 = 60,
-        Fps120 = 120
-    }
-
     /// <summary>
     /// 游戏启动引导
     /// </summary>
     [DefaultExecutionOrder(-10000)]
     public sealed class GameEntry : MonoBehaviour
     {
-        [Header("渲染设置")]
-        [SerializeField, Tooltip("选择渲染帧率")]
-        private GameRenderFrameRate _renderFrameRate = GameRenderFrameRate.Fps120;
-
         private SceneModule _sceneModule;
         private CharacterModule _characterModule;
+        private CombatModule _combatModule;
         private ColliderModule _colliderModule;
         private CameraModule _cameraModule;
 
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
-
-            // SetRenderFrameRate(_renderFrameRate);
 
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = -1;
@@ -48,6 +38,9 @@ namespace GamePlay.Root
             _characterModule = new CharacterModule();
             ServiceHub.Register<ICharacterModule>(_characterModule);
 
+            _combatModule = new CombatModule(_characterModule);
+            ServiceHub.Register<ICombatModule>(_combatModule);
+
             _colliderModule = new ColliderModule();
             ServiceHub.Register<IColliderModule>(_colliderModule);
 
@@ -57,29 +50,18 @@ namespace GamePlay.Root
 
         private void Update()
         {
-            float elapsedSeconds = Time.deltaTime;
-
             if (ServiceHub.TryGet<IIputData>(out IIputData inputData))
             {
-                inputData.Capture(elapsedSeconds);
+                inputData.Capture(Time.deltaTime);
             }
 
-            ExecuteLogicUpdate(elapsedSeconds);
-        }
-
-        /// <summary>
-        /// 游戏世界逻辑逐帧更新
-        /// </summary>
-        /// <param name="elapsedSeconds">本帧经过的时间 单位为秒</param>
-        private void ExecuteLogicUpdate(float elapsedSeconds)
-        {
             if (ServiceHub.TryGet<IPlayerInputRouter>(out IPlayerInputRouter playerInputRouter))
             {
-                playerInputRouter.LogicUpdate(elapsedSeconds);
+                playerInputRouter.LogicUpdate(Time.deltaTime);
             }
 
-            _characterModule.LogicUpdate(elapsedSeconds);
-            _colliderModule.LogicUpdate(elapsedSeconds);
+            _characterModule.LogicUpdate(Time.deltaTime);
+            _colliderModule.LogicUpdate(Time.deltaTime);
         }
 
         private void LateUpdate()
@@ -93,23 +75,13 @@ namespace GamePlay.Root
             _sceneModule.LoadScene(SceneNames.Gameplay);
         }
 
-        /// <summary>
-        /// 设置运行时渲染帧率
-        /// </summary>
-        private void SetRenderFrameRate(GameRenderFrameRate renderFrameRate)
-        {
-            _renderFrameRate = renderFrameRate;
-            QualitySettings.vSyncCount = 0;
-            Application.targetFrameRate = (int)GameRenderFrameRate.Fps120;
-            OnDemandRendering.renderFrameInterval = renderFrameRate == GameRenderFrameRate.Fps60 ? 2 : 1;
-        }
-
         private void OnDestroy()
         {
             _sceneModule.Dispose();
 
             ServiceHub.Unregister<ICameraModule>(_cameraModule);
             ServiceHub.Unregister<IColliderModule>(_colliderModule);
+            ServiceHub.Unregister<ICombatModule>(_combatModule);
             ServiceHub.Unregister<ICharacterModule>(_characterModule);
             ServiceHub.Unregister<ISceneModule>(_sceneModule);
         }

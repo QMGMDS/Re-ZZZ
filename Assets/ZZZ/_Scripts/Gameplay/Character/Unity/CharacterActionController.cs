@@ -14,7 +14,7 @@ namespace GamePlay.Character
     [DisallowMultipleComponent]
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
-    public sealed class CharacterActionController : MonoBehaviour, ICharacterUpdateTarget
+    public sealed class CharacterActionController : MonoBehaviour, ICharacterUpdateTarget, ICharacterHurtReceiver
     {
         // 必要组件
         private CharacterController _characterController;
@@ -89,7 +89,7 @@ namespace GamePlay.Character
                     $"{nameof(ICharacterModule)} 未注册 不能启用 {nameof(CharacterActionController)}");
             }
 
-            _entityId = characterModule.Register(this, _runtime);
+            _entityId = characterModule.Register(this, this, _runtime);
             _characterModule = characterModule;
         }
 
@@ -112,6 +112,12 @@ namespace GamePlay.Character
                 currentActionProgress,
                 _runtime.Intention,
                 fact);
+
+            if (fact.Hit == Trilean.True)
+            {
+                _runtime.Fact = fact.ConsumeHit();
+            }
+
             // 过渡
             _logicalProgressSeconds = _transition.Tick(
                 targetAction,
@@ -143,6 +149,12 @@ namespace GamePlay.Character
                 _currentAction,
                 _logicalProgressSeconds,
                 deltaTimeSeconds);
+        }
+
+        /// <inheritdoc/>
+        public void ReceiveHit(int damage)
+        {
+            _runtime.Fact = _runtime.Fact.MarkHit();
         }
 
         /// <summary>

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 using SPFramework;
 
 namespace GamePlay.Character.Contract
@@ -12,7 +10,10 @@ namespace GamePlay.Character.Contract
         /// <summary>
         /// 注册一个角色更新目标
         /// </summary>
-        int Register(ICharacterUpdateTarget target, CharacterInfoRuntime characterInfoRuntime);
+        int Register(
+            ICharacterUpdateTarget target,
+            ICharacterHurtReceiver hurtReceiver,
+            CharacterInfoRuntime characterInfoRuntime);
 
         /// <summary>
         /// 注销一个角色更新目标
@@ -20,9 +21,18 @@ namespace GamePlay.Character.Contract
         void Unregister(ICharacterUpdateTarget target);
 
         /// <summary>
-        /// 获取当前已注册角色的运行时信息
+        /// 根据实体 ID 获取角色运行时信息
         /// </summary>
-        IReadOnlyDictionary<int, CharacterInfoRuntime> GetCharacterInfoRuntimes();
+        bool TryGetCharacterInfoRuntime(
+            int entityId,
+            out CharacterInfoRuntime characterInfoRuntime);
+
+        /// <summary>
+        /// 根据实体 ID 获取角色受击入口
+        /// </summary>
+        bool TryGetCharacterHurtReceiver(
+            int entityId,
+            out ICharacterHurtReceiver hurtReceiver);
 
         /// <summary>
         /// 驱动全部角色执行固定逻辑更新

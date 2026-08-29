@@ -28,7 +28,8 @@ namespace Editor
             "Evade",
             "Skill",
             "Ultimate",
-            "Death"
+            "Death",
+            "Hit"
         };
 
         [SerializeField] private CharacterActionSetAsset _targetActionSet;
@@ -284,7 +285,7 @@ namespace Editor
             if (headerRowIndex < 0)
             {
                 throw new InvalidOperationException(
-                    "没有找到完整表头 需要包含出边 去边 打断窗口起点 优先级 动画过渡 Move Attack Evade Skill Ultimate Death 可选列 打断窗口终点");
+                    "没有找到完整表头 需要包含出边 去边 打断窗口起点 优先级 动画过渡 Move Attack Evade Skill Ultimate Death Hit 可选列 打断窗口终点");
             }
 
             List<ParsedTransitionLink> links = new List<ParsedTransitionLink>();
@@ -363,7 +364,8 @@ namespace Editor
                         GetCell(row, headerMap, "Ultimate"),
                         row.RowNumber,
                         "Ultimate"),
-                    ParseTrilean(GetCell(row, headerMap, "Death"), row.RowNumber, "Death")));
+                    ParseTrilean(GetCell(row, headerMap, "Death"), row.RowNumber, "Death"),
+                    ParseTrilean(GetCell(row, headerMap, "Hit"), row.RowNumber, "Hit")));
             }
 
             return links;
@@ -690,6 +692,7 @@ namespace Editor
 
             SerializedProperty requiredFact = GetRequiredRelative(linkProperty, "_requiredFact");
             SetTrilean(requiredFact, "_death", link.Death);
+            SetTrilean(requiredFact, "_hit", link.Hit);
         }
 
         private static void SetTrilean(
@@ -740,7 +743,8 @@ namespace Editor
                 Trilean evade,
                 Trilean skill,
                 Trilean ultimate,
-                Trilean death)
+                Trilean death,
+                Trilean hit)
             {
                 FromActionId = fromActionId;
                 ToActionId = toActionId;
@@ -754,6 +758,7 @@ namespace Editor
                 Skill = skill;
                 Ultimate = ultimate;
                 Death = death;
+                Hit = hit;
             }
 
             internal string FromActionId { get; }
@@ -767,6 +772,7 @@ namespace Editor
             internal Trilean Skill { get; }
             internal Trilean Ultimate { get; }
             internal Trilean Death { get; }
+            internal Trilean Hit { get; }
             internal float AnimationTransitionDurationSeconds { get; }
         }
     }

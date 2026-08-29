@@ -51,7 +51,8 @@ namespace GamePlay.Character
                     && Matches(link.RequiredIntention.Skill, intention.Skill)
                     && Matches(link.RequiredIntention.Ultimate, intention.Ultimate)
                     && Matches(link.RequiredIntention.Switch, intention.Switch)
-                    && Matches(link.RequiredFact.Death, fact.Death))
+                    && Matches(link.RequiredFact.Death, fact.Death)
+                    && Matches(link.RequiredFact.Hit, fact.Hit))
                 {
                     return _actionsById[link.ToActionId];
                 }

@@ -5,6 +5,7 @@ using UnityEngine;
 
 using SPFramework;
 using GamePlay.Character;
+using GamePlay.Combat.Contract;
 using GamePlay.Collider.Contract;
 
 namespace GamePlay.Collider
@@ -25,6 +26,7 @@ namespace GamePlay.Collider
         private readonly HashSet<int> _hitTargetEntityIds = new HashSet<int>();
 
         private IColliderModule _colliderModule;
+        private ICombatModule _combatModule;
         private int _ownerEntityId = INVALID_ENTITY_ID;
         private bool _isAttackColliderOpen;
 
@@ -70,14 +72,16 @@ namespace GamePlay.Collider
                 throw new InvalidOperationException("攻击碰撞体已经打开");
             }
 
-            if (!ServiceHub.TryGet<IColliderModule>(out IColliderModule colliderModule))
+            if (!ServiceHub.TryGet<IColliderModule>(out IColliderModule colliderModule)
+                || !ServiceHub.TryGet<ICombatModule>(out ICombatModule combatModule))
             {
                 throw new InvalidOperationException(
-                    $"{nameof(IColliderModule)} 未注册 不能打开 {nameof(ColliderController)}");
+                    $"{nameof(IColliderModule)} 和 {nameof(ICombatModule)} 未注册 不能打开 {nameof(ColliderController)}");
             }
 
             colliderModule.Register(this);
             _colliderModule = colliderModule;
+            _combatModule = combatModule;
             _ownerEntityId = entityId;
             _hitTargetEntityIds.Clear();
             _isAttackColliderOpen = true;
@@ -95,6 +99,7 @@ namespace GamePlay.Collider
             _collider.enabled = false;
             _colliderModule.Unregister(this);
             _colliderModule = null;
+            _combatModule = null;
             _ownerEntityId = INVALID_ENTITY_ID;
             _hitTargetEntityIds.Clear();
             _isAttackColliderOpen = false;
@@ -149,9 +154,7 @@ namespace GamePlay.Collider
                         continue;
                     }
 
-                    Debug.Log(
-                        $"攻击方实体 ID {_ownerEntityId} 被碰撞角色实体 ID {target.EntityId}",
-                        this);
+                    _combatModule.SubmitHit(_ownerEntityId, target.EntityId);
                 }
             }
         }

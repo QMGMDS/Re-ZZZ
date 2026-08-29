@@ -17,12 +17,15 @@ namespace GamePlay.Character
             new Dictionary<ICharacterUpdateTarget, int>();
         private readonly Dictionary<int, CharacterInfoRuntime> _characterInfoRuntimes =
             new Dictionary<int, CharacterInfoRuntime>();
+        private readonly Dictionary<int, ICharacterHurtReceiver> _hurtReceiversByEntityId =
+            new Dictionary<int, ICharacterHurtReceiver>();
 
         private int _nextEntityId;
 
         /// <inheritdoc/>
         public int Register(
             ICharacterUpdateTarget target,
+            ICharacterHurtReceiver hurtReceiver,
             CharacterInfoRuntime characterInfoRuntime)
         {
             if (target == null)
@@ -30,9 +33,12 @@ namespace GamePlay.Character
                 throw new ArgumentNullException(nameof(target));
             }
 
-            if (characterInfoRuntime == null)
+            if (hurtReceiver == null || characterInfoRuntime == null)
             {
-                throw new ArgumentNullException(nameof(characterInfoRuntime));
+                throw new ArgumentNullException(
+                    hurtReceiver == null
+                        ? nameof(hurtReceiver)
+                        : nameof(characterInfoRuntime));
             }
 
             if (_entityIdsByTarget.ContainsKey(target))
@@ -44,6 +50,7 @@ namespace GamePlay.Character
             _targets.Add(target);
             _entityIdsByTarget.Add(target, entityId);
             _characterInfoRuntimes.Add(entityId, characterInfoRuntime);
+            _hurtReceiversByEntityId.Add(entityId, hurtReceiver);
             return entityId;
         }
 
@@ -64,12 +71,25 @@ namespace GamePlay.Character
             _targets.Remove(target);
             _entityIdsByTarget.Remove(target);
             _characterInfoRuntimes.Remove(entityId);
+            _hurtReceiversByEntityId.Remove(entityId);
         }
 
         /// <inheritdoc/>
-        public IReadOnlyDictionary<int, CharacterInfoRuntime> GetCharacterInfoRuntimes()
+        public bool TryGetCharacterInfoRuntime(
+            int entityId,
+            out CharacterInfoRuntime characterInfoRuntime)
         {
-            return _characterInfoRuntimes;
+            return _characterInfoRuntimes.TryGetValue(
+                entityId,
+                out characterInfoRuntime);
+        }
+
+        /// <inheritdoc/>
+        public bool TryGetCharacterHurtReceiver(
+            int entityId,
+            out ICharacterHurtReceiver hurtReceiver)
+        {
+            return _hurtReceiversByEntityId.TryGetValue(entityId, out hurtReceiver);
         }
 
         /// <inheritdoc/>

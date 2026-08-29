@@ -26,7 +26,7 @@ namespace GamePlay.Character
             BaseHp = characterInfoAsset.BaseHp;
             BaseAtk = characterInfoAsset.BaseAtk;
             Faction = characterInfoAsset.Faction;
-            Fact = new CharacterFact(Trilean.False);
+            Fact = new CharacterFact(Trilean.False, Trilean.False);
             Intention = new CharacterIntention(
                 Trilean.False,
                 Trilean.False,
