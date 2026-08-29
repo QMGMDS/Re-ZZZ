@@ -13,8 +13,6 @@ namespace GamePlay.Character
 
         private CharacterActionAsset _currentAction;
         private float _previousLogicalProgressSeconds;
-        // 最近一次有效的世界空间移动方向
-        private Vector3 _lastWorldMoveDirection = Vector3.forward;
 
         public CharacterDisplacementDriver(CharacterController characterController)
         {
@@ -24,23 +22,23 @@ namespace GamePlay.Character
         /// <summary>
         /// 推进当前动作位移并写入 CharacterController
         /// </summary>
-        public void Evaluate(
-            CharacterActionAsset currentAction,
-            float logicalProgressSeconds,
-            Vector2 worldMoveDirection)
+        public void Evaluate(CharacterActionState actionState)
         {
+            CharacterActionAsset currentAction = actionState.CurrentAction;
             if (currentAction == null)
             {
                 throw new ArgumentNullException(nameof(currentAction));
             }
 
+            float logicalProgressSeconds = actionState.LogicalProgressSeconds;
             if (logicalProgressSeconds < 0f)
             {
                 throw new ArgumentOutOfRangeException(nameof(logicalProgressSeconds));
             }
 
+            Vector3 worldDisplacementDirection = actionState.WorldDirection;
+
             ResetProgressIfActionRestarted(currentAction, logicalProgressSeconds);
-            UpdateLastWorldMoveDirection(worldMoveDirection);
 
             float previousZ = currentAction.EvaluateZDisplacement(_previousLogicalProgressSeconds);
             float currentZ = currentAction.EvaluateZDisplacement(logicalProgressSeconds);
@@ -48,7 +46,7 @@ namespace GamePlay.Character
 
             if (deltaZ != 0f)
             {
-                _characterController.Move(_lastWorldMoveDirection * deltaZ);
+                _characterController.Move(worldDisplacementDirection * deltaZ);
             }
 
             _previousLogicalProgressSeconds = logicalProgressSeconds;
@@ -63,19 +61,6 @@ namespace GamePlay.Character
 
             _currentAction = currentAction;
             _previousLogicalProgressSeconds = 0f;
-        }
-
-        private void UpdateLastWorldMoveDirection(Vector2 worldMoveDirection)
-        {
-            if (worldMoveDirection.sqrMagnitude == 0f)
-            {
-                return;
-            }
-
-            _lastWorldMoveDirection = new Vector3(
-                worldMoveDirection.x,
-                0f,
-                worldMoveDirection.y).normalized;
         }
     }
 }

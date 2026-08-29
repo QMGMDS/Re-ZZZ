@@ -160,7 +160,7 @@ MonoBehaviour:
     _requiredFact:
       _death: 1
       _hit: 2
-    _animationTransitionDurationSeconds: 0.25
+    _animationTransitionDurationSeconds: 0
   - _fromActionId: Anbi_WalkStart
     _toActionId: Anbi_Walk
     _interruptProgress: 1

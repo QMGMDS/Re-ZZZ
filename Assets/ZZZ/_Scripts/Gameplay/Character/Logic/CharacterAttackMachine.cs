@@ -22,18 +22,21 @@ namespace GamePlay.Character
         /// <summary>
         /// 根据当前动作和逻辑时间更新攻击碰撞体状态
         /// </summary>
-        public void LogicUpdate(
-            CharacterActionAsset currentAction,
-            float logicalProgressSeconds,
-            int entityId)
+        public void LogicUpdate(CharacterActionState actionState, int entityId)
         {
+            CharacterActionAsset currentAction = actionState.CurrentAction;
+            if (currentAction == null)
+            {
+                throw new ArgumentNullException(nameof(currentAction));
+            }
+
+            float logicalProgressSeconds = actionState.LogicalProgressSeconds;
             if (_lastAction != currentAction)
             {
                 CloseIfOpen();
             }
 
-            if (currentAction != null
-                && currentAction.IsAttackActiveAt(logicalProgressSeconds))
+            if (currentAction.IsAttackActiveAt(logicalProgressSeconds))
             {
                 if (!_isAttackColliderOpen)
                 {

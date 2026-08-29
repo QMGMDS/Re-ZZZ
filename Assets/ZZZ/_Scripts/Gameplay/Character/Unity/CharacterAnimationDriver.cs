@@ -52,18 +52,23 @@ namespace GamePlay.Character
         /// <summary>
         /// 将当前动作采样到指定的逻辑秒数，并独立推进旧动画及动画混合
         /// </summary>
-        public void Evaluate(CharacterActionAsset currentAction, float logicalProgressSeconds, float deltaTime)
+        public void Evaluate(CharacterActionState actionState, float deltaTime)
         {
+            CharacterActionAsset currentAction = actionState.CurrentAction;
             if (currentAction == null)
             {
                 throw new ArgumentNullException(nameof(currentAction));
             }
 
+            float logicalProgressSeconds = actionState.LogicalProgressSeconds;
+
             if (_currentAction == null)
             {
                 BindFirstAction(currentAction);
             }
-            else if (_currentAction != currentAction || logicalProgressSeconds < _previousLogicalProgressSeconds)
+            else if (_currentAction != currentAction
+                || actionState.ActionStarted
+                || logicalProgressSeconds < _previousLogicalProgressSeconds)
             {
                 BeginTransition(currentAction);
             }

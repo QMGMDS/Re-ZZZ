@@ -4,6 +4,16 @@ using UnityEngine;
 
 namespace GamePlay.Character
 {
+    public enum CharacterActionDirectionMode
+    {
+        /// <summary>每个逻辑帧都读取最新移动输入 方向会持续变化</summary>
+        LiveMoveDirection,
+        /// <summary>动作进入瞬间保存当前移动输入方向 动作持续期间不再改变</summary>
+        CaptureMoveDirectionOnEnter,
+        /// <summary>动作进入瞬间保存角色当前水平朝向 动作持续期间不再改变</summary>
+        CaptureFacingDirectionOnEnter
+    }
+
     /// <summary>
     /// 单个角色动作的静态配置
     /// </summary>
@@ -18,6 +28,8 @@ namespace GamePlay.Character
         private AnimationClip _animationClip;
         [SerializeField, Tooltip("动作位移曲线")]
         private AnimationCurve _zDisplacementCurve;
+        [SerializeField, Tooltip("动作方向模式")]
+        private CharacterActionDirectionMode _directionMode;
         [SerializeField, Min(0f), Tooltip("角色旋转最大速度 单位为度/秒")]
         private float _rotationSpeedDegreesPerSecond;
         [SerializeField, Min(0f), Tooltip("攻击开始逻辑时间 单位为秒")]
@@ -28,6 +40,7 @@ namespace GamePlay.Character
         public string Id => _id;
         public float DurationSeconds => _durationSeconds;
         public AnimationClip AnimationClip => _animationClip;
+        public CharacterActionDirectionMode DirectionMode => _directionMode;
         public float RotationSpeedDegreesPerSecond => _rotationSpeedDegreesPerSecond;
         public float AttackStartSeconds => _attackStartSeconds;
         public float AttackEndSeconds => _attackEndSeconds;

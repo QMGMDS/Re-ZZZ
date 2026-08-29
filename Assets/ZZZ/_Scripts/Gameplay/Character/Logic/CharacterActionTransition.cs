@@ -1,3 +1,5 @@
+using System;
+
 using UnityEngine;
 
 namespace GamePlay.Character
@@ -7,14 +9,28 @@ namespace GamePlay.Character
     /// </summary>
     public sealed class CharacterActionTransition
     {
+        private CharacterActionAsset _currentAction;
         private float _elapsedSeconds;
+
+        public CharacterActionAsset CurrentAction => _currentAction;
+        public float LogicalProgressSeconds => _elapsedSeconds;
+
+        public CharacterActionTransition(CharacterActionAsset defaultAction)
+        {
+            if (defaultAction == null)
+            {
+                throw new ArgumentNullException(nameof(defaultAction));
+            }
+
+            _currentAction = defaultAction;
+        }
 
         /// <summary>
         /// 读取当前动作的归一化逻辑进度
         /// </summary>
-        public float GetNormalizedProgress(CharacterActionAsset currentAction)
+        public float GetNormalizedProgress()
         {
-            return Mathf.Clamp01(_elapsedSeconds / currentAction.DurationSeconds);
+            return Mathf.Clamp01(_elapsedSeconds / _currentAction.DurationSeconds);
         }
 
         /// <summary>
@@ -22,29 +38,30 @@ namespace GamePlay.Character
         /// </summary>
         public float Tick(
             CharacterActionAsset targetAction,
-            ref CharacterActionAsset currentAction,
-            float deltaTime)
+            float deltaTime,
+            bool restartCurrentAction,
+            out bool actionStarted)
         {
-            if (targetAction != null && (currentAction != targetAction || _elapsedSeconds >= currentAction.DurationSeconds))
+            actionStarted = false;
+
+            if (targetAction != null
+                && (restartCurrentAction
+                    || _currentAction != targetAction
+                    || _elapsedSeconds >= _currentAction.DurationSeconds))
             {
-                StartAction(targetAction, ref currentAction);
+                StartAction(targetAction);
+                actionStarted = true;
             }
 
-            if (currentAction == null)
-            {
-                return 0f;
-            }
-
-            _elapsedSeconds = Mathf.Min(_elapsedSeconds + deltaTime, currentAction.DurationSeconds);
+            _elapsedSeconds = Mathf.Min(_elapsedSeconds + deltaTime, _currentAction.DurationSeconds);
 
             return _elapsedSeconds;
         }
 
         private void StartAction(
-            CharacterActionAsset action,
-            ref CharacterActionAsset currentAction)
+            CharacterActionAsset action)
         {
-            currentAction = action;
+            _currentAction = action;
             _elapsedSeconds = 0f;
         }
     }

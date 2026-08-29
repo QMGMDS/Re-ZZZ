@@ -30,15 +30,12 @@ namespace GamePlay.Character
 
         private ICharacterModule _characterModule;
 
-        private CharacterInfoRuntime _runtime;
         private int _entityId;
 
         public int EntityId => _entityId;
 
-        // 仲裁器
-        private CharacterActionArbiter _arbiter;
-        // 过渡器
-        private CharacterActionTransition _transition;
+        // 动作逻辑模型
+        private CharacterActionModel _actionModel;
         // 位移器
         private CharacterDisplacementDriver _displacementDriver;
         // 旋转器
@@ -47,10 +44,6 @@ namespace GamePlay.Character
         private CharacterAnimationDriver _animationDriver;
         // 攻击机器
         private CharacterAttackMachine _attackMachine;
-
-        // 当前动作
-        private CharacterActionAsset _currentAction;
-        private float _logicalProgressSeconds;
 
         private void Awake()
         {
@@ -62,23 +55,21 @@ namespace GamePlay.Character
                 || _attackCollider == null)
             {
                 throw new InvalidOperationException(
-                    "检查角色信息资产 动作资产集合和攻击碰撞体配置");
+                    "检查角色信息资产、动作资产集合、攻击碰撞体配置");
             }
-
-            _runtime = new CharacterInfoRuntime(_characterInfoAsset);
 
             _actionSet.BuildRuntimeLookups(out var actionsById, out var linksBySourceActionId);
 
-            _arbiter = new CharacterActionArbiter(actionsById, linksBySourceActionId);
-            _transition = new CharacterActionTransition();
+            _actionModel = new CharacterActionModel(
+                _characterInfoAsset,
+                _actionSet.DefaultAction,
+                actionsById,
+                linksBySourceActionId);
 
             _displacementDriver = new CharacterDisplacementDriver(_characterController);
             _rotationDriver = new CharacterRotationDriver(transform);
             _animationDriver = new CharacterAnimationDriver(_animator, linksBySourceActionId);
             _attackMachine = new CharacterAttackMachine(_attackCollider);
-
-            // 默认动作
-            _currentAction = _actionSet.DefaultAction;
         }
 
         private void OnEnable()
@@ -89,7 +80,7 @@ namespace GamePlay.Character
                     $"{nameof(ICharacterModule)} 未注册 不能启用 {nameof(CharacterActionController)}");
             }
 
-            _entityId = characterModule.Register(this, this, _runtime);
+            _entityId = characterModule.Register(this, this, _actionModel.Runtime);
             _characterModule = characterModule;
         }
 
@@ -100,61 +91,38 @@ namespace GamePlay.Character
             _characterModule = null;
         }
 
+        private void OnDestroy()
+        {
+            if (_animationDriver != null)
+            {
+                _animationDriver.Dispose();
+            }
+        }
+
         /// <inheritdoc/>
         public void LogicUpdate(float tickDeltaSeconds)
         {
-            CharacterFact fact = _runtime.Fact;
-            float currentActionProgress = _transition.GetNormalizedProgress(_currentAction);
+            CharacterActionState actionState = _actionModel.LogicUpdate(
+                tickDeltaSeconds,
+                transform.forward);
 
-            // 裁决
-            CharacterActionAsset targetAction = _arbiter.TrySwitch(
-                _currentAction.Id,
-                currentActionProgress,
-                _runtime.Intention,
-                fact);
-
-            if (fact.Hit == Trilean.True)
-            {
-                _runtime.Fact = fact.ConsumeHit();
-            }
-
-            // 过渡
-            _logicalProgressSeconds = _transition.Tick(
-                targetAction,
-                ref _currentAction,
-                tickDeltaSeconds);
-
-            // 位移
-            _displacementDriver.Evaluate(
-                _currentAction,
-                _logicalProgressSeconds,
-                _runtime.MoveDirection);
-            // 旋转
-            _rotationDriver.Evaluate(
-                _currentAction,
-                _runtime.MoveDirection,
-                tickDeltaSeconds);
-
-            // 攻击碰撞体
-            _attackMachine.LogicUpdate(
-                _currentAction,
-                _logicalProgressSeconds,
-                _entityId);
+            _displacementDriver.Evaluate(actionState);
+            _rotationDriver.Evaluate(actionState, tickDeltaSeconds);
+            _attackMachine.LogicUpdate(actionState, _entityId);
         }
 
         /// <inheritdoc/>
         public void RenderUpdate(float deltaTimeSeconds)
         {
             _animationDriver.Evaluate(
-                _currentAction,
-                _logicalProgressSeconds,
+                _actionModel.CurrentState,
                 deltaTimeSeconds);
         }
 
         /// <inheritdoc/>
         public void ReceiveHit(int damage)
         {
-            _runtime.Fact = _runtime.Fact.MarkHit();
+            _actionModel.ReceiveHit(damage);
         }
 
         /// <summary>
@@ -162,16 +130,7 @@ namespace GamePlay.Character
         /// </summary>
         public void WriteRuntimeData(InputCharacterData inputCharacterData)
         {
-            _runtime.Intention = inputCharacterData.Intention;
-            _runtime.MoveDirection = inputCharacterData.MoveInput;
-        }
-
-        private void OnDestroy()
-        {
-            if (_animationDriver != null)
-            {
-                _animationDriver.Dispose();
-            }
+            _actionModel.WriteRuntimeData(inputCharacterData);
         }
     }
 }
