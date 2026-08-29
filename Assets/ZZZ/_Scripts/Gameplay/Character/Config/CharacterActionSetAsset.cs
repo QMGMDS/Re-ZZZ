@@ -73,6 +73,30 @@ namespace GamePlay.Character
             for (int index = 0; index < _actions.Count; index++)
             {
                 CharacterActionAsset action = _actions[index];
+
+                if (float.IsNaN(action.AttackStartSeconds)
+                    || float.IsInfinity(action.AttackStartSeconds)
+                    || float.IsNaN(action.AttackEndSeconds)
+                    || float.IsInfinity(action.AttackEndSeconds)
+                    || action.AttackStartSeconds < 0f
+                    || action.AttackEndSeconds < 0f)
+                {
+                    throw new InvalidOperationException(
+                        $"[{name}] 动作 {action.Id} 的攻击时间必须是大于等于零的有限秒数");
+                }
+
+                if (action.AttackStartSeconds > action.AttackEndSeconds)
+                {
+                    throw new InvalidOperationException(
+                        $"[{name}] 动作 {action.Id} 的攻击开始时间不能晚于攻击结束时间");
+                }
+
+                if (action.AttackEndSeconds > action.DurationSeconds)
+                {
+                    throw new InvalidOperationException(
+                        $"[{name}] 动作 {action.Id} 的攻击结束时间不能晚于动作时长");
+                }
+
                 builtActionsById.Add(action.Id, action);
                 actionOrderById.Add(action.Id, index);
             }

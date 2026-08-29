@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 
 using GamePlay.Character.Contract;
+using GamePlay.Collider;
 using SPFramework;
 
 namespace GamePlay.Character
@@ -24,6 +25,8 @@ namespace GamePlay.Character
         private CharacterInfoAsset _characterInfoAsset;
         [SerializeField, Tooltip("本角色的动作资产集合")]
         private CharacterActionSetAsset _actionSet;
+        [SerializeField, Tooltip("本角色的攻击碰撞体")]
+        private ColliderController _attackCollider;
 
         private ICharacterModule _characterModule;
 
@@ -42,6 +45,8 @@ namespace GamePlay.Character
         private CharacterRotationDriver _rotationDriver;
         // 动画驱动器
         private CharacterAnimationDriver _animationDriver;
+        // 攻击机器
+        private CharacterAttackMachine _attackMachine;
 
         // 当前动作
         private CharacterActionAsset _currentAction;
@@ -53,9 +58,11 @@ namespace GamePlay.Character
             _animator = GetComponent<Animator>();
 
             if (_characterInfoAsset == null
-                || _actionSet == null)
+                || _actionSet == null
+                || _attackCollider == null)
             {
-                throw new InvalidOperationException("检查配置");
+                throw new InvalidOperationException(
+                    "检查角色信息资产 动作资产集合和攻击碰撞体配置");
             }
 
             _runtime = new CharacterInfoRuntime(_characterInfoAsset);
@@ -68,6 +75,7 @@ namespace GamePlay.Character
             _displacementDriver = new CharacterDisplacementDriver(_characterController);
             _rotationDriver = new CharacterRotationDriver(transform);
             _animationDriver = new CharacterAnimationDriver(_animator, linksBySourceActionId);
+            _attackMachine = new CharacterAttackMachine(_attackCollider);
 
             // 默认动作
             _currentAction = _actionSet.DefaultAction;
@@ -87,6 +95,7 @@ namespace GamePlay.Character
 
         private void OnDisable()
         {
+            _attackMachine.CloseIfOpen();
             _characterModule.Unregister(this);
             _characterModule = null;
         }
@@ -119,6 +128,12 @@ namespace GamePlay.Character
                 _currentAction,
                 _runtime.MoveDirection,
                 tickDeltaSeconds);
+
+            // 攻击碰撞体
+            _attackMachine.LogicUpdate(
+                _currentAction,
+                _logicalProgressSeconds,
+                _entityId);
         }
 
         /// <inheritdoc/>
