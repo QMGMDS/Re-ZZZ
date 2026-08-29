@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -21,6 +22,7 @@ namespace GamePlay.Collider
 
         private UnityEngine.Collider _collider;
         private UnityEngine.Collider[] _overlapResults;
+        private readonly HashSet<int> _hitTargetEntityIds = new HashSet<int>();
 
         private IColliderModule _colliderModule;
         private int _ownerEntityId = INVALID_ENTITY_ID;
@@ -77,6 +79,7 @@ namespace GamePlay.Collider
             colliderModule.Register(this);
             _colliderModule = colliderModule;
             _ownerEntityId = entityId;
+            _hitTargetEntityIds.Clear();
             _isAttackColliderOpen = true;
             _collider.enabled = true;
         }
@@ -93,6 +96,7 @@ namespace GamePlay.Collider
             _colliderModule.Unregister(this);
             _colliderModule = null;
             _ownerEntityId = INVALID_ENTITY_ID;
+            _hitTargetEntityIds.Clear();
             _isAttackColliderOpen = false;
         }
 
@@ -111,8 +115,11 @@ namespace GamePlay.Collider
             {
                 UnityEngine.Collider candidate = _overlapResults[index];
 
-                // 自身碰撞体或 Trigger 排除
-                if (candidate == _collider || candidate.isTrigger)
+                // 自身碰撞体 Trigger 或失活碰撞体排除
+                if (candidate == _collider
+                    || candidate.isTrigger
+                    || !candidate.enabled
+                    || !candidate.gameObject.activeInHierarchy)
                 {
                     continue;
                 }
@@ -130,7 +137,14 @@ namespace GamePlay.Collider
                     CharacterActionController target =
                         candidate.GetComponentInParent<CharacterActionController>();
 
-                    if (target == null)
+                    if (target == null
+                        || !target.isActiveAndEnabled
+                        || target.EntityId == _ownerEntityId)
+                    {
+                        continue;
+                    }
+
+                    if (!_hitTargetEntityIds.Add(target.EntityId))
                     {
                         continue;
                     }

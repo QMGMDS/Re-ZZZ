@@ -1,5 +1,3 @@
-using System;
-
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -26,17 +24,9 @@ namespace GamePlay.Root
     [DefaultExecutionOrder(-10000)]
     public sealed class GameEntry : MonoBehaviour
     {
-        // 游戏世界逻辑更新帧
-        private const int GAME_LOGIC_TICK_RATE = 120;
-        // 游戏世界逻辑帧的最大补偿
-        private const int MAX_LOGIC_TICKS_PER_HOST_FRAME = 1;
-
         [Header("渲染设置")]
         [SerializeField, Tooltip("选择渲染帧率")]
         private GameRenderFrameRate _renderFrameRate = GameRenderFrameRate.Fps120;
-
-        // 固定步长时钟 - 游戏世界逻辑更新时钟
-        private FixedStepClock _fixedStepClock;
 
         private SceneModule _sceneModule;
         private CharacterModule _characterModule;
@@ -47,11 +37,10 @@ namespace GamePlay.Root
         {
             DontDestroyOnLoad(gameObject);
 
-            _fixedStepClock = new FixedStepClock(
-                GAME_LOGIC_TICK_RATE,
-                MAX_LOGIC_TICKS_PER_HOST_FRAME);
+            // SetRenderFrameRate(_renderFrameRate);
 
-            SetRenderFrameRate(_renderFrameRate);
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = -1;
 
             _sceneModule = new SceneModule();
             ServiceHub.Register<ISceneModule>(_sceneModule);
@@ -75,22 +64,22 @@ namespace GamePlay.Root
                 inputData.Capture(elapsedSeconds);
             }
 
-            _fixedStepClock.Advance(elapsedSeconds, ExecuteFixedTick);
+            ExecuteLogicUpdate(elapsedSeconds);
         }
 
         /// <summary>
-        /// 游戏世界逻辑更新
+        /// 游戏世界逻辑逐帧更新
         /// </summary>
-        /// <param name="logicalTimeSeconds">当前逻辑时间 单位为秒</param>
-        private void ExecuteFixedTick(float logicalTimeSeconds)
+        /// <param name="elapsedSeconds">本帧经过的时间 单位为秒</param>
+        private void ExecuteLogicUpdate(float elapsedSeconds)
         {
             if (ServiceHub.TryGet<IPlayerInputRouter>(out IPlayerInputRouter playerInputRouter))
             {
-                playerInputRouter.LogicUpdate(logicalTimeSeconds);
+                playerInputRouter.LogicUpdate(elapsedSeconds);
             }
 
-            _characterModule.LogicUpdate(_fixedStepClock.FixedStepSeconds);
-            _colliderModule.LogicUpdate(_fixedStepClock.FixedStepSeconds);
+            _characterModule.LogicUpdate(elapsedSeconds);
+            _colliderModule.LogicUpdate(elapsedSeconds);
         }
 
         private void LateUpdate()
@@ -111,7 +100,7 @@ namespace GamePlay.Root
         {
             _renderFrameRate = renderFrameRate;
             QualitySettings.vSyncCount = 0;
-            Application.targetFrameRate = GAME_LOGIC_TICK_RATE;
+            Application.targetFrameRate = (int)GameRenderFrameRate.Fps120;
             OnDemandRendering.renderFrameInterval = renderFrameRate == GameRenderFrameRate.Fps60 ? 2 : 1;
         }
 
