@@ -19,15 +19,18 @@ namespace GamePlay.Character
         }
 
         /// <summary>
-        /// 返回当前动作出边中优先级最高且满足全部条件的目标动作资产
+        /// 返回当前动作出边中优先级最高且满足全部条件的目标动作资产及其链接
         /// 无匹配动作时返回 null
         /// </summary>
         public CharacterActionAsset TrySwitch(
             string currentActionId,
             float currentActionProgress,
             in CharacterIntention intention,
-            in CharacterFact fact)
+            in CharacterFact fact,
+            out CharacterActionLink selectedLink)
         {
+            selectedLink = default;
+
             if (!_linksBySourceActionId.TryGetValue(currentActionId, out IReadOnlyList<CharacterActionLink> outgoingLinks))
             {
                 return null;
@@ -50,10 +53,12 @@ namespace GamePlay.Character
                     && Matches(link.RequiredIntention.Evade, intention.Evade)
                     && Matches(link.RequiredIntention.Skill, intention.Skill)
                     && Matches(link.RequiredIntention.Ultimate, intention.Ultimate)
-                    && Matches(link.RequiredIntention.Switch, intention.Switch)
                     && Matches(link.RequiredFact.Death, fact.Death)
-                    && Matches(link.RequiredFact.Hit, fact.Hit))
+                    && Matches(link.RequiredFact.Hit, fact.Hit)
+                    && Matches(link.RequiredFact.SwitchIn, fact.SwitchIn)
+                    && Matches(link.RequiredFact.SwitchOut, fact.SwitchOut))
                 {
+                    selectedLink = link;
                     return _actionsById[link.ToActionId];
                 }
             }

@@ -6,9 +6,10 @@
       "source": "git",
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.0.2",
-        "com.unity.timeline": "1.7.7"
+        "com.unity.timeline": "1.7.7",
+        "com.unity.ugui": "1.0.0"
       },
-      "hash": "77d29a3aa9df97a1820b8e3645c728fe8eed6fe0"
+      "hash": "d2657e944699ec26058e2e5530ad114d1c7221a4"
     },
     "com.unity.burst": {
       "version": "1.8.21",

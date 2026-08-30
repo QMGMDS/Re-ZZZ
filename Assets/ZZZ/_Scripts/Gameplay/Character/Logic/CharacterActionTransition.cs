@@ -9,6 +9,7 @@ namespace GamePlay.Character
     /// </summary>
     public sealed class CharacterActionTransition
     {
+        private readonly CharacterActionAsset _defaultAction;
         private CharacterActionAsset _currentAction;
         private float _elapsedSeconds;
 
@@ -22,7 +23,16 @@ namespace GamePlay.Character
                 throw new ArgumentNullException(nameof(defaultAction));
             }
 
+            _defaultAction = defaultAction;
             _currentAction = defaultAction;
+        }
+
+        /// <summary>
+        /// 重置到动作集合默认动作
+        /// </summary>
+        public void ResetToDefaultAction()
+        {
+            StartAction(_defaultAction);
         }
 
         /// <summary>

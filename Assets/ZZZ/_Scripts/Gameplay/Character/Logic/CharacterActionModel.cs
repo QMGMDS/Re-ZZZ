@@ -26,12 +26,9 @@ namespace GamePlay.Character
             IReadOnlyDictionary<string, CharacterActionAsset> actionsById,
             IReadOnlyDictionary<string, IReadOnlyList<CharacterActionLink>> linksBySourceActionId)
         {
-            if (characterInfoAsset == null || defaultAction == null)
+            if (defaultAction == null)
             {
-                throw new ArgumentNullException(
-                    characterInfoAsset == null
-                        ? nameof(characterInfoAsset)
-                        : nameof(defaultAction));
+                throw new ArgumentNullException(nameof(defaultAction));
             }
 
             if (actionsById == null || linksBySourceActionId == null)
@@ -73,6 +70,38 @@ namespace GamePlay.Character
         }
 
         /// <summary>
+        /// 重置动作模型到动作集合默认动作
+        /// </summary>
+        public void ResetToDefaultAction()
+        {
+            _transition.ResetToDefaultAction();
+            _directionModel.Reset();
+            _currentState = new CharacterActionState(
+                _transition.CurrentAction,
+                _transition.LogicalProgressSeconds,
+                Vector3.zero,
+                _transition.CurrentAction.DirectionMode,
+                false,
+                false);
+        }
+
+        /// <summary>
+        /// 写入角色上场事实
+        /// </summary>
+        public void RequestSwitchIn()
+        {
+            _runtime.Fact = _runtime.Fact.MarkSwitchIn();
+        }
+
+        /// <summary>
+        /// 写入角色下场事实
+        /// </summary>
+        public void RequestSwitchOut()
+        {
+            _runtime.Fact = _runtime.Fact.MarkSwitchOut();
+        }
+
+        /// <summary>
         /// 推进一次角色动作逻辑 Tick
         /// </summary>
         public CharacterActionState LogicUpdate(
@@ -83,16 +112,36 @@ namespace GamePlay.Character
             float currentActionProgress = _transition.GetNormalizedProgress();
             bool hitReceived = fact.Hit == Trilean.True;
 
+            CharacterActionLink selectedLink;
             CharacterActionAsset targetAction = _arbiter.TrySwitch(
                 _transition.CurrentAction.Id,
                 currentActionProgress,
                 _runtime.Intention,
-                fact);
+                fact,
+                out selectedLink);
 
             if (hitReceived)
             {
-                _runtime.Fact = fact.ConsumeHit();
+                fact = fact.ConsumeHit();
             }
+
+            bool switchInSelected = targetAction != null
+                && fact.SwitchIn == Trilean.True
+                && selectedLink.RequiredFact.SwitchIn == Trilean.True;
+            if (switchInSelected)
+            {
+                fact = fact.ConsumeSwitchIn();
+            }
+
+            bool switchOutSelected = targetAction != null
+                && fact.SwitchOut == Trilean.True
+                && selectedLink.RequiredFact.SwitchOut == Trilean.True;
+            if (switchOutSelected)
+            {
+                fact = fact.ConsumeSwitchOut();
+            }
+
+            _runtime.Fact = fact;
 
             bool restartCurrentAction =
                 hitReceived

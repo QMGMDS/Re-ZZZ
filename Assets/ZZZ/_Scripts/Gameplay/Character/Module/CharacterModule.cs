@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 
 using GamePlay.Character.Contract;
-using UnityEngine;
 
 namespace GamePlay.Character
 {
@@ -12,6 +11,8 @@ namespace GamePlay.Character
     public sealed class CharacterModule : ICharacterModule
     {
         private readonly List<ICharacterUpdateTarget> _targets =
+            new List<ICharacterUpdateTarget>();
+        private readonly List<ICharacterUpdateTarget> _logicUpdateTargets =
             new List<ICharacterUpdateTarget>();
         private readonly Dictionary<ICharacterUpdateTarget, int> _entityIdsByTarget =
             new Dictionary<ICharacterUpdateTarget, int>();
@@ -95,9 +96,16 @@ namespace GamePlay.Character
         /// <inheritdoc/>
         public void LogicUpdate(float tickDeltaSeconds)
         {
-            for (int index = 0; index < _targets.Count; index++)
+            _logicUpdateTargets.Clear();
+            _logicUpdateTargets.AddRange(_targets);
+
+            for (int index = 0; index < _logicUpdateTargets.Count; index++)
             {
-                _targets[index].LogicUpdate(tickDeltaSeconds);
+                ICharacterUpdateTarget target = _logicUpdateTargets[index];
+                if (_entityIdsByTarget.ContainsKey(target))
+                {
+                    target.LogicUpdate(tickDeltaSeconds);
+                }
             }
         }
 

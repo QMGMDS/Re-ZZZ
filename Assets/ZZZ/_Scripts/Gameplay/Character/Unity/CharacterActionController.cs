@@ -159,13 +159,30 @@ namespace GamePlay.Character
         /// <inheritdoc/>
         public void EnterField()
         {
-            Debug.Log($"{name} 上场", this);
+            _actionModel.ResetToDefaultAction();
+            _animationDriver.ResetToAction(_actionSet.DefaultAction);
+            gameObject.SetActive(true);
+            _actionModel.RequestSwitchIn();
         }
 
         /// <inheritdoc/>
         public void ExitField()
         {
-            Debug.Log($"{name} 退场", this);
+            _actionModel.RequestSwitchOut();
+        }
+
+        /// <summary>
+        /// 由动画事件触发角色失活
+        /// </summary>
+        public void Deactivate()
+        {
+            gameObject.SetActive(false);
+        }
+
+        /// <inheritdoc/>
+        public void InitializeInactive()
+        {
+            Deactivate();
         }
     }
 }

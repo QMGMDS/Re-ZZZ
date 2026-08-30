@@ -43,10 +43,13 @@ namespace GamePlay.Character
                 ToTrilean(characterInputData.Attack),
                 ToTrilean(characterInputData.Evade),
                 ToTrilean(characterInputData.Skill),
-                ToTrilean(characterInputData.Ultimate),
-                ToTrilean(characterInputData.Switch));
+                ToTrilean(characterInputData.Ultimate));
 
-            return new InputCharacterData(logicalTimeSeconds, intention, worldMove);
+            return new InputCharacterData(
+                logicalTimeSeconds,
+                intention,
+                worldMove,
+                characterInputData.Switch);
         }
 
         private static Trilean ToTrilean(bool value)

@@ -16,12 +16,19 @@ namespace GamePlay.Character
         public CharacterIntention Intention { get; }
         // 传入的移动输入
         public Vector2 MoveInput { get; }
+        // 传入的队伍切换输入
+        public bool Switch { get; }
 
-        public InputCharacterData(float logicalTime, CharacterIntention intention, Vector2 moveInput)
+        public InputCharacterData(
+            float logicalTime,
+            CharacterIntention intention,
+            Vector2 moveInput,
+            bool switchInput)
         {
             LogicalTime = logicalTime;
             Intention = intention;
             MoveInput = moveInput;
+            Switch = switchInput;
         }
     }
 }

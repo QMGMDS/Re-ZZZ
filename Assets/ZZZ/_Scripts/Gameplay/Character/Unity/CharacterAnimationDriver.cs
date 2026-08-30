@@ -50,6 +50,40 @@ namespace GamePlay.Character
         }
 
         /// <summary>
+        /// 重置动画驱动器到指定动作
+        /// </summary>
+        public void ResetToAction(CharacterActionAsset action)
+        {
+            if (action == null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+
+            if (_isTransitioning)
+            {
+                CompleteTransition();
+            }
+
+            for (int index = 0; index < _sources.Count; index++)
+            {
+                AnimationSource source = _sources[index];
+                _graph.Disconnect(_mixer, source._inputIndex);
+                _graph.DestroyPlayable(source._playable);
+            }
+
+            _sources.Clear();
+            _mixer.SetInputCount(0);
+            _currentAction = null;
+            _currentSource = null;
+            _previousLogicalProgressSeconds = 0f;
+            _transitionElapsedSeconds = 0f;
+            _transitionDurationSeconds = 0f;
+            _isTransitioning = false;
+
+            BindFirstAction(action);
+        }
+
+        /// <summary>
         /// 将当前动作采样到指定的逻辑秒数，并独立推进旧动画及动画混合
         /// </summary>
         public void Evaluate(CharacterActionState actionState, float deltaTime)

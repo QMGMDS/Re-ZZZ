@@ -17,6 +17,7 @@ namespace GamePlay.Team
             new List<ITeamCharacter>();
 
         private ITeamCharacter _activeCharacter;
+        private bool _fieldStatesInitialized;
 
         /// <inheritdoc/>
         public void Register(ITeamCharacter character)
@@ -36,6 +37,12 @@ namespace GamePlay.Team
             if (_activeCharacter == null)
             {
                 _activeCharacter = character;
+            }
+
+            if (_fieldStatesInitialized
+                && !ReferenceEquals(_activeCharacter, character))
+            {
+                character.InitializeInactive();
             }
         }
 
@@ -68,6 +75,8 @@ namespace GamePlay.Team
         /// <param name="logicalTimeSeconds">当前逻辑时间 单位为秒</param>
         public void LogicUpdate(float logicalTimeSeconds)
         {
+            InitializeInactiveCharacters();
+
             if (!ServiceHub.TryGet<IPlayerInputRouter>(
                     out IPlayerInputRouter playerInputRouter))
             {
@@ -82,13 +91,31 @@ namespace GamePlay.Team
                 return;
             }
 
-            if (inputCharacterData.Intention.Switch == Trilean.True)
+            if (inputCharacterData.Switch)
             {
                 SwitchActiveCharacter();
-                inputCharacterData = ClearSwitchInput(inputCharacterData);
             }
 
             _activeCharacter.ReceivePlayerInput(inputCharacterData);
+        }
+
+        private void InitializeInactiveCharacters()
+        {
+            if (_fieldStatesInitialized || _characters.Count == 0)
+            {
+                return;
+            }
+
+            for (int index = 0; index < _characters.Count; index++)
+            {
+                ITeamCharacter character = _characters[index];
+                if (!ReferenceEquals(_activeCharacter, character))
+                {
+                    character.InitializeInactive();
+                }
+            }
+
+            _fieldStatesInitialized = true;
         }
 
         private void SwitchActiveCharacter()
@@ -105,24 +132,6 @@ namespace GamePlay.Team
             _activeCharacter.ExitField();
             _activeCharacter = targetCharacter;
             _activeCharacter.EnterField();
-        }
-
-        private static InputCharacterData ClearSwitchInput(
-            InputCharacterData inputCharacterData)
-        {
-            CharacterIntention intention = inputCharacterData.Intention;
-            CharacterIntention intentionWithoutSwitch = new CharacterIntention(
-                intention.Move,
-                intention.Attack,
-                intention.Evade,
-                intention.Skill,
-                intention.Ultimate,
-                Trilean.False);
-
-            return new InputCharacterData(
-                inputCharacterData.LogicalTime,
-                intentionWithoutSwitch,
-                inputCharacterData.MoveInput);
         }
     }
 }

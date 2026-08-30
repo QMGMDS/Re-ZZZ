@@ -18,6 +18,17 @@ namespace GamePlay.Character
         public bool DirectionStarted { get; private set; }
 
         /// <summary>
+        /// 重置动作方向状态
+        /// </summary>
+        public void Reset()
+        {
+            _currentWorldDirection = Vector3.forward;
+            _currentDirectionMode = default;
+            DirectionStarted = false;
+            _hasCurrentWorldDirection = false;
+        }
+
+        /// <summary>
         /// 根据动作方向模式更新当前世界方向
         /// </summary>
         public void Evaluate(

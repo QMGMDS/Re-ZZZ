@@ -1,5 +1,3 @@
-using System;
-
 using UnityEngine;
 
 namespace GamePlay.Character
@@ -18,17 +16,15 @@ namespace GamePlay.Character
 
         public CharacterInfoRuntime(CharacterInfoAsset characterInfoAsset)
         {
-            if (characterInfoAsset == null)
-            {
-                throw new ArgumentNullException(nameof(characterInfoAsset));
-            }
-
             BaseHp = characterInfoAsset.BaseHp;
             BaseAtk = characterInfoAsset.BaseAtk;
             Faction = characterInfoAsset.Faction;
-            Fact = new CharacterFact(Trilean.False, Trilean.False);
-            Intention = new CharacterIntention(
+            Fact = new CharacterFact(
                 Trilean.False,
+                Trilean.False,
+                Trilean.False,
+                Trilean.False);
+            Intention = new CharacterIntention(
                 Trilean.False,
                 Trilean.False,
                 Trilean.False,
