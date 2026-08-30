@@ -25,6 +25,7 @@ namespace GamePlay.Root
     public sealed class GameEntry : MonoBehaviour
     {
         private SceneModule _sceneModule;
+        private EventBus _eventBus;
         private CharacterModule _characterModule;
         private TeamModule _teamModule;
         private CombatModule _combatModule;
@@ -38,6 +39,9 @@ namespace GamePlay.Root
 
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = -1;
+
+            _eventBus = new EventBus();
+            ServiceHub.Register<IEventBus>(_eventBus);
 
             _sceneModule = new SceneModule();
             ServiceHub.Register<ISceneModule>(_sceneModule);
@@ -113,6 +117,9 @@ namespace GamePlay.Root
             }
 
             _sceneModule.Dispose();
+
+            _eventBus.Dispose();
+            ServiceHub.Unregister<IEventBus>(_eventBus);
 
             ServiceHub.Unregister<ICameraModule>(_cameraModule);
             ServiceHub.Unregister<IColliderModule>(_colliderModule);
