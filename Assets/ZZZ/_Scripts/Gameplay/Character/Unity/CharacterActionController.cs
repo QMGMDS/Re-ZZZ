@@ -36,6 +36,7 @@ namespace GamePlay.Character
 
         private int _entityId;
 
+        /// <inheritdoc/>
         public int EntityId => _entityId;
 
         // 动作逻辑模型
@@ -77,12 +78,21 @@ namespace GamePlay.Character
             _attackMachine = new CharacterAttackMachine(_attackCollider);
         }
 
+        private void Start()
+        {
+            if (!ServiceHub.TryGet<ITeamModule>(out ITeamModule teamModule))
+            {
+                throw new InvalidOperationException($"{nameof(ITeamModule)} 未注册 不能启动 {nameof(CharacterActionController)}");
+            }
+
+            _teamModule = teamModule;
+        }
+
         private void OnEnable()
         {
             if (!ServiceHub.TryGet<ICharacterModule>(out ICharacterModule characterModule))
             {
-                throw new InvalidOperationException(
-                    $"{nameof(ICharacterModule)} 未注册 不能启用 {nameof(CharacterActionController)}");
+                throw new InvalidOperationException($"{nameof(ICharacterModule)} 未注册 不能启用 {nameof(CharacterActionController)}");
             }
 
             _entityId = characterModule.Register(this, this, _actionModel.Runtime);
@@ -91,31 +101,20 @@ namespace GamePlay.Character
 
         private void OnDisable()
         {
-            _attackMachine.CloseIfOpen();
-            _characterModule.Unregister(this);
-            _characterModule = null;
-        }
-
-        private void Start()
-        {
-            if (!ServiceHub.TryGet<ITeamModule>(out ITeamModule teamModule))
+            if (_attackMachine != null)
             {
-                throw new InvalidOperationException(
-                    $"{nameof(ITeamModule)} 未注册 不能注册 {nameof(CharacterActionController)}");
+                _attackMachine.CloseIfOpen();
             }
 
-            teamModule.Register(this);
-            _teamModule = teamModule;
+            if (_characterModule != null)
+            {
+                _characterModule.Unregister(this);
+                _characterModule = null;
+            }
         }
 
         private void OnDestroy()
         {
-            if (_teamModule != null)
-            {
-                _teamModule.Unregister(this);
-                _teamModule = null;
-            }
-
             if (_animationDriver != null)
             {
                 _animationDriver.Dispose();
@@ -125,9 +124,7 @@ namespace GamePlay.Character
         /// <inheritdoc/>
         public void LogicUpdate(float tickDeltaSeconds)
         {
-            CharacterActionState actionState = _actionModel.LogicUpdate(
-                tickDeltaSeconds,
-                transform.forward);
+            CharacterActionState actionState = _actionModel.LogicUpdate(tickDeltaSeconds, transform.forward);
 
             _displacementDriver.Evaluate(actionState);
             _rotationDriver.Evaluate(actionState, tickDeltaSeconds);
@@ -137,9 +134,7 @@ namespace GamePlay.Character
         /// <inheritdoc/>
         public void RenderUpdate(float deltaTimeSeconds)
         {
-            _animationDriver.Evaluate(
-                _actionModel.CurrentState,
-                deltaTimeSeconds);
+            _animationDriver.Evaluate(_actionModel.CurrentState, deltaTimeSeconds);
         }
 
         /// <inheritdoc/>
@@ -154,21 +149,27 @@ namespace GamePlay.Character
         public void ReceivePlayerInput(InputCharacterData inputCharacterData)
         {
             _actionModel.WriteRuntimeData(inputCharacterData);
+
+            if (!inputCharacterData.Switch)
+            {
+                return;
+            }
+
+            if (!_teamModule.TryRequestSwitch(this))
+            {
+                return;
+            }
+
+            _actionModel.RequestSwitchOut();
         }
 
         /// <inheritdoc/>
         public void EnterField()
         {
+            gameObject.SetActive(true);
             _actionModel.ResetToDefaultAction();
             _animationDriver.ResetToAction(_actionSet.DefaultAction);
-            gameObject.SetActive(true);
             _actionModel.RequestSwitchIn();
-        }
-
-        /// <inheritdoc/>
-        public void ExitField()
-        {
-            _actionModel.RequestSwitchOut();
         }
 
         /// <summary>
@@ -176,13 +177,9 @@ namespace GamePlay.Character
         /// </summary>
         public void Deactivate()
         {
+            _actionModel.ResetToDefaultAction();
+            _animationDriver.ResetToAction(_actionSet.DefaultAction);
             gameObject.SetActive(false);
-        }
-
-        /// <inheritdoc/>
-        public void InitializeInactive()
-        {
-            Deactivate();
         }
     }
 }

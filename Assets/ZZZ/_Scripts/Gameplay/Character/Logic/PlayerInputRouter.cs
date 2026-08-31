@@ -3,16 +3,15 @@ using System;
 using UnityEngine;
 
 using GamePlay.Camera.Contract;
-using GamePlay.Character.Contract;
 using GamePlay.Input;
 using GamePlay.Input.Contract;
 
 namespace GamePlay.Character
 {
     /// <summary>
-    /// 玩家输入调度器
+    /// 玩家输入翻译器
     /// </summary>
-    public sealed class PlayerInputRouter : IPlayerInputRouter
+    public sealed class PlayerInputRouter
     {
         private readonly IIputData _inputData;
         private readonly ICameraService _cameraService;

@@ -1,0 +1,156 @@
+using System;
+
+using UnityEngine;
+
+using GamePlay.Team.Contract;
+using SPFramework;
+
+namespace GamePlay.Team
+{
+    /// <summary>
+    /// 玩家队伍控制器
+    /// </summary>
+    [DisallowMultipleComponent]
+    [DefaultExecutionOrder(100)]
+    public sealed class TeamController : MonoBehaviour, ITeamModule
+    {
+        [Header("队伍配置")]
+        [SerializeField, Tooltip("按切换顺序配置场景中的玩家角色组件")]
+        private MonoBehaviour[] _characters;
+
+        private IEventBus _eventBus;
+        private ITeamCharacter[] _teamCharacters;
+        private int _currentCharacterIndex;
+        private bool _isConfigured;
+        private bool _isServiceRegistered;
+
+        private void Awake()
+        {
+            if (!ServiceHub.TryGet<IEventBus>(out IEventBus eventBus))
+            {
+                throw new InvalidOperationException($"{nameof(IEventBus)} 未注册 不能初始化 {nameof(TeamController)}");
+            }
+
+            _eventBus = eventBus;
+            _teamCharacters = BuildCharacters();
+            _currentCharacterIndex = 0;
+            _isConfigured = true;
+
+            _teamCharacters[_currentCharacterIndex].EnterField();
+
+            ServiceHub.Register<ITeamModule>(this);
+            _isServiceRegistered = true;
+        }
+
+        /// <inheritdoc/>
+        public ITeamCharacter CurrentCharacter
+        {
+            get
+            {
+                EnsureConfigured();
+                return _teamCharacters[_currentCharacterIndex];
+            }
+        }
+
+        /// <inheritdoc/>
+        public bool TryRequestSwitch(ITeamCharacter requester)
+        {
+            EnsureConfigured();
+
+            if (requester == null
+                || !ReferenceEquals(requester, _teamCharacters[_currentCharacterIndex])
+                || _teamCharacters.Length < 2)
+            {
+                return false;
+            }
+
+            int targetCharacterIndex =
+                (_currentCharacterIndex + 1) % _teamCharacters.Length;
+            ITeamCharacter targetCharacter = _teamCharacters[targetCharacterIndex];
+
+            targetCharacter.EnterField();
+            _currentCharacterIndex = targetCharacterIndex;
+
+            TeamReadOnlyInfo teamInfo = CreateReadOnlyInfo();
+
+            _eventBus.Publish(new TeamCharacterSwitchedEvent(teamInfo));
+            return true;
+        }
+
+        private ITeamCharacter[] BuildCharacters()
+        {
+            if (_characters == null || _characters.Length == 0)
+            {
+                throw new InvalidOperationException($"{nameof(TeamController)} 必须配置至少一个场景角色");
+            }
+
+            ITeamCharacter[] characters = new ITeamCharacter[_characters.Length];
+
+            for (int index = 0; index < _characters.Length; index++)
+            {
+                MonoBehaviour configuredCharacter = _characters[index];
+
+                if (configuredCharacter == null)
+                {
+                    throw new InvalidOperationException(
+                        $"{nameof(TeamController)} 的角色列表第 {index} 项未配置");
+                }
+
+                if (!(configuredCharacter is ITeamCharacter teamCharacter))
+                {
+                    throw new InvalidOperationException(
+                        $"{nameof(TeamController)} 的角色列表第 {index} 项必须实现 {nameof(ITeamCharacter)}");
+                }
+
+                for (int previousIndex = 0; previousIndex < index; previousIndex++)
+                {
+                    if (ReferenceEquals(characters[previousIndex], teamCharacter))
+                    {
+                        throw new InvalidOperationException(
+                            $"{nameof(TeamController)} 的角色列表第 {index} 项与第 {previousIndex} 项重复");
+                    }
+                }
+
+                characters[index] = teamCharacter;
+            }
+
+            return characters;
+        }
+
+        private TeamReadOnlyInfo CreateReadOnlyInfo()
+        {
+            TeamCharacterReadOnlyInfo[] characters =
+                new TeamCharacterReadOnlyInfo[_teamCharacters.Length];
+
+            for (int index = 0; index < _teamCharacters.Length; index++)
+            {
+                characters[index] = new TeamCharacterReadOnlyInfo(
+                    _teamCharacters[index].EntityId,
+                    index,
+                    index == _currentCharacterIndex);
+            }
+
+            return new TeamReadOnlyInfo(characters, _currentCharacterIndex);
+        }
+
+        private void EnsureConfigured()
+        {
+            if (!_isConfigured)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(TeamController)} 尚未初始化");
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (!_isServiceRegistered)
+            {
+                return;
+            }
+
+            ServiceHub.Unregister<ITeamModule>(this);
+            _isServiceRegistered = false;
+        }
+    }
+}

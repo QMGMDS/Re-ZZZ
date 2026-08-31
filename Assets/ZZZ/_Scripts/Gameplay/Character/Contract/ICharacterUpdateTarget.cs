@@ -6,6 +6,11 @@ namespace GamePlay.Character.Contract
     public interface ICharacterUpdateTarget
     {
         /// <summary>
+        /// 角色实体编号
+        /// </summary>
+        int EntityId { get; }
+
+        /// <summary>
         /// 执行一次固定逻辑更新
         /// </summary>
         void LogicUpdate(float tickDeltaSeconds);

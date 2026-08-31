@@ -12,7 +12,6 @@ using GamePlay.Combat.Contract;
 using GamePlay.Collider;
 using GamePlay.Collider.Contract;
 using GamePlay.Input.Contract;
-using GamePlay.Team;
 using GamePlay.Team.Contract;
 using SPFramework;
 
@@ -27,7 +26,6 @@ namespace GamePlay.Root
         private SceneModule _sceneModule;
         private EventBus _eventBus;
         private CharacterModule _characterModule;
-        private TeamModule _teamModule;
         private CombatModule _combatModule;
         private ColliderModule _colliderModule;
         private CameraModule _cameraModule;
@@ -49,9 +47,6 @@ namespace GamePlay.Root
             _characterModule = new CharacterModule();
             ServiceHub.Register<ICharacterModule>(_characterModule);
 
-            _teamModule = new TeamModule();
-            ServiceHub.Register<ITeamModule>(_teamModule);
-
             _combatModule = new CombatModule(_characterModule);
             ServiceHub.Register<ICombatModule>(_combatModule);
 
@@ -62,6 +57,12 @@ namespace GamePlay.Root
             ServiceHub.Register<ICameraModule>(_cameraModule);
         }
 
+        private void Start()
+        {
+            _sceneModule.SceneLoaded += OnSceneLoaded;
+            _sceneModule.LoadScene(SceneNames.Gameplay);
+        }
+
         private void Update()
         {
             if (ServiceHub.TryGet<IIputData>(out IIputData inputData))
@@ -69,7 +70,12 @@ namespace GamePlay.Root
                 inputData.Capture(Time.deltaTime);
             }
 
-            _teamModule.LogicUpdate(Time.deltaTime);
+            if (_playerInputRouter != null && TryGetCurrentCharacter(out ITeamCharacter currentCharacter))
+            {
+                InputCharacterData inputCharacterData = _playerInputRouter.ConsumePlayerInput(Time.deltaTime);
+                currentCharacter.ReceivePlayerInput(inputCharacterData);
+            }
+
             _characterModule.LogicUpdate(Time.deltaTime);
             _colliderModule.LogicUpdate(Time.deltaTime);
         }
@@ -78,12 +84,6 @@ namespace GamePlay.Root
         {
             _characterModule.RenderUpdate(Time.deltaTime);
             _cameraModule.RenderUpdate(Time.deltaTime);
-        }
-
-        private void Start()
-        {
-            _sceneModule.SceneLoaded += OnSceneLoaded;
-            _sceneModule.LoadScene(SceneNames.Gameplay);
         }
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
@@ -99,23 +99,14 @@ namespace GamePlay.Root
                 || !ServiceHub.TryGet<ICameraService>(out ICameraService cameraService))
             {
                 throw new InvalidOperationException(
-                    $"{nameof(IIputData)} 和 {nameof(ICameraService)} 必须在 {nameof(SceneNames.Gameplay)} 场景加载后注册 请检查游戏主场景中的输入系统和摄像机对象");
+                    $"{nameof(IIputData)} 和 {nameof(ICameraService)} 必须在 {nameof(SceneNames.Gameplay)} 场景加载后注册");
             }
 
-            PlayerInputRouter playerInputRouter =
-                new PlayerInputRouter(inputData, cameraService);
-            ServiceHub.Register<IPlayerInputRouter>(playerInputRouter);
-            _playerInputRouter = playerInputRouter;
+            _playerInputRouter = new PlayerInputRouter(inputData, cameraService);
         }
 
         private void OnDestroy()
         {
-            if (_playerInputRouter != null)
-            {
-                ServiceHub.Unregister<IPlayerInputRouter>(_playerInputRouter);
-                _playerInputRouter = null;
-            }
-
             _sceneModule.Dispose();
 
             _eventBus.Dispose();
@@ -124,9 +115,23 @@ namespace GamePlay.Root
             ServiceHub.Unregister<ICameraModule>(_cameraModule);
             ServiceHub.Unregister<IColliderModule>(_colliderModule);
             ServiceHub.Unregister<ICombatModule>(_combatModule);
-            ServiceHub.Unregister<ITeamModule>(_teamModule);
             ServiceHub.Unregister<ICharacterModule>(_characterModule);
             ServiceHub.Unregister<ISceneModule>(_sceneModule);
+        }
+
+        /// <summary>
+        /// 尝试获取已配置队伍的当前角色
+        /// </summary>
+        private bool TryGetCurrentCharacter(out ITeamCharacter currentCharacter)
+        {
+            if (!ServiceHub.TryGet<ITeamModule>(out ITeamModule teamModule))
+            {
+                currentCharacter = null;
+                return false;
+            }
+
+            currentCharacter = teamModule.CurrentCharacter;
+            return true;
         }
     }
 }

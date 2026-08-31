@@ -8,15 +8,15 @@ namespace GamePlay.Team.Contract
     public interface ITeamModule : IService
     {
         /// <summary>
-        /// 注册一个角色进入队伍
+        /// 当前逻辑角色
         /// </summary>
-        /// <param name="character">申请进入队伍的角色</param>
-        void Register(ITeamCharacter character);
+        ITeamCharacter CurrentCharacter { get; }
 
         /// <summary>
-        /// 将一个角色从队伍中注销
+        /// 请求切换到队伍中的下一个角色
         /// </summary>
-        /// <param name="character">申请离开队伍的角色</param>
-        void Unregister(ITeamCharacter character);
+        /// <param name="requester">发起请求的当前角色</param>
+        /// <returns>是否接受切换请求</returns>
+        bool TryRequestSwitch(ITeamCharacter requester);
     }
 }
