@@ -18,7 +18,6 @@ namespace GamePlay.Team
         [SerializeField, Tooltip("按切换顺序配置场景中的玩家角色组件")]
         private MonoBehaviour[] _characters;
 
-        private IEventBus _eventBus;
         private ITeamCharacter[] _teamCharacters;
         private int _currentCharacterIndex;
         private bool _isConfigured;
@@ -26,12 +25,6 @@ namespace GamePlay.Team
 
         private void Awake()
         {
-            if (!ServiceHub.TryGet<IEventBus>(out IEventBus eventBus))
-            {
-                throw new InvalidOperationException($"{nameof(IEventBus)} 未注册 不能初始化 {nameof(TeamController)}");
-            }
-
-            _eventBus = eventBus;
             _teamCharacters = BuildCharacters();
             _currentCharacterIndex = 0;
             _isConfigured = true;
@@ -73,7 +66,7 @@ namespace GamePlay.Team
 
             TeamReadOnlyInfo teamInfo = CreateReadOnlyInfo();
 
-            _eventBus.Publish(new TeamCharacterSwitchedEvent(teamInfo));
+            EventBus.Publish(new TeamCharacterSwitchedEvent(teamInfo));
             return true;
         }
 

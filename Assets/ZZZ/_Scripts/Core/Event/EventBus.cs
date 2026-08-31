@@ -6,16 +6,21 @@ namespace SPFramework
     /// <summary>
     /// 运行时事实事件总线
     /// </summary>
-    public sealed class EventBus : IEventBus, IDisposable
+    public static class EventBus
     {
-        private readonly Dictionary<Type, IEventChannel> _channels = new Dictionary<Type, IEventChannel>();
+        private static readonly Dictionary<Type, IEventChannel> _channels = new Dictionary<Type, IEventChannel>();
 
-        private bool _isDisposed;
+        private static bool _isShutdown;
 
-        /// <inheritdoc/>
-        public IDisposable Subscribe<TEvent>(Action<TEvent> handler) where TEvent : struct, IEvent
+        /// <summary>
+        /// 订阅指定类型的事件
+        /// </summary>
+        /// <typeparam name="TEvent">事件类型</typeparam>
+        /// <param name="handler">事件处理器</param>
+        /// <returns>用于取消订阅的句柄</returns>
+        public static IDisposable Subscribe<TEvent>(Action<TEvent> handler) where TEvent : struct, IEvent
         {
-            EnsureNotDisposed();
+            EnsureNotShutdown();
 
             if (handler == null)
             {
@@ -35,14 +40,16 @@ namespace SPFramework
             return ((EventChannel<TEvent>)rawChannel).Subscribe(handler);
         }
 
-        /// <inheritdoc/>
-        public void Publish<TEvent>(TEvent eventData) where TEvent : struct, IEvent
+        /// <summary>
+        /// 发布指定类型的事件
+        /// </summary>
+        /// <typeparam name="TEvent">事件类型</typeparam>
+        /// <param name="eventData">事件数据</param>
+        public static void Publish<TEvent>(TEvent eventData) where TEvent : struct, IEvent
         {
-            EnsureNotDisposed();
+            EnsureNotShutdown();
 
-            if (!_channels.TryGetValue(
-                    typeof(TEvent),
-                    out IEventChannel rawChannel))
+            if (!_channels.TryGetValue(typeof(TEvent), out IEventChannel rawChannel))
             {
                 return;
             }
@@ -51,17 +58,30 @@ namespace SPFramework
         }
 
         /// <summary>
-        /// 销毁事件总线并清理全部订阅
+        /// 开启新的事件会话并清理全部订阅
         /// </summary>
-        public void Dispose()
+        public static void Reset()
         {
-            if (_isDisposed)
+            ClearChannels();
+            _isShutdown = false;
+        }
+
+        /// <summary>
+        /// 关闭事件总线并清理全部订阅
+        /// </summary>
+        public static void Shutdown()
+        {
+            if (_isShutdown)
             {
                 return;
             }
 
-            _isDisposed = true;
+            _isShutdown = true;
+            ClearChannels();
+        }
 
+        private static void ClearChannels()
+        {
             foreach (IEventChannel channel in _channels.Values)
             {
                 channel.Clear();
@@ -70,17 +90,17 @@ namespace SPFramework
             _channels.Clear();
         }
 
-        private void EnsureNotDisposed()
+        private static void EnsureNotShutdown()
         {
-            if (_isDisposed)
+            if (_isShutdown)
             {
                 throw new ObjectDisposedException(
                     nameof(EventBus),
-                    "事件总线已销毁 不能继续订阅或发布事件");
+                    "事件总线已关闭 不能继续订阅或发布事件");
             }
         }
 
-        private void RemoveChannel(Type eventType, IEventChannel channel)
+        private static void RemoveChannel(Type eventType, IEventChannel channel)
         {
             if (_channels.TryGetValue(eventType, out IEventChannel currentChannel)
                 && ReferenceEquals(currentChannel, channel))
@@ -94,8 +114,7 @@ namespace SPFramework
             void Clear();
         }
 
-        private sealed class EventChannel<TEvent> : IEventChannel
-            where TEvent : struct, IEvent
+        private sealed class EventChannel<TEvent> : IEventChannel where TEvent : struct, IEvent
         {
             private readonly Action<Type, IEventChannel> _removeChannel;
 
@@ -166,15 +185,12 @@ namespace SPFramework
             }
         }
 
-        private sealed class EventSubscription<TEvent> : IDisposable
-            where TEvent : struct, IEvent
+        private sealed class EventSubscription<TEvent> : IDisposable where TEvent : struct, IEvent
         {
             private EventChannel<TEvent> _channel;
             private Action<TEvent> _handler;
 
-            public EventSubscription(
-                EventChannel<TEvent> channel,
-                Action<TEvent> handler)
+            public EventSubscription(EventChannel<TEvent> channel, Action<TEvent> handler)
             {
                 _channel = channel;
                 _handler = handler;
