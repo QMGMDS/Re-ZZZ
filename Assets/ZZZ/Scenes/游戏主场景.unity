@@ -911,7 +911,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2067458732384291408, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3615966766429726052, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
       propertyPath: m_Height
@@ -1655,6 +1655,10 @@ PrefabInstance:
     - target: {fileID: 2067458732384291408, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
       propertyPath: m_Name
       value: Anbi
+      objectReference: {fileID: 0}
+    - target: {fileID: 2067458732384291408, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3615966766429726052, guid: 9750614e7783a7a4a8fd47284a302a9a, type: 3}
       propertyPath: m_Height

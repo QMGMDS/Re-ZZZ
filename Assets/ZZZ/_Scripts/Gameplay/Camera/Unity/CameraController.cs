@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 
 using GamePlay.Camera.Contract;
+using GamePlay.Team.Contract;
 using SPFramework;
 
 namespace GamePlay.Camera
@@ -26,6 +27,7 @@ namespace GamePlay.Camera
         private ObjectFollower _objectFollower;
         private bool _isModuleRegistered;
         private bool _isServiceRegistered;
+        private IDisposable _characterSwitchedSubscription;
 
         private void Awake()
         {
@@ -48,16 +50,18 @@ namespace GamePlay.Camera
 
             ServiceHub.Register<ICameraService>(this);
             _isServiceRegistered = true;
-        }
 
-        /// <inheritdoc/>
-        public void RenderUpdate(float deltaTimeSeconds)
-        {
-            _objectFollower.Follow(deltaTimeSeconds);
+            _characterSwitchedSubscription = EventBus.Subscribe<TeamCharacterSwitchedEvent>(OnCharacterSwitched);
         }
 
         private void OnDisable()
         {
+            if (_characterSwitchedSubscription != null)
+            {
+                _characterSwitchedSubscription.Dispose();
+                _characterSwitchedSubscription = null;
+            }
+
             if (_isServiceRegistered)
             {
                 ServiceHub.Unregister<ICameraService>(this);
@@ -69,6 +73,17 @@ namespace GamePlay.Camera
                 ServiceHub.Unregister<ICameraModule>(this);
                 _isModuleRegistered = false;
             }
+        }
+
+        private void OnCharacterSwitched(TeamCharacterSwitchedEvent eventData)
+        {
+            _objectFollower.SetTargetObject(eventData.CharacterTransform);
+        }
+
+        /// <inheritdoc/>
+        public void RenderUpdate(float deltaTimeSeconds)
+        {
+            _objectFollower.Follow(deltaTimeSeconds);
         }
 
         /// <inheritdoc/>

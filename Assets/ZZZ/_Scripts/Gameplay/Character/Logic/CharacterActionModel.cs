@@ -53,6 +53,22 @@ namespace GamePlay.Character
         }
 
         /// <summary>
+        /// 重置动作模型到动作集合默认动作
+        /// </summary>
+        public void ResetToDefaultAction()
+        {
+            _transition.ResetToDefaultAction();
+            _directionModel.Reset();
+            _currentState = new CharacterActionState(
+                _transition.CurrentAction,
+                _transition.LogicalProgressSeconds,
+                Vector3.zero,
+                _transition.CurrentAction.DirectionMode,
+                false,
+                false);
+        }
+
+        /// <summary>
         /// 写入角色本次逻辑 Tick 的输入数据
         /// </summary>
         public void WriteRuntimeData(InputCharacterData inputCharacterData)
@@ -67,22 +83,6 @@ namespace GamePlay.Character
         public void ReceiveHit(int damage)
         {
             _runtime.Fact = _runtime.Fact.MarkHit();
-        }
-
-        /// <summary>
-        /// 重置动作模型到动作集合默认动作
-        /// </summary>
-        public void ResetToDefaultAction()
-        {
-            _transition.ResetToDefaultAction();
-            _directionModel.Reset();
-            _currentState = new CharacterActionState(
-                _transition.CurrentAction,
-                _transition.LogicalProgressSeconds,
-                Vector3.zero,
-                _transition.CurrentAction.DirectionMode,
-                false,
-                false);
         }
 
         /// <summary>
@@ -104,13 +104,10 @@ namespace GamePlay.Character
         /// <summary>
         /// 推进一次角色动作逻辑 Tick
         /// </summary>
-        public CharacterActionState LogicUpdate(
-            float tickDeltaSeconds,
-            Vector3 currentFacingDirection)
+        public CharacterActionState LogicUpdate(float tickDeltaSeconds, Vector3 currentFacingDirection)
         {
             CharacterFact fact = _runtime.Fact;
             float currentActionProgress = _transition.GetNormalizedProgress();
-            bool hitReceived = fact.Hit == Trilean.True;
 
             CharacterActionLink selectedLink;
             CharacterActionAsset targetAction = _arbiter.TrySwitch(
@@ -120,22 +117,27 @@ namespace GamePlay.Character
                 fact,
                 out selectedLink);
 
-            if (hitReceived)
+            bool hasSelectedLink = targetAction != null;
+            bool hitSelected = hasSelectedLink
+                && fact.Hit == Trilean.True
+                && selectedLink.RequiredFact.Hit == Trilean.True;
+            bool switchInSelected = hasSelectedLink
+                && fact.SwitchIn == Trilean.True
+                && selectedLink.RequiredFact.SwitchIn == Trilean.True;
+            bool switchOutSelected = hasSelectedLink
+                && fact.SwitchOut == Trilean.True
+                && selectedLink.RequiredFact.SwitchOut == Trilean.True;
+
+            if (hitSelected)
             {
                 fact = fact.ConsumeHit();
             }
 
-            bool switchInSelected = targetAction != null
-                && fact.SwitchIn == Trilean.True
-                && selectedLink.RequiredFact.SwitchIn == Trilean.True;
             if (switchInSelected)
             {
                 fact = fact.ConsumeSwitchIn();
             }
 
-            bool switchOutSelected = targetAction != null
-                && fact.SwitchOut == Trilean.True
-                && selectedLink.RequiredFact.SwitchOut == Trilean.True;
             if (switchOutSelected)
             {
                 fact = fact.ConsumeSwitchOut();
@@ -143,9 +145,7 @@ namespace GamePlay.Character
 
             _runtime.Fact = fact;
 
-            bool restartCurrentAction =
-                hitReceived
-                && targetAction == _transition.CurrentAction;
+            bool restartCurrentAction = hitSelected && targetAction == _transition.CurrentAction;
 
             bool actionStarted;
             float logicalProgressSeconds = _transition.Tick(

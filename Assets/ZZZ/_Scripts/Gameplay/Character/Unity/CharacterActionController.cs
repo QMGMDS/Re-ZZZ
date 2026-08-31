@@ -148,8 +148,14 @@ namespace GamePlay.Character
         }
 
         /// <inheritdoc/>
-        public void EnterField()
+        public void EnterField(Transform characterTransform)
         {
+            if (characterTransform == null)
+            {
+                throw new ArgumentNullException(nameof(characterTransform));
+            }
+
+            transform.SetPositionAndRotation(characterTransform.position, characterTransform.rotation);
             gameObject.SetActive(true);
             _actionModel.ResetToDefaultAction();
             _animationDriver.ResetToAction(_actionSet.DefaultAction);

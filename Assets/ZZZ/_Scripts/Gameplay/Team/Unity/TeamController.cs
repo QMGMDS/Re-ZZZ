@@ -41,7 +41,7 @@ namespace GamePlay.Team
             _currentCharacterIndex = 0;
             _isConfigured = true;
 
-            _teamCharacters[_currentCharacterIndex].EnterField();
+            // _teamCharacters[_currentCharacterIndex].EnterField(_characters[_currentCharacterIndex].transform);
 
             ServiceHub.Register<ITeamModule>(this);
             _isServiceRegistered = true;
@@ -75,12 +75,12 @@ namespace GamePlay.Team
             ITeamCharacter targetCharacter = _teamCharacters[targetCharacterIndex];
 
             currentCharacter.ExitField();
-            targetCharacter.EnterField();
+            targetCharacter.EnterField(eventData.CharacterTransform);
             _currentCharacterIndex = targetCharacterIndex;
 
             TeamReadOnlyInfo teamInfo = CreateReadOnlyInfo();
 
-            EventBus.Publish(new TeamCharacterSwitchedEvent(teamInfo));
+            EventBus.Publish(new TeamCharacterSwitchedEvent(teamInfo, _characters[targetCharacterIndex].transform));
         }
 
         private bool CanSwitch()

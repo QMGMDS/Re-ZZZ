@@ -153,7 +153,7 @@ MonoBehaviour:
       _hit: 1
       _switchIn: 2
       _switchOut: 1
-    _animationTransitionDurationSeconds: 0.25
+    _animationTransitionDurationSeconds: 0
   - _fromActionId: Anbi_Idle
     _toActionId: Anbi_SwitchOut_Normal
     _interruptProgress: 0
@@ -170,7 +170,7 @@ MonoBehaviour:
       _hit: 1
       _switchIn: 1
       _switchOut: 2
-    _animationTransitionDurationSeconds: 0.25
+    _animationTransitionDurationSeconds: 0
   - _fromActionId: Anbi_Hit_H_Front
     _toActionId: Anbi_Attack_Normal_01
     _interruptProgress: 0.671
@@ -374,7 +374,7 @@ MonoBehaviour:
       _hit: 1
       _switchIn: 1
       _switchOut: 2
-    _animationTransitionDurationSeconds: 0.25
+    _animationTransitionDurationSeconds: 0
   - _fromActionId: Anbi_Walk
     _toActionId: Anbi_Walk
     _interruptProgress: 1
@@ -476,7 +476,7 @@ MonoBehaviour:
       _hit: 1
       _switchIn: 1
       _switchOut: 2
-    _animationTransitionDurationSeconds: 0.25
+    _animationTransitionDurationSeconds: 0
   - _fromActionId: Anbi_Stop
     _toActionId: Anbi_Idle
     _interruptProgress: 1
@@ -578,7 +578,7 @@ MonoBehaviour:
       _hit: 1
       _switchIn: 1
       _switchOut: 2
-    _animationTransitionDurationSeconds: 0.25
+    _animationTransitionDurationSeconds: 0
   - _fromActionId: Anbi_EvadeFront
     _toActionId: Anbi_Idle
     _interruptProgress: 1
@@ -663,7 +663,7 @@ MonoBehaviour:
       _hit: 1
       _switchIn: 1
       _switchOut: 2
-    _animationTransitionDurationSeconds: 0.25
+    _animationTransitionDurationSeconds: 0
   - _fromActionId: Anbi_EvadeBack
     _toActionId: Anbi_Idle
     _interruptProgress: 1
@@ -833,7 +833,7 @@ MonoBehaviour:
       _hit: 1
       _switchIn: 1
       _switchOut: 2
-    _animationTransitionDurationSeconds: 0.25
+    _animationTransitionDurationSeconds: 0
   - _fromActionId: Anbi_Attack_Normal_01
     _toActionId: Anbi_Attack_Normal_01_End
     _interruptProgress: 1
@@ -850,6 +850,23 @@ MonoBehaviour:
       _hit: 1
       _switchIn: 1
       _switchOut: 1
+    _animationTransitionDurationSeconds: 0
+  - _fromActionId: Anbi_Attack_Normal_01
+    _toActionId: Anbi_SwitchOut_Normal
+    _interruptProgress: 1
+    _interruptEndProgress: 1
+    _priority: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _death: 1
+      _hit: 1
+      _switchIn: 1
+      _switchOut: 2
     _animationTransitionDurationSeconds: 0
   - _fromActionId: Anbi_Attack_Normal_01_End
     _toActionId: Anbi_Idle
@@ -1260,23 +1277,6 @@ MonoBehaviour:
       _switchOut: 1
     _animationTransitionDurationSeconds: 0.25
   - _fromActionId: Anbi_SwitchIn_Normal
-    _toActionId: Anbi_SwitchOut_Normal
-    _interruptProgress: 0
-    _interruptEndProgress: 1
-    _priority: 0
-    _requiredIntention:
-      _move: 0
-      _attack: 0
-      _evade: 0
-      _skill: 0
-      _ultimate: 0
-    _requiredFact:
-      _death: 1
-      _hit: 1
-      _switchIn: 1
-      _switchOut: 2
-    _animationTransitionDurationSeconds: 0.25
-  - _fromActionId: Anbi_SwitchIn_Normal
     _toActionId: Anbi_WalkStart
     _interruptProgress: 0.615
     _interruptEndProgress: 1
@@ -1293,6 +1293,23 @@ MonoBehaviour:
       _switchIn: 1
       _switchOut: 1
     _animationTransitionDurationSeconds: 0.25
+  - _fromActionId: Anbi_SwitchIn_Normal
+    _toActionId: Anbi_SwitchOut_Normal
+    _interruptProgress: 0
+    _interruptEndProgress: 1
+    _priority: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _death: 1
+      _hit: 1
+      _switchIn: 1
+      _switchOut: 2
+    _animationTransitionDurationSeconds: 0
   - _fromActionId: Anbi_SwitchOut_Normal
     _toActionId: Anbi_SwitchIn_Normal
     _interruptProgress: 0
@@ -1309,4 +1326,4 @@ MonoBehaviour:
       _hit: 1
       _switchIn: 2
       _switchOut: 1
-    _animationTransitionDurationSeconds: 0.25
+    _animationTransitionDurationSeconds: 0

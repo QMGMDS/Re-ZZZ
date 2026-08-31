@@ -1,3 +1,5 @@
+using UnityEngine;
+
 using GamePlay.Character;
 using GamePlay.Character.Contract;
 
@@ -16,7 +18,7 @@ namespace GamePlay.Team.Contract
         /// <summary>
         /// 角色上场
         /// </summary>
-        void EnterField();
+        void EnterField(Transform characterTransform);
 
         /// <summary>
         /// 角色离场
