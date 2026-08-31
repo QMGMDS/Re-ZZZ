@@ -11,12 +11,5 @@ namespace GamePlay.Team.Contract
         /// 当前逻辑角色
         /// </summary>
         ITeamCharacter CurrentCharacter { get; }
-
-        /// <summary>
-        /// 请求切换到队伍中的下一个角色
-        /// </summary>
-        /// <param name="requester">发起请求的当前角色</param>
-        /// <returns>是否接受切换请求</returns>
-        bool TryRequestSwitch(ITeamCharacter requester);
     }
 }

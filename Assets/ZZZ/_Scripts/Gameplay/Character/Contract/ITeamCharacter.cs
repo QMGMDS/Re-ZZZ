@@ -17,5 +17,10 @@ namespace GamePlay.Team.Contract
         /// 角色上场
         /// </summary>
         void EnterField();
+
+        /// <summary>
+        /// 角色离场
+        /// </summary>
+        void ExitField();
     }
 }

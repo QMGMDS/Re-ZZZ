@@ -49,7 +49,6 @@ namespace GamePlay.Character
         private CharacterAnimationDriver _animationDriver;
         // 攻击机器
         private CharacterAttackMachine _attackMachine;
-        private ITeamModule _teamModule;
 
         private void Awake()
         {
@@ -76,16 +75,6 @@ namespace GamePlay.Character
             _rotationDriver = new CharacterRotationDriver(transform);
             _animationDriver = new CharacterAnimationDriver(_animator, linksBySourceActionId);
             _attackMachine = new CharacterAttackMachine(_attackCollider);
-        }
-
-        private void Start()
-        {
-            if (!ServiceHub.TryGet<ITeamModule>(out ITeamModule teamModule))
-            {
-                throw new InvalidOperationException($"{nameof(ITeamModule)} 未注册 不能启动 {nameof(CharacterActionController)}");
-            }
-
-            _teamModule = teamModule;
         }
 
         private void OnEnable()
@@ -155,12 +144,7 @@ namespace GamePlay.Character
                 return;
             }
 
-            if (!_teamModule.TryRequestSwitch(this))
-            {
-                return;
-            }
-
-            _actionModel.RequestSwitchOut();
+            EventBus.Publish(new TeamCharacterSwitchRequestedEvent(transform));
         }
 
         /// <inheritdoc/>
@@ -170,6 +154,12 @@ namespace GamePlay.Character
             _actionModel.ResetToDefaultAction();
             _animationDriver.ResetToAction(_actionSet.DefaultAction);
             _actionModel.RequestSwitchIn();
+        }
+
+        /// <inheritdoc/>
+        public void ExitField()
+        {
+            _actionModel.RequestSwitchOut();
         }
 
         /// <summary>

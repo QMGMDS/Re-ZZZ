@@ -1,8 +1,10 @@
 using System;
 
+using GamePlay.Team;
+
 using SPFramework;
 
-namespace GamePlay.Team
+namespace GamePlay.Team.Contract
 {
     /// <summary>
     /// 队伍切换请求接受事件

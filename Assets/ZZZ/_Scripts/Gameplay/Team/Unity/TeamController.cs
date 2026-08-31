@@ -2,6 +2,7 @@ using System;
 
 using UnityEngine;
 
+using GamePlay.Character.Contract;
 using GamePlay.Team.Contract;
 using SPFramework;
 
@@ -22,12 +23,16 @@ namespace GamePlay.Team
         private int _currentCharacterIndex;
         private bool _isConfigured;
         private bool _isServiceRegistered;
+        private IDisposable _switchRequestSubscription;
 
         private void Awake()
         {
             _teamCharacters = BuildCharacters();
             _currentCharacterIndex = 0;
             _isConfigured = true;
+
+            _switchRequestSubscription =
+                EventBus.Subscribe<TeamCharacterSwitchRequestedEvent>(OnCharacterSwitchRequested);
 
             _teamCharacters[_currentCharacterIndex].EnterField();
 
@@ -45,29 +50,33 @@ namespace GamePlay.Team
             }
         }
 
-        /// <inheritdoc/>
-        public bool TryRequestSwitch(ITeamCharacter requester)
+        private void OnCharacterSwitchRequested(TeamCharacterSwitchRequestedEvent eventData)
         {
             EnsureConfigured();
 
-            if (requester == null
-                || !ReferenceEquals(requester, _teamCharacters[_currentCharacterIndex])
-                || _teamCharacters.Length < 2)
+            if (!CanSwitch(eventData.CharacterTransform))
             {
-                return false;
+                return;
             }
 
             int targetCharacterIndex =
                 (_currentCharacterIndex + 1) % _teamCharacters.Length;
+            ITeamCharacter currentCharacter = _teamCharacters[_currentCharacterIndex];
             ITeamCharacter targetCharacter = _teamCharacters[targetCharacterIndex];
 
+            currentCharacter.ExitField();
             targetCharacter.EnterField();
             _currentCharacterIndex = targetCharacterIndex;
 
             TeamReadOnlyInfo teamInfo = CreateReadOnlyInfo();
 
             EventBus.Publish(new TeamCharacterSwitchedEvent(teamInfo));
-            return true;
+        }
+
+        private bool CanSwitch(Transform characterTransform)
+        {
+            return _teamCharacters.Length >= 2
+                && characterTransform == _characters[_currentCharacterIndex].transform;
         }
 
         private ITeamCharacter[] BuildCharacters()
@@ -137,6 +146,12 @@ namespace GamePlay.Team
 
         private void OnDestroy()
         {
+            if (_switchRequestSubscription != null)
+            {
+                _switchRequestSubscription.Dispose();
+                _switchRequestSubscription = null;
+            }
+
             if (!_isServiceRegistered)
             {
                 return;
