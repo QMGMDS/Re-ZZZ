@@ -25,21 +25,6 @@ namespace GamePlay.Team
         private bool _isServiceRegistered;
         private IDisposable _switchRequestSubscription;
 
-        private void Awake()
-        {
-            _teamCharacters = BuildCharacters();
-            _currentCharacterIndex = 0;
-            _isConfigured = true;
-
-            _switchRequestSubscription =
-                EventBus.Subscribe<TeamCharacterSwitchRequestedEvent>(OnCharacterSwitchRequested);
-
-            _teamCharacters[_currentCharacterIndex].EnterField();
-
-            ServiceHub.Register<ITeamModule>(this);
-            _isServiceRegistered = true;
-        }
-
         /// <inheritdoc/>
         public ITeamCharacter CurrentCharacter
         {
@@ -50,17 +35,42 @@ namespace GamePlay.Team
             }
         }
 
+        private void Awake()
+        {
+            _teamCharacters = BuildCharacters();
+            _currentCharacterIndex = 0;
+            _isConfigured = true;
+
+            _teamCharacters[_currentCharacterIndex].EnterField();
+
+            ServiceHub.Register<ITeamModule>(this);
+            _isServiceRegistered = true;
+        }
+
+        private void OnEnable()
+        {
+            _switchRequestSubscription = EventBus.Subscribe<TeamCharacterSwitchRequestedEvent>(OnCharacterSwitchRequested);
+        }
+
+        private void OnDisable()
+        {
+            if (_switchRequestSubscription != null)
+            {
+                _switchRequestSubscription.Dispose();
+                _switchRequestSubscription = null;
+            }
+        }
+
         private void OnCharacterSwitchRequested(TeamCharacterSwitchRequestedEvent eventData)
         {
             EnsureConfigured();
 
-            if (!CanSwitch(eventData.CharacterTransform))
+            if (!CanSwitch())
             {
                 return;
             }
 
-            int targetCharacterIndex =
-                (_currentCharacterIndex + 1) % _teamCharacters.Length;
+            int targetCharacterIndex = (_currentCharacterIndex + 1) % _teamCharacters.Length;
             ITeamCharacter currentCharacter = _teamCharacters[_currentCharacterIndex];
             ITeamCharacter targetCharacter = _teamCharacters[targetCharacterIndex];
 
@@ -73,10 +83,9 @@ namespace GamePlay.Team
             EventBus.Publish(new TeamCharacterSwitchedEvent(teamInfo));
         }
 
-        private bool CanSwitch(Transform characterTransform)
+        private bool CanSwitch()
         {
-            return _teamCharacters.Length >= 2
-                && characterTransform == _characters[_currentCharacterIndex].transform;
+            return _teamCharacters.Length >= 2;
         }
 
         private ITeamCharacter[] BuildCharacters()
@@ -146,12 +155,6 @@ namespace GamePlay.Team
 
         private void OnDestroy()
         {
-            if (_switchRequestSubscription != null)
-            {
-                _switchRequestSubscription.Dispose();
-                _switchRequestSubscription = null;
-            }
-
             if (!_isServiceRegistered)
             {
                 return;

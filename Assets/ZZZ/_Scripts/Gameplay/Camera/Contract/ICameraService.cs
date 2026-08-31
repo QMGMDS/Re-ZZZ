@@ -13,10 +13,5 @@ namespace GamePlay.Camera.Contract
         /// 将输入方向转换为世界坐标中的方向
         /// </summary>
         Vector2 ConvertToWorldCoordinate(Vector2 input);
-
-        /// <summary>
-        /// 设置跟随目标物体
-        /// </summary>
-        void SetTargetObject(Transform targetObject);
     }
 }

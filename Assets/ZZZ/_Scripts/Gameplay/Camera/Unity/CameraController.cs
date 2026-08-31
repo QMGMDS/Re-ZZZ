@@ -11,7 +11,7 @@ namespace GamePlay.Camera
     /// 摄像机控制器
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class CameraController : MonoBehaviour, ICameraService, ICameraUpdateTarget
+    public sealed class CameraController : MonoBehaviour, ICameraModule, ICameraService
     {
         [Header("跟随配置")]
         [SerializeField, Tooltip("需要跟随目标的指定物体")]
@@ -24,7 +24,8 @@ namespace GamePlay.Camera
         private float _smoothTimeSeconds = 0.2f;
 
         private ObjectFollower _objectFollower;
-        private ICameraModule _cameraModule;
+        private bool _isModuleRegistered;
+        private bool _isServiceRegistered;
 
         private void Awake()
         {
@@ -33,25 +34,20 @@ namespace GamePlay.Camera
                 || _camera == null
                 || _smoothTimeSeconds <= 0f)
             {
-                throw new InvalidOperationException(
-                    $"{nameof(CameraController)} 检查配置");
+                throw new InvalidOperationException($"{nameof(CameraController)} 检查配置");
             }
 
             _objectFollower = new ObjectFollower(_specifiedObject, _smoothTimeSeconds);
-            SetTargetObject(_targetObject);
+            _objectFollower.SetTargetObject(_targetObject);
         }
 
         private void OnEnable()
         {
-            if (!ServiceHub.TryGet<ICameraModule>(out ICameraModule cameraModule))
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(ICameraModule)} 未注册 不能启用 {nameof(CameraController)}");
-            }
+            ServiceHub.Register<ICameraModule>(this);
+            _isModuleRegistered = true;
 
             ServiceHub.Register<ICameraService>(this);
-            cameraModule.Register(this);
-            _cameraModule = cameraModule;
+            _isServiceRegistered = true;
         }
 
         /// <inheritdoc/>
@@ -62,9 +58,17 @@ namespace GamePlay.Camera
 
         private void OnDisable()
         {
-            _cameraModule.Unregister(this);
-            _cameraModule = null;
-            ServiceHub.Unregister<ICameraService>(this);
+            if (_isServiceRegistered)
+            {
+                ServiceHub.Unregister<ICameraService>(this);
+                _isServiceRegistered = false;
+            }
+
+            if (_isModuleRegistered)
+            {
+                ServiceHub.Unregister<ICameraModule>(this);
+                _isModuleRegistered = false;
+            }
         }
 
         /// <inheritdoc/>
@@ -80,18 +84,6 @@ namespace GamePlay.Camera
 
             Vector3 worldDirection = cameraRight * input.x + cameraForward * input.y;
             return new Vector2(worldDirection.x, worldDirection.z);
-        }
-
-        /// <inheritdoc/>
-        public void SetTargetObject(Transform targetObject)
-        {
-            if (targetObject == null)
-            {
-                throw new ArgumentNullException(nameof(targetObject));
-            }
-
-            _targetObject = targetObject;
-            _objectFollower.SetTargetObject(targetObject);
         }
     }
 }

@@ -3,7 +3,6 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-using GamePlay.Camera;
 using GamePlay.Camera.Contract;
 using GamePlay.Character;
 using GamePlay.Character.Contract;
@@ -27,7 +26,6 @@ namespace GamePlay.Root
         private CharacterModule _characterModule;
         private CombatModule _combatModule;
         private ColliderModule _colliderModule;
-        private CameraModule _cameraModule;
         private PlayerInputRouter _playerInputRouter;
 
         private void Awake()
@@ -50,9 +48,6 @@ namespace GamePlay.Root
 
             _colliderModule = new ColliderModule();
             ServiceHub.Register<IColliderModule>(_colliderModule);
-
-            _cameraModule = new CameraModule();
-            ServiceHub.Register<ICameraModule>(_cameraModule);
         }
 
         private void Start()
@@ -81,7 +76,11 @@ namespace GamePlay.Root
         private void LateUpdate()
         {
             _characterModule.RenderUpdate(Time.deltaTime);
-            _cameraModule.RenderUpdate(Time.deltaTime);
+
+            if (ServiceHub.TryGet<ICameraModule>(out ICameraModule cameraModule))
+            {
+                cameraModule.RenderUpdate(Time.deltaTime);
+            }
         }
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
@@ -94,10 +93,11 @@ namespace GamePlay.Root
             _sceneModule.SceneLoaded -= OnSceneLoaded;
 
             if (!ServiceHub.TryGet<IIputData>(out IIputData inputData)
-                || !ServiceHub.TryGet<ICameraService>(out ICameraService cameraService))
+                || !ServiceHub.TryGet<ICameraService>(out ICameraService cameraService)
+                || !ServiceHub.TryGet<ICameraModule>(out _))
             {
                 throw new InvalidOperationException(
-                    $"{nameof(IIputData)} 和 {nameof(ICameraService)} 必须在 {nameof(SceneNames.Gameplay)} 场景加载后注册");
+                    $"{nameof(IIputData)} {nameof(ICameraService)} 和 {nameof(ICameraModule)} 必须在 {nameof(SceneNames.Gameplay)} 场景加载后注册");
             }
 
             _playerInputRouter = new PlayerInputRouter(inputData, cameraService);
@@ -109,7 +109,6 @@ namespace GamePlay.Root
 
             EventBus.Shutdown();
 
-            ServiceHub.Unregister<ICameraModule>(_cameraModule);
             ServiceHub.Unregister<IColliderModule>(_colliderModule);
             ServiceHub.Unregister<ICombatModule>(_combatModule);
             ServiceHub.Unregister<ICharacterModule>(_characterModule);
