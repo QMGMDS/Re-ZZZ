@@ -4,7 +4,7 @@ using UnityEngine;
 
 using GamePlay.Camera.Contract;
 using GamePlay.Input;
-using GamePlay.Input.Contract;
+using GamePlay.Input.Public;
 
 namespace GamePlay.Character
 {
@@ -13,14 +13,14 @@ namespace GamePlay.Character
     /// </summary>
     public sealed class PlayerInputRouter
     {
-        private readonly IIputData _inputData;
+        private readonly IInputService _inputService;
         private readonly ICameraService _cameraService;
 
-        public PlayerInputRouter(IIputData inputData, ICameraService cameraService)
+        public PlayerInputRouter(IInputService inputService, ICameraService cameraService)
         {
-            if (inputData == null)
+            if (inputService == null)
             {
-                throw new ArgumentNullException(nameof(inputData));
+                throw new ArgumentNullException(nameof(inputService));
             }
 
             if (cameraService == null)
@@ -28,14 +28,14 @@ namespace GamePlay.Character
                 throw new ArgumentNullException(nameof(cameraService));
             }
 
-            _inputData = inputData;
+            _inputService = inputService;
             _cameraService = cameraService;
         }
 
         /// <inheritdoc/>
-        public InputCharacterData ConsumePlayerInput(float logicalTimeSeconds)
+        public InputCharacterData BuildPlayerInput(float logicalTimeSeconds)
         {
-            CharacterInputData characterInputData = _inputData.ConsumeCharacterInput();
+            CharacterInputData characterInputData = _inputService.CharacterInputData;
             Vector2 worldMove = _cameraService.ConvertToWorldCoordinate(characterInputData.Move);
             CharacterIntention intention = new CharacterIntention(
                 ToTrilean(worldMove.sqrMagnitude > 0f),

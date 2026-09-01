@@ -10,7 +10,7 @@ using GamePlay.Combat;
 using GamePlay.Combat.Contract;
 using GamePlay.Collider;
 using GamePlay.Collider.Contract;
-using GamePlay.Input.Contract;
+using GamePlay.Input.Public;
 using GamePlay.Team.Contract;
 using SPFramework;
 
@@ -58,14 +58,14 @@ namespace GamePlay.Root
 
         private void Update()
         {
-            if (ServiceHub.TryGet<IIputData>(out IIputData inputData))
+            if (ServiceHub.TryGet<IInputService>(out IInputService inputService))
             {
-                inputData.Capture(Time.deltaTime);
+                inputService.InputCapture();
             }
 
             if (_playerInputRouter != null && TryGetCurrentCharacter(out ITeamCharacter currentCharacter))
             {
-                InputCharacterData inputCharacterData = _playerInputRouter.ConsumePlayerInput(Time.deltaTime);
+                InputCharacterData inputCharacterData = _playerInputRouter.BuildPlayerInput(Time.deltaTime);
                 currentCharacter.ReceivePlayerInput(inputCharacterData);
             }
 
@@ -92,15 +92,15 @@ namespace GamePlay.Root
 
             _sceneModule.SceneLoaded -= OnSceneLoaded;
 
-            if (!ServiceHub.TryGet<IIputData>(out IIputData inputData)
+            if (!ServiceHub.TryGet<IInputService>(out IInputService inputService)
                 || !ServiceHub.TryGet<ICameraService>(out ICameraService cameraService)
                 || !ServiceHub.TryGet<ICameraModule>(out _))
             {
                 throw new InvalidOperationException(
-                    $"{nameof(IIputData)} {nameof(ICameraService)} 和 {nameof(ICameraModule)} 必须在 {nameof(SceneNames.Gameplay)} 场景加载后注册");
+                    $"{nameof(IInputService)} {nameof(ICameraService)} 和 {nameof(ICameraModule)} 必须在 {nameof(SceneNames.Gameplay)} 场景加载后注册");
             }
 
-            _playerInputRouter = new PlayerInputRouter(inputData, cameraService);
+            _playerInputRouter = new PlayerInputRouter(inputService, cameraService);
         }
 
         private void OnDestroy()

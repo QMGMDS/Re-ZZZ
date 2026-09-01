@@ -5,7 +5,7 @@ using UnityEngine;
 namespace GamePlay.Input
 {
     /// <summary>
-    /// 经过角色输入处理后的本帧输入数据
+    /// 当前输入处理得到的角色数据
     /// </summary>
     [Serializable]
     public struct CharacterInputData

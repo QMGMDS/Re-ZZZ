@@ -5,7 +5,7 @@ using UnityEngine;
 namespace GamePlay.Input
 {
     /// <summary>
-    /// 玩家本帧的原始输入数据
+    /// 当前输入采集到的原始数据
     /// </summary>
     [Serializable]
     public struct RawInputData
