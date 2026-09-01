@@ -4,6 +4,11 @@ using System.Collections.Generic;
 namespace SPFramework
 {
     /// <summary>
+    /// 运行时事实事件标记接口
+    /// </summary>
+    public interface IEvent { }
+
+    /// <summary>
     /// 运行时事实事件总线
     /// </summary>
     public static class EventBus

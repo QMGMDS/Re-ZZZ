@@ -1,7 +1,6 @@
 using System;
 
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 using GamePlay.Camera.Public;
 using GamePlay.Character;
@@ -11,6 +10,8 @@ using GamePlay.Combat.Contract;
 using GamePlay.Collider;
 using GamePlay.Collider.Contract;
 using GamePlay.Input.Public;
+using GamePlay.SceneLoad;
+using GamePlay.SceneLoad.Public;
 using GamePlay.Team.Contract;
 using SPFramework;
 
@@ -22,11 +23,12 @@ namespace GamePlay.Root
     [DefaultExecutionOrder(-10000)]
     public sealed class GameEntry : MonoBehaviour
     {
-        private SceneModule _sceneModule;
+        private SceneLoadController _sceneLoadController;
         private CharacterModule _characterModule;
         private CombatModule _combatModule;
         private ColliderModule _colliderModule;
         private PlayerInputRouter _playerInputRouter;
+        private IDisposable _sceneLoadCompletedSubscription;
 
         private void Awake()
         {
@@ -37,8 +39,8 @@ namespace GamePlay.Root
 
             EventBus.Reset();
 
-            _sceneModule = new SceneModule();
-            ServiceHub.Register<ISceneModule>(_sceneModule);
+            _sceneLoadController = new SceneLoadController();
+            ServiceHub.Register<ISceneLoadService>(_sceneLoadController);
 
             _characterModule = new CharacterModule();
             ServiceHub.Register<ICharacterModule>(_characterModule);
@@ -48,12 +50,14 @@ namespace GamePlay.Root
 
             _colliderModule = new ColliderModule();
             ServiceHub.Register<IColliderModule>(_colliderModule);
+
+            _sceneLoadCompletedSubscription =
+                EventBus.Subscribe<SceneLoadCompletedEvent>(OnSceneLoadCompleted);
         }
 
         private void Start()
         {
-            _sceneModule.SceneLoaded += OnSceneLoaded;
-            _sceneModule.LoadScene(SceneNames.Gameplay);
+            _sceneLoadController.SyncLoadScene(SceneNames.Gameplay);
         }
 
         private void Update()
@@ -83,14 +87,15 @@ namespace GamePlay.Root
             }
         }
 
-        private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
+        private void OnSceneLoadCompleted(SceneLoadCompletedEvent eventData)
         {
-            if (scene.name != SceneNames.Gameplay)
+            if (eventData.SceneName != SceneNames.Gameplay)
             {
                 return;
             }
 
-            _sceneModule.SceneLoaded -= OnSceneLoaded;
+            _sceneLoadCompletedSubscription.Dispose();
+            _sceneLoadCompletedSubscription = null;
 
             if (!ServiceHub.TryGet<IInputService>(out IInputService inputService)
                 || !ServiceHub.TryGet<ICameraService>(out ICameraService cameraService))
@@ -104,14 +109,20 @@ namespace GamePlay.Root
 
         private void OnDestroy()
         {
-            _sceneModule.Dispose();
+            if (_sceneLoadCompletedSubscription != null)
+            {
+                _sceneLoadCompletedSubscription.Dispose();
+                _sceneLoadCompletedSubscription = null;
+            }
+
+            _sceneLoadController.Dispose();
 
             EventBus.Shutdown();
 
             ServiceHub.Unregister<IColliderModule>(_colliderModule);
             ServiceHub.Unregister<ICombatModule>(_combatModule);
             ServiceHub.Unregister<ICharacterModule>(_characterModule);
-            ServiceHub.Unregister<ISceneModule>(_sceneModule);
+            ServiceHub.Unregister<ISceneLoadService>(_sceneLoadController);
         }
 
         /// <summary>
