@@ -26,9 +26,7 @@ namespace GamePlay.Input
         /// <summary>
         /// 将原始输入处理为角色输入
         /// </summary>
-        internal void GetCharacterInput(
-            in RawInputData rawInputData,
-            ref CharacterInputData characterInputData)
+        internal void GetCharacterInput(in RawInputData rawInputData, ref CharacterInputData characterInputData)
         {
             Vector2 normalizedMove = NormalizeAxis(rawInputData.Move);
 
@@ -58,8 +56,7 @@ namespace GamePlay.Input
                 || float.IsNaN(deltaTimeSeconds)
                 || float.IsInfinity(deltaTimeSeconds))
             {
-                throw new InvalidOperationException(
-                    $"{nameof(CharacterInputProcessor)} 读取到无效的帧间隔");
+                throw new InvalidOperationException($"{nameof(CharacterInputProcessor)} 读取到无效的帧间隔");
             }
 
             if (input.sqrMagnitude != 0f)

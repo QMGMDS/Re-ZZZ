@@ -17,73 +17,53 @@ namespace GamePlay.Input
         [SerializeField, Tooltip("输入模块静态配置资产")]
         private InputConfigAsset _inputConfigAsset;
 
+        // 私有依赖的逻辑模型
         private RawInputController _rawInputController;
         private CharacterInputProcessor _characterInputProcessor;
+
+        // 内部持有数据
         private RawInputData _rawInputData;
         private CharacterInputData _characterInputData;
-        private bool _isInitialized;
-        private bool _isServiceRegistered;
 
+        /// <inheritdoc/>
         public RawInputData RawInputData => _rawInputData;
+        /// <inheritdoc/>
         public CharacterInputData CharacterInputData => _characterInputData;
 
         private void Awake()
         {
             if (_inputConfigAsset == null)
             {
-                throw new InvalidOperationException(
-                    $"{nameof(InputController)} 必须配置 {nameof(_inputConfigAsset)}");
+                throw new InvalidOperationException($"{nameof(InputController)} 必须配置 {nameof(_inputConfigAsset)}");
             }
 
             _inputConfigAsset.Validate();
+
             _rawInputController = new RawInputController(_inputConfigAsset);
             _characterInputProcessor = new CharacterInputProcessor(_inputConfigAsset);
-            _isInitialized = true;
         }
 
         private void OnEnable()
         {
-            EnsureInitialized();
-
-            _characterInputProcessor.Reset();
             SetInputActionsEnabled(true);
+            _characterInputProcessor.Reset();
+
             ServiceHub.Register<IInputService>(this);
-            _isServiceRegistered = true;
+        }
+
+        private void OnDisable()
+        {
+            SetInputActionsEnabled(false);
+            _characterInputProcessor.Reset();
+
+            ServiceHub.Unregister<IInputService>(this);
         }
 
         /// <inheritdoc/>
         public void InputCapture()
         {
             _rawInputController.GetRawInputData(ref _rawInputData);
-            _characterInputProcessor.GetCharacterInput(
-                in _rawInputData,
-                ref _characterInputData);
-        }
-
-        private void OnDisable()
-        {
-            if (_isServiceRegistered)
-            {
-                ServiceHub.Unregister<IInputService>(this);
-                _isServiceRegistered = false;
-            }
-
-            if (!_isInitialized)
-            {
-                return;
-            }
-
-            SetInputActionsEnabled(false);
-            _characterInputProcessor.Reset();
-        }
-
-        private void EnsureInitialized()
-        {
-            if (!_isInitialized)
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(InputController)} 尚未初始化");
-            }
+            _characterInputProcessor.GetCharacterInput(in _rawInputData, ref _characterInputData);
         }
 
         private void SetInputActionsEnabled(bool isEnabled)

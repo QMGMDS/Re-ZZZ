@@ -55,14 +55,11 @@ namespace GamePlay.Input
             }
         }
 
-        private static void ValidateInputReference(
-            InputActionReference inputReference,
-            string fieldName)
+        private static void ValidateInputReference(InputActionReference inputReference, string fieldName)
         {
             if (inputReference == null || inputReference.action == null)
             {
-                throw new InvalidOperationException(
-                    $"{nameof(InputConfigAsset)} 的 {fieldName} 必须分配有效的 InputActionReference");
+                throw new InvalidOperationException($"{nameof(InputConfigAsset)} 的 {fieldName} 必须分配有效的 InputActionReference");
             }
         }
     }
