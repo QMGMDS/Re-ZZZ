@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-using GamePlay.Camera.Contract;
+using GamePlay.Camera.Public;
 using GamePlay.Character;
 using GamePlay.Character.Contract;
 using GamePlay.Combat;
@@ -77,9 +77,9 @@ namespace GamePlay.Root
         {
             _characterModule.RenderUpdate(Time.deltaTime);
 
-            if (ServiceHub.TryGet<ICameraModule>(out ICameraModule cameraModule))
+            if (ServiceHub.TryGet<ICameraService>(out ICameraService cameraService))
             {
-                cameraModule.RenderUpdate(Time.deltaTime);
+                cameraService.CameraUpdate();
             }
         }
 
@@ -93,11 +93,10 @@ namespace GamePlay.Root
             _sceneModule.SceneLoaded -= OnSceneLoaded;
 
             if (!ServiceHub.TryGet<IInputService>(out IInputService inputService)
-                || !ServiceHub.TryGet<ICameraService>(out ICameraService cameraService)
-                || !ServiceHub.TryGet<ICameraModule>(out _))
+                || !ServiceHub.TryGet<ICameraService>(out ICameraService cameraService))
             {
                 throw new InvalidOperationException(
-                    $"{nameof(IInputService)} {nameof(ICameraService)} 和 {nameof(ICameraModule)} 必须在 {nameof(SceneNames.Gameplay)} 场景加载后注册");
+                    $"{nameof(IInputService)} 和 {nameof(ICameraService)} 必须在 {nameof(SceneNames.Gameplay)} 场景加载后注册");
             }
 
             _playerInputRouter = new PlayerInputRouter(inputService, cameraService);

@@ -47,13 +47,8 @@ namespace GamePlay.Camera
         /// <summary>
         /// 驱动指定物体跟随目标物体
         /// </summary>
-        public void Follow(float deltaTime)
+        public void Follow()
         {
-            if (deltaTime < 0f)
-            {
-                throw new ArgumentOutOfRangeException(nameof(deltaTime));
-            }
-
             Vector3 specifiedPosition = _specifiedObject.position;
             Vector3 targetPosition = _targetObject.position;
 
@@ -65,7 +60,7 @@ namespace GamePlay.Camera
                 ref _smoothDampVelocity,
                 _smoothTimeSeconds,
                 Mathf.Infinity,
-                deltaTime);
+                Time.deltaTime);
 
             specifiedPosition.x = nextPosition.x;
             specifiedPosition.z = nextPosition.y;

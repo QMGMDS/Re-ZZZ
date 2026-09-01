@@ -2,7 +2,7 @@ using System;
 
 using UnityEngine;
 
-using GamePlay.Camera.Contract;
+using GamePlay.Camera.Public;
 using GamePlay.Input;
 using GamePlay.Input.Public;
 

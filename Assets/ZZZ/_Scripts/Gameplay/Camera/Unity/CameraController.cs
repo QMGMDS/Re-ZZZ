@@ -2,7 +2,7 @@ using System;
 
 using UnityEngine;
 
-using GamePlay.Camera.Contract;
+using GamePlay.Camera.Public;
 using GamePlay.Team.Contract;
 using SPFramework;
 
@@ -12,78 +12,60 @@ namespace GamePlay.Camera
     /// 摄像机控制器
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class CameraController : MonoBehaviour, ICameraModule, ICameraService
+    public sealed class CameraController : MonoBehaviour, ICameraService
     {
         [Header("跟随配置")]
+        [SerializeField, Tooltip("主摄像机")]
+        private UnityEngine.Camera _camera;
         [SerializeField, Tooltip("需要跟随目标的指定物体")]
         private Transform _specifiedObject;
         [SerializeField, Tooltip("默认跟随的目标物体")]
         private Transform _targetObject;
-        [SerializeField, Tooltip("主摄像机")]
-        private UnityEngine.Camera _camera;
         [SerializeField, Min(0.0001f), Tooltip("跟随平滑时间 单位为秒")]
         private float _smoothTimeSeconds = 0.2f;
 
+        // 私有依赖的逻辑模型
         private ObjectFollower _objectFollower;
-        private bool _isModuleRegistered;
-        private bool _isServiceRegistered;
+
+        // 事件退订句柄
         private IDisposable _characterSwitchedSubscription;
 
         private void Awake()
         {
-            if (_specifiedObject == null
-                || _targetObject == null
-                || _camera == null
-                || _smoothTimeSeconds <= 0f)
+            if (_camera == null || _specifiedObject == null || _targetObject == null || _smoothTimeSeconds <= 0f)
             {
                 throw new InvalidOperationException($"{nameof(CameraController)} 检查配置");
             }
 
             _objectFollower = new ObjectFollower(_specifiedObject, _smoothTimeSeconds);
+
             _objectFollower.SetTargetObject(_targetObject);
         }
 
         private void OnEnable()
         {
-            ServiceHub.Register<ICameraModule>(this);
-            _isModuleRegistered = true;
-
             ServiceHub.Register<ICameraService>(this);
-            _isServiceRegistered = true;
 
             _characterSwitchedSubscription = EventBus.Subscribe<TeamCharacterSwitchedEvent>(OnCharacterSwitched);
         }
 
         private void OnDisable()
         {
+            ServiceHub.Unregister<ICameraService>(this);
+
             if (_characterSwitchedSubscription != null)
             {
                 _characterSwitchedSubscription.Dispose();
                 _characterSwitchedSubscription = null;
             }
-
-            if (_isServiceRegistered)
-            {
-                ServiceHub.Unregister<ICameraService>(this);
-                _isServiceRegistered = false;
-            }
-
-            if (_isModuleRegistered)
-            {
-                ServiceHub.Unregister<ICameraModule>(this);
-                _isModuleRegistered = false;
-            }
         }
 
-        private void OnCharacterSwitched(TeamCharacterSwitchedEvent eventData)
-        {
-            _objectFollower.SetTargetObject(eventData.CharacterTransform);
-        }
+        #region 服务接口
 
         /// <inheritdoc/>
-        public void RenderUpdate(float deltaTimeSeconds)
+        public void CameraUpdate()
         {
-            _objectFollower.Follow(deltaTimeSeconds);
+            _objectFollower.Follow();
         }
 
         /// <inheritdoc/>
@@ -100,5 +82,16 @@ namespace GamePlay.Camera
             Vector3 worldDirection = cameraRight * input.x + cameraForward * input.y;
             return new Vector2(worldDirection.x, worldDirection.z);
         }
+
+        #endregion
+
+        #region 事件回调
+
+        private void OnCharacterSwitched(TeamCharacterSwitchedEvent eventData)
+        {
+            _objectFollower.SetTargetObject(eventData.CharacterTransform);
+        }
+
+        #endregion
     }
 }
