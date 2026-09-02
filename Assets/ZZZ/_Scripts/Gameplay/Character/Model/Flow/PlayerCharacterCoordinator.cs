@@ -34,13 +34,13 @@ namespace GamePlay.Character
 
         public void Tick()
         {
-            // 动作切换
-            _arbiter.Arbitrate(ref _currentActionState);
+            // 动作切换 actionLink为命中有向边
+            bool hasActionTransition = _arbiter.Arbitrate(ref _currentActionState, out CharacterActionLink actionLink);
             // 动作过渡
             _transition.Advance(ref _currentActionState);
 
             // 动画响应
-            _animationPlayer.AnimationPlay(ref _currentActionState);
+            _animationPlayer.AnimationPlay(ref _currentActionState, hasActionTransition ? actionLink.AnimationBlendSeconds : 0f);
         }
 
         public void Dispose()

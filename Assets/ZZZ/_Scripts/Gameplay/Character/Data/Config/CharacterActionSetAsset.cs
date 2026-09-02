@@ -13,12 +13,12 @@ namespace GamePlay.Character
         private string _sourceActionId;
         [SerializeField, Tooltip("去边")]
         private string _targetActionId;
+        [SerializeField, Tooltip("优先级")]
+        private int _priority;
         [SerializeField, Range(0f, 1f), Tooltip("打断窗口起点")]
         private float _normalizedInterruptionWindowStart;
         [SerializeField, Range(0f, 1f), Tooltip("打断窗口终点")]
         private float _normalizedInterruptionWindowEnd;
-        [SerializeField, Tooltip("优先级")]
-        private int _priority;
         [SerializeField, Min(0f), Tooltip("动画过渡")]
         private float _animationBlendSeconds;
         [SerializeField, Tooltip("角色意图")]
@@ -28,9 +28,9 @@ namespace GamePlay.Character
 
         public string SourceActionId => _sourceActionId;
         public string TargetActionId => _targetActionId;
+        public int Priority => _priority;
         public float NormalizedInterruptionWindowStart => _normalizedInterruptionWindowStart;
         public float NormalizedInterruptionWindowEnd => _normalizedInterruptionWindowEnd;
-        public int Priority => _priority;
         public float AnimationBlendSeconds => _animationBlendSeconds;
         public CharacterIntention RequiredIntention => _requiredIntention;
         public CharacterFact RequiredFact => _requiredFact;

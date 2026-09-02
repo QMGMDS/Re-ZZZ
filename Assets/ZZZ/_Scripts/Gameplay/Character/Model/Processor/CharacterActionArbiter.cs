@@ -18,8 +18,10 @@ namespace GamePlay.Character
             _actionsById = actionsById;
         }
 
-        public void Arbitrate(ref CharacterActionState state)
+        public bool Arbitrate(ref CharacterActionState state, out CharacterActionLink selectedLink)
         {
+            selectedLink = default;
+
             CharacterActionAsset currentAction = _actionsById[state.CurrentActionId];
 
             // 进度归一化
@@ -29,7 +31,7 @@ namespace GamePlay.Character
             // 无去边
             if (!_linksBySourceActionId.TryGetValue(state.CurrentActionId, out IReadOnlyList<CharacterActionLink> outgoingLinks))
             {
-                return;
+                return false;
             }
 
             for (int index = 0; index < outgoingLinks.Count; index++)
@@ -64,11 +66,14 @@ namespace GamePlay.Character
                 }
 
                 // 动作切换
+                selectedLink = link;
                 state.SetCurrentActionId(link.TargetActionId);
                 state.SetLogicalProgressSeconds(0f);
                 state.SetFact(state.Fact.ConsumeRequired(link.RequiredFact));
-                return;
+                return true;
             }
+
+            return false;
         }
 
         private static bool Matches(Trilean required, Trilean actual)
