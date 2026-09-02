@@ -1,9 +1,12 @@
 namespace GamePlay.Definition
 {
+    /// <summary>
+    /// 三值布尔
+    /// </summary>
     public enum Trilean
     {
-        DontCare = 0,
-        False = 1,
-        True = 2
+        DontCare,
+        False,
+        True
     }
 }

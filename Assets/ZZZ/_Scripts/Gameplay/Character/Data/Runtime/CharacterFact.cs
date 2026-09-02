@@ -10,20 +10,17 @@ namespace GamePlay.Character
     public struct CharacterFact
     {
         [SerializeField]
-        private Trilean _enterField;
+        private Trilean _switchIn;
         [SerializeField]
-        private Trilean _exitField;
+        private Trilean _switchOut;
         [SerializeField]
         private Trilean _hit;
         [SerializeField]
         private Trilean _death;
 
-        public Trilean EnterField => _enterField;
-
-        public Trilean ExitField => _exitField;
-
+        public Trilean SwitchIn => _switchIn;
+        public Trilean SwitchOut => _switchOut;
         public Trilean Hit => _hit;
-
         public Trilean Death => _death;
 
         public static CharacterFact AllFalse => new CharacterFact(
@@ -38,47 +35,21 @@ namespace GamePlay.Character
             Trilean hit,
             Trilean death)
         {
-            ValidateValue(enterField, nameof(enterField), true);
-            ValidateValue(exitField, nameof(exitField), true);
-            ValidateValue(hit, nameof(hit), true);
-            ValidateValue(death, nameof(death), true);
-
-            _enterField = enterField;
-            _exitField = exitField;
+            _switchIn = enterField;
+            _switchOut = exitField;
             _hit = hit;
             _death = death;
         }
 
-        public static CharacterFact CreateAllFalse()
-        {
-            return AllFalse;
-        }
-
-        public void ValidateRuntime()
-        {
-            ValidateValue(_enterField, nameof(EnterField), false);
-            ValidateValue(_exitField, nameof(ExitField), false);
-            ValidateValue(_hit, nameof(Hit), false);
-            ValidateValue(_death, nameof(Death), false);
-        }
-
-        public void ValidateCondition()
-        {
-            ValidateValue(_enterField, nameof(EnterField), true);
-            ValidateValue(_exitField, nameof(ExitField), true);
-            ValidateValue(_hit, nameof(Hit), true);
-            ValidateValue(_death, nameof(Death), true);
-        }
-
         public CharacterFact MarkEnterField()
         {
-            _enterField = Trilean.True;
+            _switchIn = Trilean.True;
             return this;
         }
 
         public CharacterFact MarkExitField()
         {
-            _exitField = Trilean.True;
+            _switchOut = Trilean.True;
             return this;
         }
 
@@ -96,17 +67,14 @@ namespace GamePlay.Character
 
         public CharacterFact ConsumeRequired(CharacterFact requiredFact)
         {
-            requiredFact.ValidateCondition();
-            ValidateRuntime();
-
-            if (requiredFact._enterField == Trilean.True && _enterField == Trilean.True)
+            if (requiredFact._switchIn == Trilean.True && _switchIn == Trilean.True)
             {
-                _enterField = Trilean.False;
+                _switchIn = Trilean.False;
             }
 
-            if (requiredFact._exitField == Trilean.True && _exitField == Trilean.True)
+            if (requiredFact._switchOut == Trilean.True && _switchOut == Trilean.True)
             {
-                _exitField = Trilean.False;
+                _switchOut = Trilean.False;
             }
 
             if (requiredFact._hit == Trilean.True && _hit == Trilean.True)
@@ -120,16 +88,6 @@ namespace GamePlay.Character
             }
 
             return this;
-        }
-
-        private static void ValidateValue(Trilean value, string fieldName, bool allowDontCare)
-        {
-            if (!Enum.IsDefined(typeof(Trilean), value)
-                || (!allowDontCare && value == Trilean.DontCare))
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(CharacterFact)} 的 {fieldName} 只能是 False 或 True");
-            }
         }
     }
 }

@@ -3,15 +3,10 @@ namespace GamePlay.Character
     public sealed class CharacterInfo
     {
         public string CharacterConfigId { get; }
-
         public int EntityId { get; }
-
         public int BaseHealth { get; }
-
         public int CurrentHealth { get; private set; }
-
         public int BaseAttack { get; }
-
         public int CurrentAttack { get; private set; }
 
         public CharacterInfo(

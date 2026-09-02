@@ -1,112 +1,43 @@
-using System;
-
 using UnityEngine;
 
 namespace GamePlay.Character
 {
+    /// <summary>
+    /// 动作朝向模式
+    /// </summary>
     public enum ActionDirectionMode
     {
+        /// <summary>每个逻辑帧都读取最新移动输入，方向会持续变化</summary>
         LiveMoveDirection = 0,
+        /// <summary>动作进入瞬间保存当前移动输入方向，动作持续期间不再改变</summary>
         CaptureMoveDirectionOnEnter = 1,
+        /// <summary>动作进入瞬间保存角色当前水平朝向，动作持续期间不再改变</summary>
         CaptureFacingDirectionOnEnter = 2
     }
 
     [CreateAssetMenu(fileName = "CharacterAction", menuName = "ZZZ/角色/动作单资产")]
     public sealed class CharacterActionAsset : ScriptableObject
     {
-        [SerializeField]
+        [SerializeField, Tooltip("动作ID")]
         private string _actionId;
-        [SerializeField, Min(0f)]
+        [SerializeField, Min(0f), Tooltip("动作逻辑时长")]
         private float _durationSeconds;
-        [SerializeField]
+
+        [SerializeField, Tooltip("动作播放动画")]
         private AnimationClip _animationClip;
-        [SerializeField]
+
+        [SerializeField, Tooltip("动作朝向模式")]
         private ActionDirectionMode _actionDirectionMode;
-        [SerializeField, Min(0f)]
+        [SerializeField, Min(0f), Tooltip("动作最大旋转速度 度/秒")]
         private float _maxRotationSpeedDegreesPerSecond;
-        [SerializeField]
+        [SerializeField, Tooltip("动作位移曲线")]
         private AnimationCurve _cumulativeForwardDisplacement;
 
         public string ActionId => _actionId;
-
         public float DurationSeconds => _durationSeconds;
-
         public AnimationClip AnimationClip => _animationClip;
-
         public ActionDirectionMode ActionDirectionMode => _actionDirectionMode;
-
         public float MaxRotationSpeedDegreesPerSecond => _maxRotationSpeedDegreesPerSecond;
-
         public AnimationCurve CumulativeForwardDisplacement => _cumulativeForwardDisplacement;
-
-        public void Validate()
-        {
-            if (string.IsNullOrWhiteSpace(_actionId))
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(CharacterActionAsset)} 的 {nameof(ActionId)} 不能为空");
-            }
-
-            if (!IsFinitePositive(_durationSeconds))
-            {
-                throw new InvalidOperationException(
-                    $"动作 {_actionId} 的 {nameof(DurationSeconds)} 必须是大于零的有限秒数");
-            }
-
-            if (_animationClip == null)
-            {
-                throw new InvalidOperationException(
-                    $"动作 {_actionId} 的 {nameof(AnimationClip)} 不能为空");
-            }
-
-            if (!Enum.IsDefined(typeof(ActionDirectionMode), _actionDirectionMode))
-            {
-                throw new InvalidOperationException(
-                    $"动作 {_actionId} 的 {nameof(ActionDirectionMode)} 无效");
-            }
-
-            if (!IsFiniteNonNegative(_maxRotationSpeedDegreesPerSecond))
-            {
-                throw new InvalidOperationException(
-                    $"动作 {_actionId} 的 {nameof(MaxRotationSpeedDegreesPerSecond)} 必须是大于等于零的有限速度");
-            }
-
-            if (_cumulativeForwardDisplacement == null)
-            {
-                throw new InvalidOperationException(
-                    $"动作 {_actionId} 的 {nameof(CumulativeForwardDisplacement)} 不能为空");
-            }
-        }
-
-        public float EvaluateCumulativeForwardDisplacement(float logicalProgressSeconds)
-        {
-            if (!IsFiniteNonNegative(logicalProgressSeconds))
-            {
-                throw new ArgumentOutOfRangeException(nameof(logicalProgressSeconds));
-            }
-
-            if (logicalProgressSeconds > _durationSeconds)
-            {
-                throw new ArgumentOutOfRangeException(nameof(logicalProgressSeconds));
-            }
-
-            if (_cumulativeForwardDisplacement == null)
-            {
-                throw new InvalidOperationException(
-                    $"动作 {_actionId} 的 {nameof(CumulativeForwardDisplacement)} 不能为空");
-            }
-
-            return _cumulativeForwardDisplacement.Evaluate(logicalProgressSeconds);
-        }
-
-        private static bool IsFinitePositive(float value)
-        {
-            return !float.IsNaN(value) && !float.IsInfinity(value) && value > 0f;
-        }
-
-        private static bool IsFiniteNonNegative(float value)
-        {
-            return !float.IsNaN(value) && !float.IsInfinity(value) && value >= 0f;
-        }
     }
 }

@@ -48,6 +48,7 @@ namespace GamePlay.Camera
             _objectFollower.Follow();
         }
 
+        /// <inheritdoc/>
         public Vector2 ConvertToWorldCoordinate(Vector2 input)
         {
             Vector3 cameraForward = _camera.transform.forward;

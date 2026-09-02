@@ -82,15 +82,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c4e22d41aa3458342b0d44527d7819dc, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3615966766429726052}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c4e22d41aa3458342b0d44527d7819dc, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 9154480246847436422}
     - targetCorrespondingSourceObject: {fileID: 6764741725787164841, guid: c4e22d41aa3458342b0d44527d7819dc, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6824981023769617521}
-    - targetCorrespondingSourceObject: {fileID: 6764741725787164841, guid: c4e22d41aa3458342b0d44527d7819dc, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 3255606604953078392}
   m_SourcePrefab: {fileID: 100100000, guid: c4e22d41aa3458342b0d44527d7819dc, type: 3}
 --- !u!1 &2067458732384291408 stripped
 GameObject:
@@ -144,21 +138,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.8, z: 0}
---- !u!114 &9154480246847436422
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2067458732384291408}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83dffeb7cd173d64a880845117fd20df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _characterInfoAsset: {fileID: 0}
-  _actionSet: {fileID: 11400000, guid: 0697629e8c3663d4483c3b98fc13e70f, type: 2}
-  _attackCollider: {fileID: 3255606604953078392}
 --- !u!1 &5589336370222475176 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6764741725787164841, guid: c4e22d41aa3458342b0d44527d7819dc, type: 3}
@@ -185,15 +164,3 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 0.2, z: 0.2}
   m_Center: {x: -0.4, y: 0, z: 0}
---- !u!114 &3255606604953078392
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5589336370222475176}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba03adf92545a3b4cb7dac0b6e5e8526, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

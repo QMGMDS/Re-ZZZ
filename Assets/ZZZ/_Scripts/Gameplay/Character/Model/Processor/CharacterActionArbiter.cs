@@ -7,105 +7,68 @@ namespace GamePlay.Character
 {
     public sealed class CharacterActionArbiter
     {
-        private readonly IReadOnlyDictionary<string, CharacterActionAsset> _actionsById;
         private readonly IReadOnlyDictionary<string, IReadOnlyList<CharacterActionLink>> _linksBySourceActionId;
-
-        public CharacterActionArbiter(CharacterActionSetAsset actionSet)
-        {
-            if (actionSet == null)
-            {
-                throw new ArgumentNullException(nameof(actionSet));
-            }
-
-            actionSet.BuildRuntimeLookups(
-                out IReadOnlyDictionary<string, CharacterActionAsset> actionsById,
-                out IReadOnlyDictionary<string, IReadOnlyList<CharacterActionLink>> linksBySourceActionId);
-            _actionsById = actionsById;
-            _linksBySourceActionId = linksBySourceActionId;
-        }
+        private readonly IReadOnlyDictionary<string, CharacterActionAsset> _actionsById;
 
         public CharacterActionArbiter(
-            IReadOnlyDictionary<string, CharacterActionAsset> actionsById,
-            IReadOnlyDictionary<string, IReadOnlyList<CharacterActionLink>> linksBySourceActionId)
+            IReadOnlyDictionary<string, IReadOnlyList<CharacterActionLink>> linksBySourceActionId,
+            IReadOnlyDictionary<string, CharacterActionAsset> actionsById)
         {
-            _actionsById = actionsById ?? throw new ArgumentNullException(nameof(actionsById));
-            _linksBySourceActionId =
-                linksBySourceActionId ?? throw new ArgumentNullException(nameof(linksBySourceActionId));
+            _linksBySourceActionId = linksBySourceActionId;
+            _actionsById = actionsById;
         }
 
-        public bool TrySelect(
-            string currentActionId,
-            float normalizedProgress,
-            in CharacterIntention intention,
-            in CharacterFact fact,
-            out CharacterActionLink selectedLink,
-            out CharacterActionAsset targetAction)
+        public void Arbitrate(ref CharacterActionState state)
         {
-            if (string.IsNullOrWhiteSpace(currentActionId))
+            CharacterActionAsset currentAction = _actionsById[state.CurrentActionId];
+
+            // 进度归一化
+            float normalizedProgress = state.LogicalProgressSeconds / currentAction.DurationSeconds;
+            normalizedProgress = Math.Clamp(normalizedProgress, 0, 1);
+
+            // 无去边
+            if (!_linksBySourceActionId.TryGetValue(state.CurrentActionId, out IReadOnlyList<CharacterActionLink> outgoingLinks))
             {
-                throw new ArgumentException("当前动作 ID 不能为空", nameof(currentActionId));
-            }
-
-            if (float.IsNaN(normalizedProgress)
-                || float.IsInfinity(normalizedProgress)
-                || normalizedProgress < 0f
-                || normalizedProgress > 1f)
-            {
-                throw new ArgumentOutOfRangeException(nameof(normalizedProgress));
-            }
-
-            intention.ValidateRuntime();
-            fact.ValidateRuntime();
-
-            if (!_actionsById.ContainsKey(currentActionId))
-            {
-                throw new InvalidOperationException(
-                    $"当前动作不存在 {currentActionId}");
-            }
-
-            selectedLink = default;
-            targetAction = null;
-
-            if (!_linksBySourceActionId.TryGetValue(
-                    currentActionId,
-                    out IReadOnlyList<CharacterActionLink> outgoingLinks))
-            {
-                return false;
+                return;
             }
 
             for (int index = 0; index < outgoingLinks.Count; index++)
             {
+                // 按优先级遍历
                 CharacterActionLink link = outgoingLinks[index];
+
+                // 打断窗口判断
                 if (normalizedProgress < link.NormalizedInterruptionWindowStart
                     || normalizedProgress > link.NormalizedInterruptionWindowEnd)
                 {
                     continue;
                 }
 
-                if (!Matches(link.RequiredIntention.Move, intention.Move)
-                    || !Matches(link.RequiredIntention.Attack, intention.Attack)
-                    || !Matches(link.RequiredIntention.Evade, intention.Evade)
-                    || !Matches(link.RequiredIntention.Skill, intention.Skill)
-                    || !Matches(link.RequiredIntention.Ultimate, intention.Ultimate)
-                    || !Matches(link.RequiredFact.EnterField, fact.EnterField)
-                    || !Matches(link.RequiredFact.ExitField, fact.ExitField)
-                    || !Matches(link.RequiredFact.Hit, fact.Hit)
-                    || !Matches(link.RequiredFact.Death, fact.Death))
+                // 意图判断
+                if (!Matches(link.RequiredIntention.Move, state.Intention.Move)
+                    || !Matches(link.RequiredIntention.Attack, state.Intention.Attack)
+                    || !Matches(link.RequiredIntention.Evade, state.Intention.Evade)
+                    || !Matches(link.RequiredIntention.Skill, state.Intention.Skill)
+                    || !Matches(link.RequiredIntention.Ultimate, state.Intention.Ultimate))
                 {
                     continue;
                 }
 
-                if (!_actionsById.TryGetValue(link.TargetActionId, out targetAction))
+                // 事实判断
+                if (!Matches(link.RequiredFact.SwitchIn, state.Fact.SwitchIn)
+                    || !Matches(link.RequiredFact.SwitchOut, state.Fact.SwitchOut)
+                    || !Matches(link.RequiredFact.Hit, state.Fact.Hit)
+                    || !Matches(link.RequiredFact.Death, state.Fact.Death))
                 {
-                    throw new InvalidOperationException(
-                        $"动作链接目标不存在 {link.TargetActionId}");
+                    continue;
                 }
 
-                selectedLink = link;
-                return true;
+                // 动作切换
+                state.SetCurrentActionId(link.TargetActionId);
+                state.SetLogicalProgressSeconds(0f);
+                state.SetFact(state.Fact.ConsumeRequired(link.RequiredFact));
+                return;
             }
-
-            return false;
         }
 
         private static bool Matches(Trilean required, Trilean actual)
