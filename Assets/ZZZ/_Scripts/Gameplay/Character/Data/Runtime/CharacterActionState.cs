@@ -12,6 +12,14 @@ namespace GamePlay.Character
         public CharacterIntention Intention => _intention;
         public CharacterFact Fact => _fact;
 
+        public CharacterActionState(string currentActionId)
+        {
+            _currentActionId = currentActionId;
+            _logicalProgressSeconds = 0f;
+            _intention = CharacterIntention.AllFalse;
+            _fact = CharacterFact.AllFalse;
+        }
+
         #region 动作状态的修改方法
 
         public void SetCurrentActionId(string currentActionId)

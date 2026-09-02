@@ -12,6 +12,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cfb9bb4dbdccfc4b8a705d97631cd1e, type: 3}
   m_Name: Anbi_ActionSet
   m_EditorClassIdentifier: 
-  _initialAction: {fileID: 0}
-  _actions: []
-  _links: []
+  _initialAction: {fileID: 11400000, guid: ea312e01687f6f240bff6b4bc742039f, type: 2}
+  _actions:
+  - {fileID: 11400000, guid: ea312e01687f6f240bff6b4bc742039f, type: 2}
+  - {fileID: 11400000, guid: 398c7313ba3d7c14fbb0db8d37ec5e91, type: 2}
+  _links:
+  - _sourceActionId: Anbi_Idle
+    _targetActionId: Anbi_Idle
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _priority: 0
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Anbi_Idle
+    _targetActionId: Anbi_Walk
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _priority: 0
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Anbi_Walk
+    _targetActionId: Anbi_Idle
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _priority: 0
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1

@@ -9,11 +9,11 @@ namespace GamePlay.Character
     [DisallowMultipleComponent]
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
-    public sealed class PlayerCharacterController : MonoBehaviour, IPlayerCharacterService
+    public sealed class PlayerCharacterController : MonoBehaviour
     {
         // 依赖组件
-        private CharacterController _characterController;
         private Animator _animator;
+        private CharacterController _characterController;
 
         // 依赖配置
         [SerializeField]
@@ -21,9 +21,10 @@ namespace GamePlay.Character
         [SerializeField]
         private CharacterInfoAsset _characterInfoAsset;
 
+        // 角色信息
         private CharacterInfo _characterInfo;
-        private CharacterActionState _characterActionState;
 
+        // 依赖逻辑模型
         private PlayerCharacterCoordinator _coordinator;
 
         private void Awake()
@@ -36,40 +37,40 @@ namespace GamePlay.Character
                 throw new InvalidOperationException($"{nameof(PlayerCharacterController)} 检查配置");
             }
 
-            _coordinator = new PlayerCharacterCoordinator(_characterActionSetAsset, _characterController, transform, _animator);
-
+            _coordinator = new PlayerCharacterCoordinator(_characterActionSetAsset, _animator);
         }
 
-        private void OnEnable()
+        #region 模块内部调用接口
+
+        /// <summary>
+        /// 更新该角色
+        /// </summary>
+        public void CharacterUpdate()
+        {
+            _coordinator.Tick();
+        }
+
+        /// <summary>
+        /// 命令该角色进场
+        /// </summary>
+        public void EnterField()
         {
         }
 
-        private void OnDisable()
+        /// <summary>
+        /// 命令该角色离场
+        /// </summary>
+        public void ExitField()
         {
         }
 
-        private void OnDestroy()
+        /// <summary>
+        /// 销毁该角色
+        /// </summary>
+        public void Dispose()
         {
             _coordinator.Dispose();
             _coordinator = null;
-        }
-
-        #region 服务接口
-
-        /// <inheritdoc/>
-        public void CharacterUpdate()
-        {
-            _coordinator.Tick(ref _characterActionState, Time.deltaTime);
-        }
-
-        /// <inheritdoc/>
-        public void EnterField(int characterEntityId, Transform characterTransform)
-        {
-        }
-
-        /// <inheritdoc/>
-        public void ExitField()
-        {
         }
 
         #endregion
