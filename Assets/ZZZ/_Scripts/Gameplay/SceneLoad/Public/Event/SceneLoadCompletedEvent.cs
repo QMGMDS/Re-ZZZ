@@ -5,7 +5,7 @@ using SPFramework;
 namespace GamePlay.SceneLoad.Public
 {
     /// <summary>
-    /// 场景加载完成事件
+    /// 场景加载完成事件，事件的发布在新场景的 OnEnable 之后
     /// </summary>
     public readonly struct SceneLoadCompletedEvent : IEvent
     {

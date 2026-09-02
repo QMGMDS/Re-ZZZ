@@ -47,5 +47,10 @@ namespace GamePlay.Character
         {
             _animationPlayer.Dispose();
         }
+
+        public void SetIntention(CharacterIntention intention)
+        {
+            _currentActionState.SetIntention(intention);
+        }
     }
 }

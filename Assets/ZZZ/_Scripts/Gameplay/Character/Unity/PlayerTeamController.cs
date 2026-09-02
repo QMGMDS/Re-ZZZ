@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+using SPFramework;
+using GamePlay.Definition;
+using GamePlay.Input;
+using GamePlay.Input.Public;
+
 namespace GamePlay.Character
 {
     [DisallowMultipleComponent]
@@ -26,7 +31,31 @@ namespace GamePlay.Character
 
         private void Update()
         {
+            if (!ServiceHub.TryGet<IInputService>(out IInputService inputService))
+            {
+                throw new InvalidOperationException("未得到本帧输入服务接口");
+            }
+
+            // 输入写入激活角色
+            CharacterInputData characterInputData = inputService.CharacterInputData;
+            _currentActiveCharacter.SetIntention(TranslateInput(characterInputData));
+
             _currentActiveCharacter.CharacterUpdate();
+        }
+
+        private static CharacterIntention TranslateInput(CharacterInputData characterInputData)
+        {
+            return new CharacterIntention(
+                ToTrilean(characterInputData.Move.sqrMagnitude != 0f),
+                ToTrilean(characterInputData.Attack),
+                ToTrilean(characterInputData.Evade),
+                ToTrilean(characterInputData.Skill),
+                ToTrilean(characterInputData.Ultimate));
+        }
+
+        private static Trilean ToTrilean(bool value)
+        {
+            return value ? Trilean.True : Trilean.False;
         }
     }
 }

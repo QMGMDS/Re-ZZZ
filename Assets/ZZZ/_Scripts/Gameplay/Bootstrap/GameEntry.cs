@@ -1,87 +1,73 @@
+using System;
+
 using UnityEngine;
 
-using GamePlay.Camera.Public;
-using GamePlay.Character.Public;
-using GamePlay.Input.Public;
-using GamePlay.SceneLoad;
-using GamePlay.SceneLoad.Public;
 using SPFramework;
+using GamePlay.SceneLoad;
+using GamePlay.Camera.Public;
+using GamePlay.Input.Public;
+using GamePlay.SceneLoad.Public;
 
 namespace GamePlay.Root
 {
+    /// <summary>
+    /// 游戏启动引导
+    /// </summary>
     [DefaultExecutionOrder(-10000)]
     public sealed class GameEntry : MonoBehaviour
     {
-        // private SceneLoadController _sceneLoadController;
-        // private PlayerCharacterServiceRouter _playerCharacterServiceRouter;
-        // private ColliderModule _colliderModule;
+        private ISceneLoadService _sceneLoadController;
 
-        // private void Awake()
-        // {
-        //     DontDestroyOnLoad(gameObject);
+        // 状态标识
+        private bool _isGameplaySceneLoaded;
 
-        //     QualitySettings.vSyncCount = 0;
-        //     Application.targetFrameRate = -1;
+        // 事件订阅句柄
+        private IDisposable _sceneLoadCompletedSubscription;
 
-        //     EventBus.Reset();
+        private void Awake()
+        {
+            DontDestroyOnLoad(gameObject);
 
-        //     _sceneLoadController = new SceneLoadController();
-        //     ServiceHub.Register<ISceneLoadService>(_sceneLoadController);
+            _sceneLoadController = new SceneLoadController();
 
-        //     _playerCharacterServiceRouter = new PlayerCharacterServiceRouter();
-        //     ServiceHub.Register<IPlayerCharacterService>(_playerCharacterServiceRouter);
+            _sceneLoadCompletedSubscription = EventBus.Subscribe<SceneLoadCompletedEvent>(OnSceneLoadCompleted);
+        }
 
-        //     _colliderModule = new ColliderModule();
-        //     ServiceHub.Register<IColliderModule>(_colliderModule);
-        // }
+        private void Start()
+        {
+            _sceneLoadController.SyncLoadScene(SceneNames.Gameplay);
+        }
 
-        // private void Start()
-        // {
-        //     _sceneLoadController.SyncLoadScene(SceneNames.Gameplay);
-        // }
+        private void Update()
+        {
+            if (!_isGameplaySceneLoaded)
+            {
+                return;
+            }
 
-        // private void Update()
-        // {
-        //     if (ServiceHub.TryGet<IInputService>(out IInputService inputService))
-        //     {
-        //         inputService.InputCapture();
-        //     }
+            if (ServiceHub.TryGet<IInputService>(out IInputService inputService))
+            {
+                inputService.InputCapture();
+            }
 
-        //     _playerCharacterServiceRouter.CharacterUpdate();
-        //     _colliderModule.LogicUpdate(Time.deltaTime);
-        // }
+            if (ServiceHub.TryGet<ICameraService>(out ICameraService cameraService))
+            {
+                cameraService.CameraUpdate();
+            }
+        }
 
-        // private void LateUpdate()
-        // {
-        //     if (ServiceHub.TryGet<ICameraService>(out ICameraService cameraService))
-        //     {
-        //         cameraService.CameraUpdate();
-        //     }
-        // }
+        private void OnDestroy()
+        {
+            _sceneLoadCompletedSubscription.Dispose();
+        }
 
-        // private void OnDestroy()
-        // {
-        //     if (_colliderModule != null)
-        //     {
-        //         ServiceHub.Unregister<IColliderModule>(_colliderModule);
-        //         _colliderModule = null;
-        //     }
+        #region 事件回调
 
-        //     if (_playerCharacterServiceRouter != null)
-        //     {
-        //         ServiceHub.Unregister<IPlayerCharacterService>(_playerCharacterServiceRouter);
-        //         _playerCharacterServiceRouter.Dispose();
-        //         _playerCharacterServiceRouter = null;
-        //     }
+        private void OnSceneLoadCompleted(SceneLoadCompletedEvent sceneLoadCompletedEvent)
+        {
+            _isGameplaySceneLoaded = sceneLoadCompletedEvent.SceneName == SceneNames.Gameplay;
+        }
 
-        //     if (_sceneLoadController != null)
-        //     {
-        //         ServiceHub.Unregister<ISceneLoadService>(_sceneLoadController);
-        //         _sceneLoadController.Dispose();
-        //         _sceneLoadController = null;
-        //     }
-
-        //     EventBus.Shutdown();
-        // }
+        #endregion
     }
 }

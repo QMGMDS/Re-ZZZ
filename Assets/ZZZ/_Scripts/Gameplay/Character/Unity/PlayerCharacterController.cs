@@ -2,8 +2,6 @@ using System;
 
 using UnityEngine;
 
-using GamePlay.Character.Public;
-
 namespace GamePlay.Character
 {
     [DisallowMultipleComponent]
@@ -40,6 +38,15 @@ namespace GamePlay.Character
             _coordinator = new PlayerCharacterCoordinator(_characterActionSetAsset, _animator);
         }
 
+        /// <summary>
+        /// 销毁该角色
+        /// </summary>
+        private void OnDestroy()
+        {
+            _coordinator.Dispose();
+            _coordinator = null;
+        }
+
         #region 模块内部调用接口
 
         /// <summary>
@@ -48,6 +55,14 @@ namespace GamePlay.Character
         public void CharacterUpdate()
         {
             _coordinator.Tick();
+        }
+
+        /// <summary>
+        /// 写入该角色的当前意图
+        /// </summary>
+        public void SetIntention(CharacterIntention intention)
+        {
+            _coordinator.SetIntention(intention);
         }
 
         /// <summary>
@@ -62,15 +77,6 @@ namespace GamePlay.Character
         /// </summary>
         public void ExitField()
         {
-        }
-
-        /// <summary>
-        /// 销毁该角色
-        /// </summary>
-        public void Dispose()
-        {
-            _coordinator.Dispose();
-            _coordinator = null;
         }
 
         #endregion

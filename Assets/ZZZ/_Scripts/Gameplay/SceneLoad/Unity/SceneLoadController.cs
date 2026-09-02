@@ -10,13 +10,15 @@ namespace GamePlay.SceneLoad
     /// <summary>
     /// 场景加载控制器
     /// </summary>
-    public sealed class SceneLoadController : ISceneLoadService, IDisposable
+    public sealed class SceneLoadController : ISceneLoadService
     {
         /// <summary>
         /// 构造场景加载控制器
         /// </summary>
         public SceneLoadController()
         {
+            ServiceHub.Register<ISceneLoadService>(this);
+
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
@@ -25,6 +27,8 @@ namespace GamePlay.SceneLoad
         /// </summary>
         public void Dispose()
         {
+            ServiceHub.Unregister<ISceneLoadService>(this);
+
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
@@ -43,9 +47,13 @@ namespace GamePlay.SceneLoad
 
         #endregion
 
+        #region 发布事件
+
         private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
         {
             EventBus.Publish(new SceneLoadCompletedEvent(scene.name));
         }
+
+        #endregion
     }
 }

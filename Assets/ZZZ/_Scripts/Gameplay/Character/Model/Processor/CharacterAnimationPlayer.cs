@@ -13,13 +13,17 @@ namespace GamePlay.Character
 
         private PlayableGraph _graph;
         private AnimationPlayableOutput _output;
+
+        // 当前使用的动画节点
         private AnimationClipPlayable _currentPlayable;
+
+        // 当前所处的动作ID，根据此ID切换动画
         private string _currentActionId;
-        private bool _hasCurrentPlayable;
 
         public CharacterAnimationPlayer(IReadOnlyDictionary<string, CharacterActionAsset> actionsById, Animator animator)
         {
             _actionsById = actionsById;
+
             _graph = PlayableGraph.Create(nameof(CharacterAnimationPlayer));
             _graph.SetTimeUpdateMode(DirectorUpdateMode.Manual);
             _output = AnimationPlayableOutput.Create(_graph, "CharacterAnimation", animator);
@@ -30,10 +34,11 @@ namespace GamePlay.Character
         {
             CharacterActionAsset currentAction = _actionsById[state.CurrentActionId];
 
+            // 逻辑时长转动画时长
             float normalizedProgress = state.LogicalProgressSeconds / currentAction.DurationSeconds;
             float clipTimeSeconds = normalizedProgress * currentAction.AnimationClip.length;
 
-            if (!_hasCurrentPlayable || !string.Equals(_currentActionId, state.CurrentActionId, StringComparison.Ordinal))
+            if (!_currentPlayable.IsValid() || !string.Equals(_currentActionId, state.CurrentActionId, StringComparison.Ordinal))
             {
                 Play(currentAction.AnimationClip, clipTimeSeconds);
                 _currentActionId = state.CurrentActionId;
@@ -54,7 +59,6 @@ namespace GamePlay.Character
             _output = default;
             _currentPlayable = default;
             _currentActionId = null;
-            _hasCurrentPlayable = false;
         }
 
         private void Play(AnimationClip clip, float clipTimeSeconds)
@@ -70,7 +74,6 @@ namespace GamePlay.Character
             }
 
             _currentPlayable = playable;
-            _hasCurrentPlayable = true;
             _graph.Evaluate(0f);
         }
 
