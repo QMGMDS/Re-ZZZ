@@ -3,11 +3,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-using GamePlay.Camera.Public;
 using GamePlay.Character.Public;
-using GamePlay.Definition;
-using GamePlay.Input;
-using GamePlay.Input.Public;
 using SPFramework;
 
 namespace GamePlay.Character
@@ -29,8 +25,6 @@ namespace GamePlay.Character
         private CharacterActionState _characterActionState;
         private PlayerCharacterCoordinator _coordinator;
         private PlayerCharacterServiceRouter _router;
-        private IInputService _inputService;
-        private ICameraService _cameraService;
         private int _entityId = -1;
         private bool _isInitialized;
 
@@ -81,27 +75,6 @@ namespace GamePlay.Character
             _isInitialized = true;
         }
 
-        private void Start()
-        {
-            if (!_isInitialized)
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(PlayerCharacterController)} 尚未完成初始化");
-            }
-
-            if (!ServiceHub.TryGet<IInputService>(out _inputService))
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(IInputService)} 未注册 不能启动 {nameof(PlayerCharacterController)}");
-            }
-
-            if (!ServiceHub.TryGet<ICameraService>(out _cameraService))
-            {
-                throw new InvalidOperationException(
-                    $"{nameof(ICameraService)} 未注册 不能启动 {nameof(PlayerCharacterController)}");
-            }
-        }
-
         private void OnEnable()
         {
             if (!_isInitialized)
@@ -110,12 +83,12 @@ namespace GamePlay.Character
                     $"{nameof(PlayerCharacterController)} 尚未完成初始化");
             }
 
-            if (!ServiceHub.TryGet<ICharacterService>(
-                    out ICharacterService characterService)
-                || !(characterService is PlayerCharacterServiceRouter router))
+            if (!ServiceHub.TryGet<IPlayerCharacterService>(
+                    out IPlayerCharacterService playerCharacterService)
+                || !(playerCharacterService is PlayerCharacterServiceRouter router))
             {
                 throw new InvalidOperationException(
-                    $"{nameof(ICharacterService)} 未注册唯一路由 不能启用 {nameof(PlayerCharacterController)}");
+                    $"{nameof(IPlayerCharacterService)} 未注册唯一路由 不能启用 {nameof(PlayerCharacterController)}");
             }
 
             _router = router;
@@ -130,7 +103,7 @@ namespace GamePlay.Character
 
         private void OnDisable()
         {
-            if (_router != null)
+            if (_router != null && !_router.IsDisposed)
             {
                 _router.SuspendRuntimeUnit(this);
             }
@@ -138,11 +111,12 @@ namespace GamePlay.Character
 
         private void OnDestroy()
         {
-            if (_router != null)
+            if (_router != null && !_router.IsDisposed)
             {
                 _router.UnregisterRuntimeUnit(this);
-                _router = null;
             }
+
+            _router = null;
 
             if (_coordinator != null)
             {
@@ -153,23 +127,20 @@ namespace GamePlay.Character
 
         public void CharacterUpdate()
         {
-            CharacterInputData inputData = _inputService.CharacterInputData;
-            _characterActionState.MoveDirectionInWorld = _cameraService.ConvertToWorldCoordinate(inputData.Move);
-            _characterActionState.Intention = CreateIntention(inputData, _characterActionState.MoveDirectionInWorld);
-
-            if (inputData.Switch)
-            {
-                EventBus.Publish(new CharacterSwitchRequestedEvent(transform));
-            }
-
             _coordinator.Tick(ref _characterActionState, Time.deltaTime);
         }
 
-        public void EnterField(Transform characterTransform)
+        public void EnterField(int characterEntityId, Transform characterTransform)
         {
             if (characterTransform == null)
             {
                 throw new ArgumentNullException(nameof(characterTransform));
+            }
+
+            if (characterEntityId != _entityId)
+            {
+                throw new InvalidOperationException(
+                    $"角色实体 ID 不匹配 期望 {_entityId} 实际 {characterEntityId}");
             }
 
             gameObject.SetActive(true);
@@ -192,25 +163,6 @@ namespace GamePlay.Character
         public void Deactivate()
         {
             gameObject.SetActive(false);
-        }
-
-        private static CharacterIntention CreateIntention(
-            CharacterInputData inputData,
-            Vector2 worldMoveDirection)
-        {
-            return new CharacterIntention(
-                ToTrilean(worldMoveDirection.sqrMagnitude > 0f),
-                ToTrilean(inputData.Attack),
-                ToTrilean(inputData.Evade),
-                ToTrilean(inputData.Skill),
-                ToTrilean(inputData.Ultimate));
-        }
-
-        private static Trilean ToTrilean(bool value)
-        {
-            return value
-                ? Trilean.True
-                : Trilean.False;
         }
     }
 }

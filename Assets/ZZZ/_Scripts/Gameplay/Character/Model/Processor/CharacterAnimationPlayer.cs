@@ -72,10 +72,13 @@ namespace GamePlay.Character
                     $"动画链接源 ID 与当前动作不一致 {selectedLink.SourceActionId}");
             }
 
+            float outgoingClipPlaybackSpeed =
+                _currentAction.AnimationClip.length / _currentAction.DurationSeconds;
             _playableGraph.StartTransition(
                 action.AnimationClip,
                 0f,
-                selectedLink.AnimationBlendSeconds);
+                selectedLink.AnimationBlendSeconds,
+                outgoingClipPlaybackSpeed);
             _currentAction = action;
         }
 

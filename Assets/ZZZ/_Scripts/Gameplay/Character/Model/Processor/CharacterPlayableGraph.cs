@@ -17,6 +17,8 @@ namespace GamePlay.Character
         private AnimationClipPlayable _outgoingPlayable;
         private AnimationClip _currentClip;
         private float _outgoingClipLength;
+        // outgoing 播放倍率由动作播放器按片段时长除以逻辑时长计算
+        private float _outgoingClipPlaybackSpeed;
         private float _currentClipTimeSeconds;
         private float _outgoingClipTimeSeconds;
         private float _blendElapsedSeconds;
@@ -111,12 +113,17 @@ namespace GamePlay.Character
             _hasCurrentPlayable = true;
         }
 
-        public void StartTransition(AnimationClip clip, float clipTimeSeconds, float blendSeconds)
+        public void StartTransition(
+            AnimationClip clip,
+            float clipTimeSeconds,
+            float blendSeconds,
+            float outgoingClipPlaybackSpeed)
         {
             EnsureNotDisposed();
             ValidateClip(clip);
             ValidateTime(clipTimeSeconds, nameof(clipTimeSeconds));
             ValidateBlendSeconds(blendSeconds);
+            ValidatePlaybackSpeed(outgoingClipPlaybackSpeed);
 
             if (!_hasCurrentPlayable)
             {
@@ -130,6 +137,7 @@ namespace GamePlay.Character
 
             _outgoingPlayable = _currentPlayable;
             _outgoingClipLength = _currentClip.length;
+            _outgoingClipPlaybackSpeed = outgoingClipPlaybackSpeed;
             _outgoingClipTimeSeconds = _currentClipTimeSeconds;
             _currentPlayable = CreatePlayable(clip, 1);
             _currentPlayable.SetTime(clipTimeSeconds);
@@ -165,7 +173,8 @@ namespace GamePlay.Character
             if (_isBlending)
             {
                 _outgoingClipTimeSeconds = Mathf.Min(
-                    _outgoingClipTimeSeconds + deltaTimeSeconds,
+                    _outgoingClipTimeSeconds
+                        + deltaTimeSeconds * _outgoingClipPlaybackSpeed,
                     _outgoingClipLength);
                 _outgoingPlayable.SetTime(_outgoingClipTimeSeconds);
 
@@ -205,6 +214,7 @@ namespace GamePlay.Character
             _mixer.SetInputWeight(1, 0f);
             _outgoingPlayable = default;
             _outgoingClipLength = 0f;
+            _outgoingClipPlaybackSpeed = 0f;
             _outgoingClipTimeSeconds = 0f;
             _blendElapsedSeconds = 0f;
             _blendDurationSeconds = 0f;
@@ -259,6 +269,7 @@ namespace GamePlay.Character
             _currentClip = null;
             _currentClipTimeSeconds = 0f;
             _outgoingClipLength = 0f;
+            _outgoingClipPlaybackSpeed = 0f;
             _outgoingClipTimeSeconds = 0f;
             _blendElapsedSeconds = 0f;
             _blendDurationSeconds = 0f;
@@ -315,6 +326,16 @@ namespace GamePlay.Character
             if (float.IsNaN(blendSeconds) || float.IsInfinity(blendSeconds) || blendSeconds < 0f)
             {
                 throw new ArgumentOutOfRangeException(nameof(blendSeconds));
+            }
+        }
+
+        private static void ValidatePlaybackSpeed(float playbackSpeed)
+        {
+            if (float.IsNaN(playbackSpeed)
+                || float.IsInfinity(playbackSpeed)
+                || playbackSpeed < 0f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(playbackSpeed));
             }
         }
     }

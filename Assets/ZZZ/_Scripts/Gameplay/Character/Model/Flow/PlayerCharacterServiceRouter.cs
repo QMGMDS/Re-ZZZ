@@ -8,7 +8,7 @@ using GamePlay.Character.Public;
 
 namespace GamePlay.Character
 {
-    public sealed class PlayerCharacterServiceRouter : ICharacterService, IDisposable
+    public sealed class PlayerCharacterServiceRouter : IPlayerCharacterService, IDisposable
     {
         private sealed class ReferenceComparer<T> : IEqualityComparer<T> where T : class
         {
@@ -44,6 +44,8 @@ namespace GamePlay.Character
         public IPlayerCharacterService CurrentCharacter => _currentUnit;
 
         public int RegisteredUnitCount => _unitsByEntityId.Count;
+
+        internal bool IsDisposed => _isDisposed;
 
         public int RegisterRuntimeUnit(IPlayerCharacterService runtimeUnit)
         {
@@ -138,7 +140,7 @@ namespace GamePlay.Character
                     $"角色实体 ID 正在退场 不能上场 {characterEntityId}");
             }
 
-            targetUnit.EnterField(characterTransform);
+            targetUnit.EnterField(characterEntityId, characterTransform);
             _currentUnit = targetUnit;
         }
 

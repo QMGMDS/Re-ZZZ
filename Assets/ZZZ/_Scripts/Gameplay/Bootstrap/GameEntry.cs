@@ -32,7 +32,7 @@ namespace GamePlay.Root
             ServiceHub.Register<ISceneLoadService>(_sceneLoadController);
 
             _playerCharacterServiceRouter = new PlayerCharacterServiceRouter();
-            ServiceHub.Register<ICharacterService>(_playerCharacterServiceRouter);
+            ServiceHub.Register<IPlayerCharacterService>(_playerCharacterServiceRouter);
 
             _colliderModule = new ColliderModule();
             ServiceHub.Register<IColliderModule>(_colliderModule);
@@ -72,7 +72,7 @@ namespace GamePlay.Root
 
             if (_playerCharacterServiceRouter != null)
             {
-                ServiceHub.Unregister<ICharacterService>(_playerCharacterServiceRouter);
+                ServiceHub.Unregister<IPlayerCharacterService>(_playerCharacterServiceRouter);
                 _playerCharacterServiceRouter.Dispose();
                 _playerCharacterServiceRouter = null;
             }
