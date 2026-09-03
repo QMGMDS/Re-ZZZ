@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cfb9bb4dbdccfc4b8a705d97631cd1e, type: 3}
+  m_Name: Claymore_ActionSet
+  m_EditorClassIdentifier: 
+  _initialAction: {fileID: 11400000, guid: 4022c5798f9c057409404a3820567fbf, type: 2}
+  _actions:
+  - {fileID: 11400000, guid: 4022c5798f9c057409404a3820567fbf, type: 2}
+  - {fileID: 11400000, guid: 1873579d6f41b5f449dedcea96d9cfc1, type: 2}
+  _links:
+  - _sourceActionId: Claymore_Idle
+    _targetActionId: Claymore_Hit_Front_Up
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 0
+      _switchOut: 0
+      _hit: 2
+      _death: 0
+  - _sourceActionId: Claymore_Hit_Front_Up
+    _targetActionId: Claymore_Idle
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 0
+      _switchOut: 0
+      _hit: 1
+      _death: 0
+  - _sourceActionId: Claymore_Hit_Front_Up
+    _targetActionId: Claymore_Hit_Front_Up
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 0
+      _switchOut: 0
+      _hit: 2
+      _death: 0

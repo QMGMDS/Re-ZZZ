@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f35bf813edf5c947baf3c555ab0e8b5, type: 3}
   m_Name: Anbi_Info
   m_EditorClassIdentifier: 
-  _characterConfigId: 
-  _baseHealth: 0
-  _baseAttack: 0
+  _characterConfigId: Anbi
+  _baseHealth: 100
+  _baseAttack: 5

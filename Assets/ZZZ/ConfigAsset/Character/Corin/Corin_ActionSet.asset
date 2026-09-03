@@ -1,0 +1,655 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cfb9bb4dbdccfc4b8a705d97631cd1e, type: 3}
+  m_Name: Corin_ActionSet
+  m_EditorClassIdentifier: 
+  _initialAction: {fileID: 11400000, guid: 57d769aa245897245b6ae83ccd4422c6, type: 2}
+  _actions:
+  - {fileID: 11400000, guid: 57d769aa245897245b6ae83ccd4422c6, type: 2}
+  - {fileID: 11400000, guid: 7fb8738a72a635445a903e19bbb82f6b, type: 2}
+  - {fileID: 11400000, guid: ba1c0335069fe824d9a90516155eb095, type: 2}
+  - {fileID: 11400000, guid: 3b69399e2e738bd4e80ee1eedc036d93, type: 2}
+  - {fileID: 11400000, guid: 9797f2e07dd7d0845bf8f159be134626, type: 2}
+  - {fileID: 11400000, guid: 71c59f11fa0a5d64c86e2b3faa0a14a2, type: 2}
+  - {fileID: 11400000, guid: f5658f497ab4c0c4d90331c7e638c1e3, type: 2}
+  - {fileID: 11400000, guid: ea440f3c1a961c14cbc5f18ee4120711, type: 2}
+  - {fileID: 11400000, guid: e34e928f244ce634e84b79df6f2cdb93, type: 2}
+  _links:
+  - _sourceActionId: Corin_Idle
+    _targetActionId: Corin_Idle
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Idle
+    _targetActionId: Corin_WalkStart
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.2
+    _requiredIntention:
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Idle
+    _targetActionId: Corin_EvadeFront
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 2
+      _attack: 0
+      _evade: 2
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Idle
+    _targetActionId: Corin_EvadeBack
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 1
+      _attack: 0
+      _evade: 2
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Idle
+    _targetActionId: Corin_SwitchIn_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 2
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Idle
+    _targetActionId: Corin_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_WalkStart
+    _targetActionId: Corin_Walk
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_WalkStart
+    _targetActionId: Corin_Stop
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_WalkStart
+    _targetActionId: Corin_EvadeFront
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 2
+      _attack: 0
+      _evade: 2
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_WalkStart
+    _targetActionId: Corin_EvadeBack
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 1
+      _attack: 0
+      _evade: 2
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_WalkStart
+    _targetActionId: Corin_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Walk
+    _targetActionId: Corin_Walk
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Walk
+    _targetActionId: Corin_Stop
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Walk
+    _targetActionId: Corin_EvadeFront
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 2
+      _attack: 0
+      _evade: 2
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Walk
+    _targetActionId: Corin_EvadeBack
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 1
+      _attack: 0
+      _evade: 2
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Walk
+    _targetActionId: Corin_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Stop
+    _targetActionId: Corin_Idle
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Stop
+    _targetActionId: Corin_WalkStart
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Stop
+    _targetActionId: Corin_EvadeFront
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 2
+      _attack: 0
+      _evade: 2
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Stop
+    _targetActionId: Corin_EvadeBack
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 1
+      _attack: 0
+      _evade: 2
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Stop
+    _targetActionId: Corin_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_EvadeFront
+    _targetActionId: Corin_Idle
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_EvadeFront
+    _targetActionId: Corin_Run
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0.178
+    _normalizedInterruptionWindowEnd: 0.214
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_EvadeFront
+    _targetActionId: Corin_WalkStart
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0.536
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_EvadeFront
+    _targetActionId: Corin_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_EvadeBack
+    _targetActionId: Corin_Idle
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_EvadeBack
+    _targetActionId: Corin_WalkStart
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0.438
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_EvadeBack
+    _targetActionId: Corin_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Run
+    _targetActionId: Corin_Run
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Run
+    _targetActionId: Corin_Stop
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Run
+    _targetActionId: Corin_EvadeFront
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 2
+      _attack: 0
+      _evade: 2
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Run
+    _targetActionId: Corin_EvadeBack
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 1
+      _attack: 0
+      _evade: 2
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_Run
+    _targetActionId: Corin_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_SwitchIn_Normal
+    _targetActionId: Corin_Idle
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_SwitchIn_Normal
+    _targetActionId: Corin_WalkStart
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0.5
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_SwitchIn_Normal
+    _targetActionId: Corin_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Corin_SwitchOut_Normal
+    _targetActionId: Corin_SwitchIn_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 2
+      _switchOut: 1
+      _hit: 1
+      _death: 1
