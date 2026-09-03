@@ -21,18 +21,33 @@ namespace GamePlay.Character
         private PlayerCharacterController _currentActiveCharacter;
         private int _currentActiveCharacterIndex;
 
+        // 借用服务接口
+        private IInputService _inputService;
+        private ICameraService _cameraService;
+
+
         private void Awake()
         {
             if (_playerCharacterControllers == null || _playerCharacterControllers.Count == 0)
             {
                 throw new InvalidOperationException($"{nameof(PlayerTeamController)} 必须配置 {nameof(_playerCharacterControllers)}");
             }
-
             for (int index = 0; index < _playerCharacterControllers.Count; index++)
             {
                 PlayerCharacterController playerCharacterController = _playerCharacterControllers[index];
                 playerCharacterController.InitializeCharacterInfo(index);
             }
+
+            if (!ServiceHub.TryGet<IInputService>(out IInputService inputService))
+            {
+                throw new InvalidOperationException("未得到本帧输入服务接口");
+            }
+            _inputService = inputService;
+            if (!ServiceHub.TryGet<ICameraService>(out ICameraService cameraService))
+            {
+                throw new InvalidOperationException("未得到本帧摄像机服务接口");
+            }
+            _cameraService = cameraService;
 
             _currentActiveCharacterIndex = 0;
             _currentActiveCharacter = _playerCharacterControllers[_currentActiveCharacterIndex];
@@ -40,17 +55,7 @@ namespace GamePlay.Character
 
         private void Update()
         {
-            if (!ServiceHub.TryGet<IInputService>(out IInputService inputService))
-            {
-                throw new InvalidOperationException("未得到本帧输入服务接口");
-            }
-
-            if (!ServiceHub.TryGet<ICameraService>(out ICameraService cameraService))
-            {
-                throw new InvalidOperationException("未得到本帧摄像机服务接口");
-            }
-
-            CharacterInputData characterInputData = inputService.CharacterInputData;
+            CharacterInputData characterInputData = _inputService.CharacterInputData;
 
             // 角色切换判断
             if (characterInputData.Switch)
@@ -59,7 +64,7 @@ namespace GamePlay.Character
             }
 
             // 输入写入激活角色
-            Vector2 moveDirectionInWorld = cameraService.ConvertToWorldCoordinate(characterInputData.Move);
+            Vector2 moveDirectionInWorld = _cameraService.ConvertToWorldCoordinate(characterInputData.Move);
             _currentActiveCharacter.SetIntention(TranslateInput(characterInputData), moveDirectionInWorld);
 
             // 遍历角色更新
@@ -78,8 +83,8 @@ namespace GamePlay.Character
             int nextCharacterIndex = (_currentActiveCharacterIndex + 1) % _playerCharacterControllers.Count;
             PlayerCharacterController nextCharacter = _playerCharacterControllers[nextCharacterIndex];
 
-            _currentActiveCharacter.ExitField();
-            nextCharacter.EnterField();
+            Transform currentCharacterTransform = _currentActiveCharacter.ExitField();
+            nextCharacter.EnterField(currentCharacterTransform);
 
             _currentActiveCharacterIndex = nextCharacterIndex;
             _currentActiveCharacter = nextCharacter;

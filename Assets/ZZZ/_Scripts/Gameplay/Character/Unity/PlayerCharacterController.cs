@@ -76,15 +76,20 @@ namespace GamePlay.Character
         /// <summary>
         /// 命令该角色进场
         /// </summary>
-        public void EnterField()
+        public void EnterField(Transform characterTransform)
         {
+            transform.SetPositionAndRotation(characterTransform.position, characterTransform.rotation);
+            gameObject.SetActive(true);
+            _coordinator.MarkEnterField();
         }
 
         /// <summary>
         /// 命令该角色离场
         /// </summary>
-        public void ExitField()
+        public Transform ExitField()
         {
+            _coordinator.MarkExitField();
+            return transform;
         }
 
         #endregion

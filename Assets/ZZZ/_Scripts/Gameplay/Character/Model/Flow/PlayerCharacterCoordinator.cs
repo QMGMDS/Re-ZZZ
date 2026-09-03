@@ -58,5 +58,15 @@ namespace GamePlay.Character
             _currentActionState.SetIntention(intention);
             _currentActionState.SetMoveDirectionInWorld(moveDirectionInWorld);
         }
+
+        public void MarkEnterField()
+        {
+            _currentActionState.SetFact(_currentActionState.Fact.MarkEnterField());
+        }
+
+        public void MarkExitField()
+        {
+            _currentActionState.SetFact(_currentActionState.Fact.MarkExitField());
+        }
     }
 }
