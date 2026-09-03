@@ -66,6 +66,14 @@ namespace GamePlay.Character
         }
 
         /// <summary>
+        /// 初始化该角色信息
+        /// </summary>
+        public void InitializeCharacterInfo(int assignedEntityId)
+        {
+            _characterInfo = new CharacterInfo(_characterInfoAsset, assignedEntityId);
+        }
+
+        /// <summary>
         /// 命令该角色进场
         /// </summary>
         public void EnterField()

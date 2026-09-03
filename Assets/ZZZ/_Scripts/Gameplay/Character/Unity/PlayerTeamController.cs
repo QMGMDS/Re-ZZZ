@@ -19,6 +19,7 @@ namespace GamePlay.Character
 
         // 队伍中当前激活角色
         private PlayerCharacterController _currentActiveCharacter;
+        private int _currentActiveCharacterIndex;
 
         private void Awake()
         {
@@ -27,7 +28,14 @@ namespace GamePlay.Character
                 throw new InvalidOperationException($"{nameof(PlayerTeamController)} 必须配置 {nameof(_playerCharacterControllers)}");
             }
 
-            _currentActiveCharacter = _playerCharacterControllers[0];
+            for (int index = 0; index < _playerCharacterControllers.Count; index++)
+            {
+                PlayerCharacterController playerCharacterController = _playerCharacterControllers[index];
+                playerCharacterController.InitializeCharacterInfo(index);
+            }
+
+            _currentActiveCharacterIndex = 0;
+            _currentActiveCharacter = _playerCharacterControllers[_currentActiveCharacterIndex];
         }
 
         private void Update()
@@ -42,12 +50,39 @@ namespace GamePlay.Character
                 throw new InvalidOperationException("未得到本帧摄像机服务接口");
             }
 
-            // 输入写入激活角色
             CharacterInputData characterInputData = inputService.CharacterInputData;
+
+            // 角色切换判断
+            if (characterInputData.Switch)
+            {
+                SwitchToNextCharacter();
+            }
+
+            // 输入写入激活角色
             Vector2 moveDirectionInWorld = cameraService.ConvertToWorldCoordinate(characterInputData.Move);
             _currentActiveCharacter.SetIntention(TranslateInput(characterInputData), moveDirectionInWorld);
 
-            _currentActiveCharacter.CharacterUpdate();
+            // 遍历角色更新
+            for (int index = 0; index < _playerCharacterControllers.Count; index++)
+            {
+                PlayerCharacterController playerCharacterController = _playerCharacterControllers[index];
+                playerCharacterController.CharacterUpdate();
+            }
+        }
+
+        /// <summary>
+        /// 检测输入 Switch - 角色切换
+        /// </summary>
+        private void SwitchToNextCharacter()
+        {
+            int nextCharacterIndex = (_currentActiveCharacterIndex + 1) % _playerCharacterControllers.Count;
+            PlayerCharacterController nextCharacter = _playerCharacterControllers[nextCharacterIndex];
+
+            _currentActiveCharacter.ExitField();
+            nextCharacter.EnterField();
+
+            _currentActiveCharacterIndex = nextCharacterIndex;
+            _currentActiveCharacter = nextCharacter;
         }
 
         private static CharacterIntention TranslateInput(CharacterInputData characterInputData)

@@ -20,7 +20,7 @@ namespace GamePlay.Character
     {
         [SerializeField, Tooltip("动作ID")]
         private string _actionId;
-        [SerializeField, Min(0f), Tooltip("动作逻辑时长")]
+        [SerializeField, Min(0.001f), Tooltip("动作逻辑时长")]
         private float _durationSeconds;
 
         [SerializeField, Tooltip("动作播放动画")]

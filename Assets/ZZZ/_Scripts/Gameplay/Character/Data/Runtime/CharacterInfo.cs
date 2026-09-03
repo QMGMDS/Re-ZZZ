@@ -2,67 +2,30 @@ namespace GamePlay.Character
 {
     public sealed class CharacterInfo
     {
-        public string CharacterConfigId { get; }
-        public int EntityId { get; }
-        public int BaseHealth { get; }
+        /// <summary>角色配置ID</summary>
+        public string CharacterConfigId { get; private set; }
+        /// <summary>角色基础血量</summary>
+        public int BaseHealth { get; private set; }
+        /// <summary>角色基础攻击力</summary>
+        public int BaseAttack { get; private set; }
+
+        /// <summary>角色实体ID</summary>
+        public int EntityId { get; private set; }
+        /// <summary>角色当前血量</summary>
         public int CurrentHealth { get; private set; }
-        public int BaseAttack { get; }
+        /// <summary>角色当前攻击力</summary>
         public int CurrentAttack { get; private set; }
 
-        public CharacterInfo(
-            string configId,
-            int entityId,
-            int baseHealth,
-            int currentHealth,
-            int baseAttack,
-            int currentAttack)
+        public CharacterInfo(CharacterInfoAsset characterInfoAsset, int assignedEntityId)
         {
-            if (string.IsNullOrWhiteSpace(configId))
-            {
-                throw new System.ArgumentException("角色配置 ID 不能为空", nameof(configId));
-            }
+            CharacterConfigId = characterInfoAsset.CharacterConfigId;
+            BaseHealth = characterInfoAsset.BaseHealth;
+            BaseAttack = characterInfoAsset.BaseAttack;
 
-            if (entityId < 0)
-            {
-                throw new System.ArgumentOutOfRangeException(nameof(entityId));
-            }
+            CurrentHealth = BaseHealth;
+            CurrentAttack = BaseAttack;
 
-            if (baseHealth <= 0 || currentHealth < 0 || currentHealth > baseHealth)
-            {
-                throw new System.ArgumentOutOfRangeException(nameof(currentHealth));
-            }
-
-            if (baseAttack < 0 || currentAttack < 0)
-            {
-                throw new System.ArgumentOutOfRangeException(nameof(currentAttack));
-            }
-
-            CharacterConfigId = configId;
-            EntityId = entityId;
-            BaseHealth = baseHealth;
-            CurrentHealth = currentHealth;
-            BaseAttack = baseAttack;
-            CurrentAttack = currentAttack;
-        }
-
-        public void SetCurrentHealth(int currentHealth)
-        {
-            if (currentHealth < 0 || currentHealth > BaseHealth)
-            {
-                throw new System.ArgumentOutOfRangeException(nameof(currentHealth));
-            }
-
-            CurrentHealth = currentHealth;
-        }
-
-        public void SetCurrentAttack(int currentAttack)
-        {
-            if (currentAttack < 0)
-            {
-                throw new System.ArgumentOutOfRangeException(nameof(currentAttack));
-            }
-
-            CurrentAttack = currentAttack;
+            EntityId = assignedEntityId;
         }
     }
 }
