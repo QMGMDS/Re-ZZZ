@@ -35,11 +35,17 @@ namespace GamePlay.Character
             for (int index = 0; index < _playerCharacterControllers.Count; index++)
             {
                 PlayerCharacterController playerCharacterController = _playerCharacterControllers[index];
+                if (playerCharacterController == null)
+                {
+                    throw new InvalidOperationException($"{nameof(PlayerTeamController)} 的角色列表第 {index} 项未配置");
+                }
+
                 playerCharacterController.InitializeCharacterInfo(index);
             }
 
             _currentActiveCharacterIndex = 0;
             _currentActiveCharacter = _playerCharacterControllers[_currentActiveCharacterIndex];
+            _currentActiveCharacter.ActivateInitial();
         }
 
         private void Start()
@@ -74,6 +80,11 @@ namespace GamePlay.Character
             for (int index = 0; index < _playerCharacterControllers.Count; index++)
             {
                 PlayerCharacterController playerCharacterController = _playerCharacterControllers[index];
+                if (!playerCharacterController.isActiveAndEnabled)
+                {
+                    continue;
+                }
+
                 playerCharacterController.CharacterUpdate();
             }
         }

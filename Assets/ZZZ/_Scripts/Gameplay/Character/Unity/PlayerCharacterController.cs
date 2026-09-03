@@ -74,6 +74,14 @@ namespace GamePlay.Character
         }
 
         /// <summary>
+        /// 激活初始角色物体
+        /// </summary>
+        public void ActivateInitial()
+        {
+            gameObject.SetActive(true);
+        }
+
+        /// <summary>
         /// 命令该角色进场
         /// </summary>
         public void EnterField(Transform characterTransform)

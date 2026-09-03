@@ -231,7 +231,11 @@ namespace Editor
 
             try
             {
-                using (FileStream fileStream = File.OpenRead(filePath))
+                using (FileStream fileStream = new FileStream(
+                           filePath,
+                           FileMode.Open,
+                           FileAccess.Read,
+                           FileShare.ReadWrite | FileShare.Delete))
                 using (ZipArchive archive = new ZipArchive(fileStream, ZipArchiveMode.Read))
                 {
                     XDocument workbook = ReadXml(archive, "xl/workbook.xml");
