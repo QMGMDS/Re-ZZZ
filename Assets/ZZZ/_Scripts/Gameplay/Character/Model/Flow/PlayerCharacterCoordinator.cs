@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GamePlay.Character
 {
-    public sealed class PlayerCharacterCoordinator : IDisposable
+    public sealed class PlayerCharacterCoordinator
     {
         private readonly IReadOnlyDictionary<string, CharacterActionAsset> _actionsById;
         private readonly IReadOnlyDictionary<string, IReadOnlyList<CharacterActionLink>> _linksBySourceActionId;
