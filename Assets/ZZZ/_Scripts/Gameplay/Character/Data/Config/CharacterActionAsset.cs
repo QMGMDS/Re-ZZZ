@@ -3,7 +3,7 @@ using UnityEngine;
 namespace GamePlay.Character
 {
     /// <summary>
-    /// 动作朝向模式
+    /// 动作运动模式
     /// </summary>
     public enum ActionDirectionMode
     {
@@ -26,7 +26,7 @@ namespace GamePlay.Character
         [SerializeField, Tooltip("动作播放动画")]
         private AnimationClip _animationClip;
 
-        [SerializeField, Tooltip("动作朝向模式")]
+        [SerializeField, Tooltip("动作运动模式")]
         private ActionDirectionMode _actionDirectionMode;
         [SerializeField, Min(0f), Tooltip("动作最大旋转速度 度/秒")]
         private float _maxRotationSpeedDegreesPerSecond;

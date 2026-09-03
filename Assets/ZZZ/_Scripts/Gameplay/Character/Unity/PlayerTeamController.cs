@@ -7,6 +7,7 @@ using SPFramework;
 using GamePlay.Definition;
 using GamePlay.Input;
 using GamePlay.Input.Public;
+using GamePlay.Camera.Public;
 
 namespace GamePlay.Character
 {
@@ -36,9 +37,15 @@ namespace GamePlay.Character
                 throw new InvalidOperationException("未得到本帧输入服务接口");
             }
 
+            if (!ServiceHub.TryGet<ICameraService>(out ICameraService cameraService))
+            {
+                throw new InvalidOperationException("未得到本帧摄像机服务接口");
+            }
+
             // 输入写入激活角色
             CharacterInputData characterInputData = inputService.CharacterInputData;
-            _currentActiveCharacter.SetIntention(TranslateInput(characterInputData));
+            Vector2 moveDirectionInWorld = cameraService.ConvertToWorldCoordinate(characterInputData.Move);
+            _currentActiveCharacter.SetIntention(TranslateInput(characterInputData), moveDirectionInWorld);
 
             _currentActiveCharacter.CharacterUpdate();
         }

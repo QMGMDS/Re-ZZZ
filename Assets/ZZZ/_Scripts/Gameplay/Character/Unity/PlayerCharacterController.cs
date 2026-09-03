@@ -35,7 +35,7 @@ namespace GamePlay.Character
                 throw new InvalidOperationException($"{nameof(PlayerCharacterController)} 检查配置");
             }
 
-            _coordinator = new PlayerCharacterCoordinator(_characterActionSetAsset, _animator);
+            _coordinator = new PlayerCharacterCoordinator(_characterActionSetAsset, _animator, _characterController);
         }
 
         /// <summary>
@@ -60,9 +60,9 @@ namespace GamePlay.Character
         /// <summary>
         /// 写入该角色的当前意图
         /// </summary>
-        public void SetIntention(CharacterIntention intention)
+        public void SetIntention(CharacterIntention intention, Vector2 moveDirectionInWorld)
         {
-            _coordinator.SetIntention(intention);
+            _coordinator.SetIntention(intention, moveDirectionInWorld);
         }
 
         /// <summary>

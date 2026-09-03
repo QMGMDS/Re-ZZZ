@@ -10,16 +10,34 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41524139b4d309a4797cebc79c684329, type: 3}
-  m_Name: Anbi_Walk
+  m_Name: Anbi_Idle
   m_EditorClassIdentifier: 
-  _actionId: Anbi_Walk
-  _durationSeconds: 0.533
-  _animationClip: {fileID: 7400000, guid: 1213a53bf7a3ceb48a5115810ac7fda1, type: 2}
+  _actionId: Anbi_Idle
+  _durationSeconds: 4.033
+  _animationClip: {fileID: 7400000, guid: d013022323d47fa42b8c1aa7db1c07f5, type: 2}
   _actionDirectionMode: 0
   _maxRotationSpeedDegreesPerSecond: 0
   _cumulativeForwardDisplacement:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
