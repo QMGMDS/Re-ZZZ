@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using SPFramework;
+using GamePlay.Character.Public;
 using GamePlay.Definition;
 using GamePlay.Input;
 using GamePlay.Input.Public;
@@ -25,7 +26,6 @@ namespace GamePlay.Character
         private IInputService _inputService;
         private ICameraService _cameraService;
 
-
         private void Awake()
         {
             if (_playerCharacterControllers == null || _playerCharacterControllers.Count == 0)
@@ -38,6 +38,12 @@ namespace GamePlay.Character
                 playerCharacterController.InitializeCharacterInfo(index);
             }
 
+            _currentActiveCharacterIndex = 0;
+            _currentActiveCharacter = _playerCharacterControllers[_currentActiveCharacterIndex];
+        }
+
+        private void Start()
+        {
             if (!ServiceHub.TryGet<IInputService>(out IInputService inputService))
             {
                 throw new InvalidOperationException("未得到本帧输入服务接口");
@@ -48,9 +54,6 @@ namespace GamePlay.Character
                 throw new InvalidOperationException("未得到本帧摄像机服务接口");
             }
             _cameraService = cameraService;
-
-            _currentActiveCharacterIndex = 0;
-            _currentActiveCharacter = _playerCharacterControllers[_currentActiveCharacterIndex];
         }
 
         private void Update()
@@ -58,7 +61,7 @@ namespace GamePlay.Character
             CharacterInputData characterInputData = _inputService.CharacterInputData;
 
             // 角色切换判断
-            if (characterInputData.Switch)
+            if (characterInputData.Switch && _playerCharacterControllers.Count >= 2)
             {
                 SwitchToNextCharacter();
             }
@@ -88,6 +91,8 @@ namespace GamePlay.Character
 
             _currentActiveCharacterIndex = nextCharacterIndex;
             _currentActiveCharacter = nextCharacter;
+
+            EventBus.Publish(new CharacterSwitchedEvent(nextCharacter.transform));
         }
 
         private static CharacterIntention TranslateInput(CharacterInputData characterInputData)

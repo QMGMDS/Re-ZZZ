@@ -21,6 +21,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f3b9f7e834e85414c91a657a33cacdfb, type: 2}
   - {fileID: 11400000, guid: 3927da8bc825f244bb6d8920d461b2bc, type: 2}
   - {fileID: 11400000, guid: 76d2a3e866301f64581cfe4c594ea750, type: 2}
+  - {fileID: 11400000, guid: e3ef2a1c1ffc4664fa0b94ac256d495c, type: 2}
+  - {fileID: 11400000, guid: 2c0f6b76a09fc5a4ea0ec16e5ab13b4b, type: 2}
   _links:
   - _sourceActionId: Anbi_Idle
     _targetActionId: Anbi_Idle
@@ -90,6 +92,23 @@ MonoBehaviour:
       _switchOut: 1
       _hit: 1
       _death: 1
+  - _sourceActionId: Anbi_Idle
+    _targetActionId: Anbi_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
+      _hit: 1
+      _death: 1
   - _sourceActionId: Anbi_WalkStart
     _targetActionId: Anbi_Walk
     _priority: 0
@@ -158,6 +177,23 @@ MonoBehaviour:
       _switchOut: 1
       _hit: 1
       _death: 1
+  - _sourceActionId: Anbi_WalkStart
+    _targetActionId: Anbi_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
+      _hit: 1
+      _death: 1
   - _sourceActionId: Anbi_Walk
     _targetActionId: Anbi_Walk
     _priority: 0
@@ -224,6 +260,23 @@ MonoBehaviour:
     _requiredFact:
       _switchIn: 1
       _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Anbi_Walk
+    _targetActionId: Anbi_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
       _hit: 1
       _death: 1
   - _sourceActionId: Anbi_Stop
@@ -292,6 +345,23 @@ MonoBehaviour:
     _requiredFact:
       _switchIn: 1
       _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Anbi_Stop
+    _targetActionId: Anbi_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
       _hit: 1
       _death: 1
   - _sourceActionId: Anbi_EvadeFront
@@ -345,6 +415,23 @@ MonoBehaviour:
       _switchOut: 1
       _hit: 1
       _death: 1
+  - _sourceActionId: Anbi_EvadeFront
+    _targetActionId: Anbi_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
+      _hit: 1
+      _death: 1
   - _sourceActionId: Anbi_EvadeBack
     _targetActionId: Anbi_Idle
     _priority: 0
@@ -377,6 +464,23 @@ MonoBehaviour:
     _requiredFact:
       _switchIn: 1
       _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Anbi_EvadeBack
+    _targetActionId: Anbi_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
       _hit: 1
       _death: 1
   - _sourceActionId: Anbi_Run
@@ -444,6 +548,91 @@ MonoBehaviour:
       _ultimate: 0
     _requiredFact:
       _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Anbi_Run
+    _targetActionId: Anbi_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Anbi_SwitchIn_Normal
+    _targetActionId: Anbi_Idle
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Anbi_SwitchIn_Normal
+    _targetActionId: Anbi_WalkStart
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0.615
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Anbi_SwitchIn_Normal
+    _targetActionId: Anbi_SwitchOut_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 2
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Anbi_SwitchOut_Normal
+    _targetActionId: Anbi_SwitchIn_Normal
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 0
+      _evade: 0
+      _skill: 0
+      _ultimate: 0
+    _requiredFact:
+      _switchIn: 2
       _switchOut: 1
       _hit: 1
       _death: 1

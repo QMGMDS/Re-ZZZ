@@ -6,11 +6,11 @@ using SPFramework;
 
 namespace GamePlay.Character.Public
 {
-    public readonly struct CharacterSwitchRequestedEvent : IEvent
+    public readonly struct CharacterSwitchedEvent : IEvent
     {
         public Transform CharacterTransform { get; }
 
-        public CharacterSwitchRequestedEvent(Transform characterTransform)
+        public CharacterSwitchedEvent(Transform characterTransform)
         {
             if (characterTransform == null)
             {

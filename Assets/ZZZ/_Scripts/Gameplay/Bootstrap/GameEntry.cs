@@ -21,7 +21,7 @@ namespace GamePlay.Root
         // 状态标识
         private bool _isGameplaySceneLoaded;
 
-        // 事件订阅句柄
+        // 事件退订句柄
         private IDisposable _sceneLoadCompletedSubscription;
 
         private void Awake()

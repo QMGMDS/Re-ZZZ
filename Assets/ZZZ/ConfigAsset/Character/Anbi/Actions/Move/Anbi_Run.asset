@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Anbi_Run
   m_EditorClassIdentifier: 
   _actionId: Anbi_Run
-  _durationSeconds: 0.533
+  _durationSeconds: 0.433
   _animationClip: {fileID: 7400000, guid: 6514883f6e2bd9344885061c1f28e1e9, type: 2}
   _actionDirectionMode: 0
   _maxRotationSpeedDegreesPerSecond: 720
@@ -24,53 +24,17 @@ MonoBehaviour:
       time: 0
       value: 0
       inSlope: 3.7339752
-      outSlope: 3.7339752
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.07692307
-      value: 0.28722885
-      inSlope: 3.8152542
-      outSlope: 3.8152542
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.3076923
-      value: 1.1964536
-      inSlope: 3.8058276
-      outSlope: 3.8058276
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.69230765
-      value: 2.6551743
-      inSlope: 3.9829752
-      outSlope: 3.9829752
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.9230769
-      value: 3.5396378
-      inSlope: 3.7169852
-      outSlope: 3.7169852
-      tangentMode: 0
+      outSlope: 3.8253744
+      tangentMode: 69
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 3.8253744
-      inSlope: 1.857288
+      inSlope: 3.8253744
       outSlope: 1.857288
-      tangentMode: 0
+      tangentMode: 69
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334

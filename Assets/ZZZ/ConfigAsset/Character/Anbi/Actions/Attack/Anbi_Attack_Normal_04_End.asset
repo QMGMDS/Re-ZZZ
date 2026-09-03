@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Anbi_Attack_Normal_04_End
   m_EditorClassIdentifier: 
   _actionId: Anbi_Attack_Normal_04_End
-  _durationSeconds: 0
+  _durationSeconds: 2.933
   _animationClip: {fileID: 7400000, guid: 25bd0624145797749879346fca1ae202, type: 2}
   _actionDirectionMode: 0
   _maxRotationSpeedDegreesPerSecond: 720

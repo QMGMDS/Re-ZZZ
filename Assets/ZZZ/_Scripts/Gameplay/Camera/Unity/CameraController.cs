@@ -2,8 +2,9 @@ using System;
 
 using UnityEngine;
 
-using GamePlay.Camera.Public;
 using SPFramework;
+using GamePlay.Camera.Public;
+using GamePlay.Character.Public;
 
 namespace GamePlay.Camera
 {
@@ -22,6 +23,9 @@ namespace GamePlay.Camera
 
         private ObjectFollower _objectFollower;
 
+        // 事件退订句柄
+        private IDisposable _characterSwitchedSubscription;
+
         private void Awake()
         {
             if (_camera == null || _specifiedObject == null || _targetObject == null || _smoothTimeSeconds <= 0f)
@@ -36,17 +40,21 @@ namespace GamePlay.Camera
         private void OnEnable()
         {
             ServiceHub.Register<ICameraService>(this);
+            _characterSwitchedSubscription = EventBus.Subscribe<CharacterSwitchedEvent>(OnCharacterSwitched);
         }
 
         private void OnDisable()
         {
             ServiceHub.Unregister<ICameraService>(this);
+            _characterSwitchedSubscription.Dispose();
         }
 
         public void CameraUpdate()
         {
             _objectFollower.Follow();
         }
+
+        #region 服务接口
 
         /// <inheritdoc/>
         public Vector2 ConvertToWorldCoordinate(Vector2 input)
@@ -62,5 +70,16 @@ namespace GamePlay.Camera
             Vector3 worldDirection = cameraRight * input.x + cameraForward * input.y;
             return new Vector2(worldDirection.x, worldDirection.z);
         }
+
+        #endregion
+
+        #region 事件回调
+
+        private void OnCharacterSwitched(CharacterSwitchedEvent characterSwitchedEvent)
+        {
+            _objectFollower.SetTargetObject(characterSwitchedEvent.CharacterTransform);
+        }
+
+        #endregion
     }
 }

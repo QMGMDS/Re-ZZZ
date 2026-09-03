@@ -15,8 +15,8 @@ MonoBehaviour:
   _actionId: Anbi_Attack_Normal_04_Perfect_End
   _durationSeconds: 2.533
   _animationClip: {fileID: 7400000, guid: 04edfcbbe60734a428f3bd58408c1278, type: 2}
-  _actionDirectionMode: 1
-  _maxRotationSpeedDegreesPerSecond: 0
+  _actionDirectionMode: 0
+  _maxRotationSpeedDegreesPerSecond: 720
   _cumulativeForwardDisplacement:
     serializedVersion: 2
     m_Curve:
