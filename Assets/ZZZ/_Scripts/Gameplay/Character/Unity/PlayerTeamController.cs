@@ -18,8 +18,10 @@ namespace GamePlay.Character
         [SerializeField, Tooltip("队伍列表，默认第一位为初始激活角色")]
         private List<PlayerCharacterController> _playerCharacterControllers = new List<PlayerCharacterController>();
 
-        // 队伍中当前激活角色
-        private PlayerCharacterController _currentActiveCharacter;
+        // 队伍信息列表
+        private readonly List<CharacterInfo> _characterInfos = new List<CharacterInfo>();
+
+        // 队伍中当前激活角色索引
         private int _currentActiveCharacterIndex;
 
         // 借用服务接口
@@ -41,11 +43,11 @@ namespace GamePlay.Character
                 }
 
                 playerCharacterController.InitializeCharacterInfo(index);
+                _characterInfos.Add(playerCharacterController.CharacterInfo);
             }
 
             _currentActiveCharacterIndex = 0;
-            _currentActiveCharacter = _playerCharacterControllers[_currentActiveCharacterIndex];
-            _currentActiveCharacter.ActivateInitial();
+            _playerCharacterControllers[_currentActiveCharacterIndex].ActivateInitial();
         }
 
         private void OnEnable()
@@ -84,7 +86,7 @@ namespace GamePlay.Character
 
             // 输入写入激活角色
             Vector2 moveDirectionInWorld = _cameraService.ConvertToWorldCoordinate(characterInputData.Move);
-            _currentActiveCharacter.SetIntention(TranslateInput(characterInputData), moveDirectionInWorld);
+            _playerCharacterControllers[_currentActiveCharacterIndex].SetIntention(TranslateInput(characterInputData), moveDirectionInWorld);
 
             // 遍历角色更新
             for (int index = 0; index < _playerCharacterControllers.Count; index++)
@@ -107,11 +109,10 @@ namespace GamePlay.Character
             int nextCharacterIndex = (_currentActiveCharacterIndex + 1) % _playerCharacterControllers.Count;
             PlayerCharacterController nextCharacter = _playerCharacterControllers[nextCharacterIndex];
 
-            Transform currentCharacterTransform = _currentActiveCharacter.ExitField();
+            Transform currentCharacterTransform = _playerCharacterControllers[_currentActiveCharacterIndex].ExitField();
             nextCharacter.EnterField(currentCharacterTransform);
 
             _currentActiveCharacterIndex = nextCharacterIndex;
-            _currentActiveCharacter = nextCharacter;
 
             EventBus.Publish(new CharacterSwitchedEvent(nextCharacter.transform));
         }
@@ -134,7 +135,13 @@ namespace GamePlay.Character
         #region 服务接口
 
         /// <inheritdoc/>
-        public Transform CurrentActiveCharacterTransform => _currentActiveCharacter.transform;
+        public IReadOnlyList<CharacterInfo> CharacterInfos => _characterInfos;
+
+        /// <inheritdoc/>
+        public int CurrentActiveCharacterIndex => _currentActiveCharacterIndex;
+
+        /// <inheritdoc/>
+        public Transform CurrentActiveCharacterTransform => _playerCharacterControllers[_currentActiveCharacterIndex].transform;
 
         #endregion
     }

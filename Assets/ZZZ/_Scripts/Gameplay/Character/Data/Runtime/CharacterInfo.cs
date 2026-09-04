@@ -1,9 +1,13 @@
+using UnityEngine;
+
 namespace GamePlay.Character
 {
     public sealed class CharacterInfo
     {
         /// <summary>角色配置ID</summary>
         public string CharacterConfigId { get; private set; }
+        /// <summary>角色头像</summary>
+        public Sprite CharacterAvatar { get; private set; }
         /// <summary>角色基础血量</summary>
         public int BaseHealth { get; private set; }
         /// <summary>角色基础攻击力</summary>
@@ -19,6 +23,7 @@ namespace GamePlay.Character
         public CharacterInfo(CharacterInfoAsset characterInfoAsset, int assignedEntityId)
         {
             CharacterConfigId = characterInfoAsset.CharacterConfigId;
+            CharacterAvatar = characterInfoAsset.CharacterAvatar;
             BaseHealth = characterInfoAsset.BaseHealth;
             BaseAttack = characterInfoAsset.BaseAttack;
 

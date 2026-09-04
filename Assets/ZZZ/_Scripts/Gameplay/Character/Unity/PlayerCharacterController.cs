@@ -100,6 +100,11 @@ namespace GamePlay.Character
             return transform;
         }
 
+        /// <summary>
+        /// 角色属性
+        /// </summary>
+        public CharacterInfo CharacterInfo => _characterInfo;
+
         #endregion
 
         #region 动画事件

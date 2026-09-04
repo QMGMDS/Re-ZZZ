@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "Unity.InputSystem",
-        "Game.Framework"
+        "Game.Framework",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

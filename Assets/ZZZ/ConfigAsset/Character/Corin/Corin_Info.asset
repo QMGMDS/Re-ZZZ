@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f35bf813edf5c947baf3c555ab0e8b5, type: 3}
   m_Name: Corin_Info
   m_EditorClassIdentifier: 
-  _characterConfigId: 
-  _baseHealth: 0
-  _baseAttack: 0
+  _characterConfigId: Corin
+  _characterAvatar: {fileID: -603342264, guid: 2455320af49a2c74585cbd073f1b9b44, type: 3}
+  _baseHealth: 1000
+  _baseAttack: 2
