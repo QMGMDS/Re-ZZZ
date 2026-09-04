@@ -2,6 +2,9 @@ using System;
 
 using UnityEngine;
 
+using SPFramework;
+using GamePlay.Character.Public;
+
 namespace GamePlay.Character
 {
     [DisallowMultipleComponent]
@@ -47,7 +50,7 @@ namespace GamePlay.Character
             _coordinator = null;
         }
 
-        #region 模块内部调用接口
+        #region 可调用接口
 
         /// <summary>
         /// 更新该角色
@@ -66,11 +69,16 @@ namespace GamePlay.Character
         }
 
         /// <summary>
-        /// 初始化该角色信息
+        /// 注册该角色信息
         /// </summary>
-        public void InitializeCharacterInfo(int assignedEntityId)
+        public void RegisterCharacterInfo()
         {
-            _characterInfo = new CharacterInfo(_characterInfoAsset, assignedEntityId);
+            if (!ServiceHub.TryGet<ICharacterInfoRegistryService>(out ICharacterInfoRegistryService characterInfoRegistryService))
+            {
+                throw new InvalidOperationException($"{nameof(PlayerCharacterController)} 未获取到 {nameof(ICharacterInfoRegistryService)}");
+            }
+
+            _characterInfo = characterInfoRegistryService.RegisterCharacterInfo(_characterInfoAsset);
         }
 
         /// <summary>

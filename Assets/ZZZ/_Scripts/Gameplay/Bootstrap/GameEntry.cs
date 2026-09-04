@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 
 using SPFramework;
+using GamePlay.Character;
 using GamePlay.SceneLoad;
 using GamePlay.Camera.Public;
 using GamePlay.Input.Public;
@@ -16,7 +17,8 @@ namespace GamePlay.Root
     [DefaultExecutionOrder(-10000)]
     public sealed class GameEntry : MonoBehaviour
     {
-        private ISceneLoadService _sceneLoadController;
+        private CharacterInfoRegistry _characterInfoRegistry;
+        private SceneLoadController _sceneLoadController;
 
         // 状态标识
         private bool _isGameplaySceneLoaded;
@@ -28,6 +30,7 @@ namespace GamePlay.Root
         {
             DontDestroyOnLoad(gameObject);
 
+            _characterInfoRegistry = new CharacterInfoRegistry();
             _sceneLoadController = new SceneLoadController();
 
             _sceneLoadCompletedSubscription = EventBus.Subscribe<SceneLoadCompletedEvent>(OnSceneLoadCompleted);
@@ -58,7 +61,11 @@ namespace GamePlay.Root
 
         private void OnDestroy()
         {
+            // 事件退订
             _sceneLoadCompletedSubscription.Dispose();
+
+            _sceneLoadController.Dispose();
+            _characterInfoRegistry.Dispose();
         }
 
         #region 事件回调

@@ -42,7 +42,7 @@ namespace GamePlay.Character
                     throw new InvalidOperationException($"{nameof(PlayerTeamController)} 的角色列表第 {index} 项未配置");
                 }
 
-                playerCharacterController.InitializeCharacterInfo(index);
+                playerCharacterController.RegisterCharacterInfo();
                 _characterInfos.Add(playerCharacterController.CharacterInfo);
             }
 

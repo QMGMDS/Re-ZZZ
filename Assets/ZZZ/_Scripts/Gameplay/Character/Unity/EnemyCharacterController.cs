@@ -2,6 +2,9 @@ using System;
 
 using UnityEngine;
 
+using SPFramework;
+using GamePlay.Character.Public;
+
 namespace GamePlay.Character
 {
     [DisallowMultipleComponent]
@@ -16,6 +19,11 @@ namespace GamePlay.Character
         // 依赖配置
         [SerializeField]
         private CharacterActionSetAsset _characterActionSetAsset;
+        [SerializeField]
+        private CharacterInfoAsset _characterInfoAsset;
+
+        // 角色信息
+        private CharacterInfo _characterInfo;
 
         // 依赖逻辑模型
         private EnemyCharacterCoordinator _coordinator;
@@ -25,12 +33,22 @@ namespace GamePlay.Character
             _characterController = GetComponent<CharacterController>();
             _animator = GetComponent<Animator>();
 
-            if (_characterActionSetAsset == null)
+            if (_characterActionSetAsset == null || _characterInfoAsset == null)
             {
                 throw new InvalidOperationException($"{nameof(EnemyCharacterController)} 检查配置");
             }
 
             _coordinator = new EnemyCharacterCoordinator(_characterActionSetAsset, _animator, _characterController);
+        }
+
+        private void Start()
+        {
+            if (!ServiceHub.TryGet<ICharacterInfoRegistryService>(out ICharacterInfoRegistryService characterInfoRegistryService))
+            {
+                throw new InvalidOperationException($"{nameof(EnemyCharacterController)} 未获取到 {nameof(ICharacterInfoRegistryService)}");
+            }
+
+            _characterInfo = characterInfoRegistryService.RegisterCharacterInfo(_characterInfoAsset);
         }
 
         private void OnDestroy()
@@ -39,7 +57,7 @@ namespace GamePlay.Character
             _coordinator = null;
         }
 
-        #region 模块内部调用接口
+        #region 可调用接口
 
         /// <summary>
         /// 更新该敌人角色
@@ -64,6 +82,11 @@ namespace GamePlay.Character
         {
             _coordinator.SetMoveDirectionInWorld(moveDirectionInWorld);
         }
+
+        /// <summary>
+        /// 角色属性
+        /// </summary>
+        public CharacterInfo CharacterInfo => _characterInfo;
 
         #endregion
     }
