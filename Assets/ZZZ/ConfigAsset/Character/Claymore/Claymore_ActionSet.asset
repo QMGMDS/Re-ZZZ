@@ -15,56 +15,263 @@ MonoBehaviour:
   _initialAction: {fileID: 11400000, guid: 4022c5798f9c057409404a3820567fbf, type: 2}
   _actions:
   - {fileID: 11400000, guid: 4022c5798f9c057409404a3820567fbf, type: 2}
-  - {fileID: 11400000, guid: 1873579d6f41b5f449dedcea96d9cfc1, type: 2}
+  - {fileID: 11400000, guid: 33d9b3b1a2483254382bc3d1af0f8228, type: 2}
+  - {fileID: 11400000, guid: 14becea455e1e7c4d94716af8f42ca34, type: 2}
+  - {fileID: 11400000, guid: 3913bad3162f81b419420cf8321ae7ea, type: 2}
+  - {fileID: 11400000, guid: 905ad0ee8db3d10468b66cc8372fb78a, type: 2}
   _links:
   - _sourceActionId: Claymore_Idle
-    _targetActionId: Claymore_Hit_Front_Up
+    _targetActionId: Claymore_Idle
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Claymore_Idle
+    _targetActionId: Claymore_RunStart
     _priority: 0
     _normalizedInterruptionWindowStart: 0
     _normalizedInterruptionWindowEnd: 1
     _animationBlendSeconds: 0.25
     _requiredIntention:
-      _move: 0
-      _attack: 0
-      _evade: 0
-      _skill: 0
-      _ultimate: 0
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
     _requiredFact:
-      _switchIn: 0
-      _switchOut: 0
-      _hit: 2
-      _death: 0
-  - _sourceActionId: Claymore_Hit_Front_Up
-    _targetActionId: Claymore_Idle
-    _priority: 0
-    _normalizedInterruptionWindowStart: 1
-    _normalizedInterruptionWindowEnd: 1
-    _animationBlendSeconds: 0.25
-    _requiredIntention:
-      _move: 0
-      _attack: 0
-      _evade: 0
-      _skill: 0
-      _ultimate: 0
-    _requiredFact:
-      _switchIn: 0
-      _switchOut: 0
+      _switchIn: 1
+      _switchOut: 1
       _hit: 1
-      _death: 0
-  - _sourceActionId: Claymore_Hit_Front_Up
-    _targetActionId: Claymore_Hit_Front_Up
+      _death: 1
+  - _sourceActionId: Claymore_Idle
+    _targetActionId: Claymore_Attack_01
     _priority: 0
     _normalizedInterruptionWindowStart: 0
     _normalizedInterruptionWindowEnd: 1
     _animationBlendSeconds: 0
     _requiredIntention:
       _move: 0
-      _attack: 0
-      _evade: 0
-      _skill: 0
-      _ultimate: 0
+      _attack: 2
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
     _requiredFact:
-      _switchIn: 0
-      _switchOut: 0
-      _hit: 2
-      _death: 0
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Claymore_RunStart
+    _targetActionId: Claymore_Run
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Claymore_RunStart
+    _targetActionId: Claymore_Stop
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Claymore_RunStart
+    _targetActionId: Claymore_Attack_01
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 2
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Claymore_Run
+    _targetActionId: Claymore_Run
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Claymore_Run
+    _targetActionId: Claymore_Stop
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Claymore_Run
+    _targetActionId: Claymore_Attack_01
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 2
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Claymore_Stop
+    _targetActionId: Claymore_Idle
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Claymore_Stop
+    _targetActionId: Claymore_RunStart
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Claymore_Stop
+    _targetActionId: Claymore_Attack_01
+    _priority: 0
+    _normalizedInterruptionWindowStart: 0
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 2
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Claymore_Attack_01
+    _targetActionId: Claymore_Idle
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 1
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Claymore_Attack_01
+    _targetActionId: Claymore_RunStart
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0.25
+    _requiredIntention:
+      _move: 2
+      _attack: 1
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1
+  - _sourceActionId: Claymore_Attack_01
+    _targetActionId: Claymore_Attack_01
+    _priority: 0
+    _normalizedInterruptionWindowStart: 1
+    _normalizedInterruptionWindowEnd: 1
+    _animationBlendSeconds: 0
+    _requiredIntention:
+      _move: 0
+      _attack: 2
+      _evade: 1
+      _skill: 1
+      _ultimate: 1
+    _requiredFact:
+      _switchIn: 1
+      _switchOut: 1
+      _hit: 1
+      _death: 1

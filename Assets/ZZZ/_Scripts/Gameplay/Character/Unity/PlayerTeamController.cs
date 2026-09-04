@@ -13,7 +13,7 @@ using GamePlay.Camera.Public;
 namespace GamePlay.Character
 {
     [DisallowMultipleComponent]
-    public sealed class PlayerTeamController : MonoBehaviour
+    public sealed class PlayerTeamController : MonoBehaviour, IPlayerTeamService
     {
         [SerializeField, Tooltip("队伍列表，默认第一位为初始激活角色")]
         private List<PlayerCharacterController> _playerCharacterControllers = new List<PlayerCharacterController>();
@@ -46,6 +46,16 @@ namespace GamePlay.Character
             _currentActiveCharacterIndex = 0;
             _currentActiveCharacter = _playerCharacterControllers[_currentActiveCharacterIndex];
             _currentActiveCharacter.ActivateInitial();
+        }
+
+        private void OnEnable()
+        {
+            ServiceHub.Register<IPlayerTeamService>(this);
+        }
+
+        private void OnDisable()
+        {
+            ServiceHub.Unregister<IPlayerTeamService>(this);
         }
 
         private void Start()
@@ -120,5 +130,12 @@ namespace GamePlay.Character
         {
             return value ? Trilean.True : Trilean.False;
         }
+
+        #region 服务接口
+
+        /// <inheritdoc/>
+        public Transform CurrentActiveCharacterTransform => _currentActiveCharacter.transform;
+
+        #endregion
     }
 }

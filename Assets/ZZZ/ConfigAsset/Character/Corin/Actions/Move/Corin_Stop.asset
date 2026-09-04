@@ -16,7 +16,7 @@ MonoBehaviour:
   _durationSeconds: 3.667
   _animationClip: {fileID: 7400000, guid: 95a45913b16277c44881ba827f159458, type: 2}
   _actionDirectionMode: 0
-  _maxRotationSpeedDegreesPerSecond: 720
+  _maxRotationSpeedDegreesPerSecond: 0
   _cumulativeForwardDisplacement:
     serializedVersion: 2
     m_Curve:

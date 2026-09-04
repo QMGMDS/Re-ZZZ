@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b23f08d2ae4cba14087c1ed36193d82b, type: 3}
+  m_Name: Claymore
+  m_EditorClassIdentifier: 
+  mBehaviorSource:
+    behaviorName: Claymore
+    behaviorDescription: 
+    mTaskData:
+      types: []
+      parentIndex: 
+      startIndex: 
+      variableStartIndex: 
+      JSONSerialization: '{"EntryTask":{"Type":"BehaviorDesigner.Runtime.Tasks.EntryTask","NodeData":{"Offset":"(275.9177,128.854446)"},"ID":0,"Name":"Entry","Instant":true},"RootTask":{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(-4.082306,118.854446)"},"ID":1,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-222.264084,143.854492)"},"ID":2,"Name":"\u8fdb\u653b","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"GamePlay.AI.BehaviorDesigner.Tasks.Conditionals.IsAttackRange","NodeData":{"Offset":"(-56.6958427,155.672791)"},"ID":3,"Name":"Is
+        Attack Range","Instant":true},{"Type":"GamePlay.AI.BehaviorDesigner.Tasks.Actions.AttackTarget","NodeData":{"Offset":"(56.9404755,155.672729)"},"ID":4,"Name":"Attack
+        Target","Instant":true}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(85.45432,138.636353)"},"ID":5,"Name":"\u8ffd\u9010","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"GamePlay.AI.BehaviorDesigner.Tasks.Conditionals.IsVisionRange","NodeData":{"Offset":"(-54.42334,160.2182)"},"ID":6,"Name":"Is
+        Vision Range","Instant":true},{"Type":"GamePlay.AI.BehaviorDesigner.Tasks.Actions.ChaseTarget","NodeData":{"Offset":"(81.94043,160.218262)"},"ID":7,"Name":"Chase
+        Target","Instant":true}]},{"Type":"GamePlay.AI.BehaviorDesigner.Tasks.Actions.Idle","NodeData":{"Offset":"(358.758667,145.218262)"},"ID":8,"Name":"Idle","Instant":true}]}}'
+      fieldSerializationData:
+        typeName: []
+        fieldNameHash: 
+        startIndex: 
+        dataPosition: 
+        unityObjects: []
+        byteData: 
+        byteDataArray: 
+      Version: 1.7.12
